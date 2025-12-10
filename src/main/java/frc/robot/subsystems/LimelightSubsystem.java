@@ -4,83 +4,69 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.wpilibj.AnalogGyro;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.CommandSwerveDrivetrain;
-import frc.robot.LimelightHelpers;
+import limelight.Limelight;
+import limelight.networktables.AngularVelocity3d;
+import limelight.networktables.LimelightResults;
+import limelight.networktables.LimelightSettings.LEDMode;
+import limelight.networktables.Orientation3d;
+import limelight.networktables.PoseEstimate;
+import limelight.networktables.target.pipeline.NeuralClassifier;
 import static frc.robot.RobotContainer.m_gyro;
-import static frc.robot.RobotContainer.m_poseEstimator;
-import limelight.*;
+import static frc.robot.Robot.m_poseEstimator;
+
+import java.util.Optional;
+
+import com.ctre.phoenix6.SignalLogger;
 
 public class LimelightSubsystem extends SubsystemBase {
 
-    /** Creates a new LimelightSubsystem. */
-    public LimelightSubsystem() {
-    }
+        /** Creates a new LimelightSubsystem. */
+        public LimelightSubsystem() {
+        }
 
     @Override
     public void periodic() {
-        Limelight limelight = new Limelight("test");
+        Limelight limelight = new Limelight("limelight");
+
+        // Set the limelight to use Pipeline LED control, with the Camera offset of 0, and save.
+        limelight.getSettings()
+                .withLimelightLEDMode(LEDMode.PipelineControl)
+                .withCameraOffset(Pose3d.kZero)
+                .save();
+
+        // Get target data
+        limelight.getLatestResults().ifPresent((LimelightResults result) -> {
+                for (NeuralClassifier object : result.targets_Classifier) {
+                        // Classifier says its a algae.
+                        if (object.className.equals("algae")) {
+                                // Check pixel location of algae.
+                                if (object.ty > 2 && object.ty < 1) {
+                                        // Algae is valid! do stuff!
+                                }
+                        }
+                }
+        });
 
 
-        // This method will be called once per scheduler run
-        // Basic targeting data
-        double tx = LimelightHelpers.getTX(""); // Horizontal offset from crosshair to target in degrees
-        double ty = LimelightHelpers.getTY(""); // Vertical offset from crosshair to target in degrees
-        double ta = LimelightHelpers.getTA(""); // Target area (0% to 100% of image)
-        boolean hasTarget = LimelightHelpers.getTV(""); // Do you have a valid target?
+        // Required for megatag2 in periodic() function before fetching pose.
+        limelight.getSettings()
+                .withRobotOrientation(new Orientation3d(m_gyro.getRotation3d(),
+                        new AngularVelocity3d(m_gyro.getAngularVelocityXDevice().getValue(),
+                        m_gyro.getAngularVelocityYDevice().getValue(),
+                        m_gyro.getAngularVelocityZDevice().getValue())))
+                .save();
 
-        double txnc = LimelightHelpers.getTXNC(""); // Horizontal offset from principal pixel/point to target in degrees
-        double tync = LimelightHelpers.getTYNC(""); // Vertical offset from principal pixel/point to target in degrees
-
-        // Switch to pipeline 0
-        LimelightHelpers.setPipelineIndex("", 0);
-
-        // Let the current pipeline control the LEDs
-        LimelightHelpers.setLEDMode_PipelineControl("");
-
-        // Force LEDs on/off/blink
-        LimelightHelpers.setLEDMode_ForceOff("");
-
-        // First, tell Limelight your robot's current orientation
-        double robotYaw = m_gyro.getYaw().getValueAsDouble();
-        LimelightHelpers.SetRobotOrientation("", robotYaw, 0.0, 0.0, 0.0, 0.0, 0.0);
-
-        // Get the pose estimate
-        LimelightHelpers.PoseEstimate limelightMeasurement = LimelightHelpers.getBotPoseEstimate_wpiBlue("");
-
-        // Add it to your pose estimator
-        m_poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.5, .5, 9999999));
-        m_poseEstimator.addVisionMeasurement(
-                limelightMeasurement.pose,
-                limelightMeasurement.timestampSeconds);
-
-        // Set a custom crop window for improved performance (-1 to 1 for each value)
-        LimelightHelpers.setCropWindow("", -0.5, 0.5, -0.5, 0.5);
-
-        // Change the camera pose relative to robot center (x forward, y left, z up,
-        // degrees)
-        LimelightHelpers.setCameraPose_RobotSpace("",
-                0.5, // Forward offset (meters)
-                0.0, // Side offset (meters)
-                0.5, // Height offset (meters)
-                0.0, // Roll (degrees)
-                30.0, // Pitch (degrees)
-                0.0 // Yaw (degrees)
-        );
-
-        // Set AprilTag offset tracking point (meters)
-        LimelightHelpers.setFiducial3DOffset("",
-                0.0, // Forward offset
-                0.0, // Side offset
-                0.5 // Height offset
-        );
-
-        // Configure AprilTag detection
-        LimelightHelpers.SetFiducialIDFiltersOverride("", new int[] { 1, 2, 3, 4 }); // Only track these tag IDs
-        LimelightHelpers.SetFiducialDownscalingOverride("", 2.0f); // Process at half resolution for improved framerate
-                                                                   // and reduced range
-
+        // Get MegaTag2 pose
+        Optional<PoseEstimate> visionEstimate = limelight.getPoseEstimator(true).getPoseEstimate();
+        // If the pose is present
+        visionEstimate.ifPresent((PoseEstimate poseEstimate) -> {
+                // Add it to the pose estimator.
+                Pose2d pose = poseEstimate.pose.toPose2d();
+                SignalLogger.writeDouble("Pose X: ", pose.getX());
+                m_poseEstimator.addVisionMeasurement(pose, poseEstimate.timestampSeconds);
+        });
     }
 }
