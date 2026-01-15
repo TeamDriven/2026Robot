@@ -11,6 +11,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.generated.TunerConstants;
@@ -59,6 +60,9 @@ public class Robot extends TimedRobot {
     CommandScheduler.getInstance().run();
     Pose2d pose = m_poseEstimator.getEstimatedPosition();
     RobotContainer.m_field.setRobotPose(pose);
+    SmartDashboard.putNumber("limelight TX",LimelightHelpers.getTX("limelight"));
+    SmartDashboard.putNumber("limelight TY",LimelightHelpers.getTY("limelight"));
+    SmartDashboard.putNumber("limelight TA",LimelightHelpers.getTA("limelight"));
   }
 
   @Override
@@ -121,4 +125,6 @@ public class Robot extends TimedRobot {
   @Override
   public void simulationPeriodic() {
   }
+
+  
 }

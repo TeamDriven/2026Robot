@@ -99,4 +99,12 @@ public class LimelightSubsystem extends SubsystemBase {
             }
         }
     }
+
+    double limelight_aim_proportional(){
+        //kp is the constant of proportionality
+        double kP = .035;
+        double targetingAngularVelocity = LimelightHelpers.getTX("limelight") * kP;
+        return 0.0;
+    }
+
 }

@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import frc.robot.subsystems.Intake;
 import com.ctre.phoenix6.hardware.Pigeon2;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.jni.SwerveJNI.ModulePosition;
@@ -73,6 +74,8 @@ public class RobotContainer {
 
     public static Field2d m_field = new Field2d();
 
+    public static final Intake m_intake = new Intake();
+
     public RobotContainer() {
         SmartDashboard.putData("Field", m_field);
         configureBindings();
@@ -117,6 +120,10 @@ public class RobotContainer {
         joystick.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
 
         drivetrain.registerTelemetry(logger::telemeterize);
+
+        joystick.rightTrigger().whileTrue(m_intake.runIntakePercent(1)).onFalse(m_intake.stopIntakeCommand());
+        //joystick.rightBumper().whileTrue(m_intake.runIntakePercent(-0.5)).onFalse(m_intake.stopIntakeCommand());
+
     }
 
     public Command getAutonomousCommand() {
