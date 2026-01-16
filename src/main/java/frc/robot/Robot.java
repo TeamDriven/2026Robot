@@ -6,20 +6,17 @@ package frc.robot;
 
 import com.ctre.phoenix6.hardware.Pigeon2;
 
-import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import edu.wpi.first.math.numbers.N1;
-import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.LimelightSubsystem;
+import frc.robot.LimelightHelpers;
 
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
@@ -59,6 +56,9 @@ public class Robot extends TimedRobot {
     CommandScheduler.getInstance().run();
     Pose2d pose = m_poseEstimator.getEstimatedPosition();
     RobotContainer.m_field.setRobotPose(pose);
+    SmartDashboard.putNumber("limelight TX",LimelightHelpers.getTX("limelight"));
+    SmartDashboard.putNumber("limelight TY",LimelightHelpers.getTY("limelight"));
+    SmartDashboard.putNumber("limelight TA",LimelightHelpers.getTA("limelight"));
   }
 
   @Override
@@ -78,7 +78,7 @@ public class Robot extends TimedRobot {
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     if (m_autonomousCommand != null) {
-      m_autonomousCommand.schedule();
+      CommandScheduler.getInstance().schedule(m_autonomousCommand);
     }
   }
 
@@ -121,4 +121,6 @@ public class Robot extends TimedRobot {
   @Override
   public void simulationPeriodic() {
   }
+
+  
 }

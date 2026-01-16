@@ -4,69 +4,107 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import limelight.Limelight;
-import limelight.networktables.AngularVelocity3d;
-import limelight.networktables.LimelightResults;
-import limelight.networktables.LimelightSettings.LEDMode;
-import limelight.networktables.Orientation3d;
-import limelight.networktables.PoseEstimate;
-import limelight.networktables.target.pipeline.NeuralClassifier;
-import static frc.robot.RobotContainer.m_gyro;
+
+import frc.robot.LimelightHelpers;
 import static frc.robot.Robot.m_poseEstimator;
-
-import java.util.Optional;
-
-import com.ctre.phoenix6.SignalLogger;
+import static frc.robot.Robot.m_gyro;
+import static frc.robot.RobotContainer.backLeft;
+import static frc.robot.RobotContainer.frontLeft;
+import static frc.robot.RobotContainer.backRight;
+import static frc.robot.RobotContainer.frontRight;
 
 public class LimelightSubsystem extends SubsystemBase {
+    public LimelightHelpers helper = new LimelightHelpers();
 
-        /** Creates a new LimelightSubsystem. */
-        public LimelightSubsystem() {
-        }
+    /** Creates a new LimelightSubsystem. */
+    public LimelightSubsystem() {
+
+    }
 
     @Override
     public void periodic() {
-        Limelight limelight = new Limelight("limelight");
+        updateOdometry();
 
-        // Set the limelight to use Pipeline LED control, with the Camera offset of 0, and save.
-        limelight.getSettings()
-                .withLimelightLEDMode(LEDMode.PipelineControl)
-                .withCameraOffset(Pose3d.kZero)
-                .save();
+        double tx = LimelightHelpers.getTX(""); // Horizontal offset from crosshair to target in degrees
+        double ty = LimelightHelpers.getTY(""); // Vertical offset from crosshair to target in degrees
+        double ta = LimelightHelpers.getTA(""); // Target area (0% to 100% of image)
+        boolean hasTarget = LimelightHelpers.getTV(""); // Do you have a valid target?
 
-        // Get target data
-        limelight.getLatestResults().ifPresent((LimelightResults result) -> {
-                for (NeuralClassifier object : result.targets_Classifier) {
-                        // Classifier says its a algae.
-                        if (object.className.equals("algae")) {
-                                // Check pixel location of algae.
-                                if (object.ty > 2 && object.ty < 1) {
-                                        // Algae is valid! do stuff!
-                                }
-                        }
-                }
-        });
+        double txnc = LimelightHelpers.getTXNC(""); // Horizontal offset from principal pixel/point to target in degrees
+        double tync = LimelightHelpers.getTYNC(""); // Vertical offset from principal pixel/point to target in degrees
 
-
-        // Required for megatag2 in periodic() function before fetching pose.
-        limelight.getSettings()
-                .withRobotOrientation(new Orientation3d(m_gyro.getRotation3d(),
-                        new AngularVelocity3d(m_gyro.getAngularVelocityXDevice().getValue(),
-                        m_gyro.getAngularVelocityYDevice().getValue(),
-                        m_gyro.getAngularVelocityZDevice().getValue())))
-                .save();
-
-        // Get MegaTag2 pose
-        Optional<PoseEstimate> visionEstimate = limelight.getPoseEstimator(true).getPoseEstimate();
-        // If the pose is present
-        visionEstimate.ifPresent((PoseEstimate poseEstimate) -> {
-                // Add it to the pose estimator.
-                Pose2d pose = poseEstimate.pose.toPose2d();
-                SignalLogger.writeDouble("Pose X: ", pose.getX());
-                m_poseEstimator.addVisionMeasurement(pose, poseEstimate.timestampSeconds);
-        });
+        System.out.println("tx" + tx);
+        System.out.println("has target" + hasTarget);
+        System.out.println("ty" + ty);
     }
+
+    public void updateOdometry() {
+
+        m_poseEstimator.update(
+                m_gyro.getRotation2d(),
+                new SwerveModulePosition[] {
+
+                        frontLeft,
+                        frontRight,
+                        backLeft,
+                        backRight
+                });
+
+        boolean useMegaTag2 = true; // set to false to use MegaTag1
+        boolean doRejectUpdate = false;
+        if (useMegaTag2 == false) {
+            LimelightHelpers.PoseEstimate mt1 = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
+
+            if (mt1.tagCount == 1 && mt1.rawFiducials.length == 1) {
+                if (mt1.rawFiducials[0].ambiguity > .7) {
+                    doRejectUpdate = true;
+                }
+                if (mt1.rawFiducials[0].distToCamera > 3) {
+                    doRejectUpdate = true;
+                }
+            }
+            if (mt1.tagCount == 0) {
+                doRejectUpdate = true;
+            }
+
+            if (!doRejectUpdate) {
+                m_poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.5, .5, 9999999));
+                m_poseEstimator.addVisionMeasurement(
+                        mt1.pose,
+                        mt1.timestampSeconds);
+            }
+        } else if (useMegaTag2 == true) {
+            LimelightHelpers.SetRobotOrientation("limelight",
+                    m_poseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
+            LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
+            if (Math.abs(m_gyro.getAngularVelocityZWorld().getValueAsDouble()) > 720) // if our angular velocity is
+                                                                                      // greater
+                                                                                      // than 720 degrees per second,
+                                                                                      // ignore
+                                                                                      // vision updates
+            {
+                doRejectUpdate = true;
+            }
+            if (mt2.tagCount == 0) {
+                doRejectUpdate = true;
+            }
+            if (!doRejectUpdate) {
+                m_poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 9999999));
+                m_poseEstimator.addVisionMeasurement(
+                        mt2.pose,
+                        mt2.timestampSeconds);
+            }
+        }
+    }
+
+    double limelight_aim_proportional(){
+        //kp is the constant of proportionality
+        double kP = .035;
+        double targetingAngularVelocity = LimelightHelpers.getTX("limelight") * kP;
+        return 0.0;
+    }
+
 }
