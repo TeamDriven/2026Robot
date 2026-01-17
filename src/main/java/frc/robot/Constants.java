@@ -13,13 +13,22 @@ public class Constants {
     }
 
     // Intake
+    public class IntakeConsts {
 
+    }
     // Actuation
-    public static final double GearRatio = 1;
+    public class ActuationConsts {
+        public static final double GearRatio = 1;
+    }
 
     // Shooter
+    public class ShooterConsts {
+
+    }
 
     // AngleController
-    public static final double ANGLE_CONTROLLER_REST_POS = 0;
-    public static final double GEAR_RATIO = 1;
+    public class AngleControllerConsts {
+        public static final double ANGLE_CONTROLLER_REST_POS = 0;
+        public static final double GEAR_RATIO = 1;
+    }
 }

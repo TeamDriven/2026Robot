@@ -104,7 +104,7 @@ public class LimelightSubsystem extends SubsystemBase {
     }
   }
 
-  double limelight_aim_proportional() {
+  public static double limelight_aim_proportional() {
     // kp is the constant of proportionality
     double kP = .035;
     double targetingAngularVelocity = LimelightHelpers.getTX("limelight") * kP;
@@ -117,7 +117,7 @@ public class LimelightSubsystem extends SubsystemBase {
     return targetingAngularVelocity;
   }
 
-  double limelight_range_proportional() {
+  public static double limelight_range_proportional() {
     double kP = .1;
     double targetingForwardSpeed = LimelightHelpers.getTY("limelight") * kP;
     targetingForwardSpeed *= DrivetrainConst.MaxSpeed;

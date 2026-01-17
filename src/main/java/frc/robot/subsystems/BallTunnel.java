@@ -23,7 +23,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
  * check its speed and create commands to control it.
  */
 public class BallTunnel extends SubsystemBase {
-  private TalonFX ballTunnelMotor = new TalonFX(17);
+  private TalonFX ballTunnelMotor;
 
   VelocityVoltage velocityControl;
   NeutralOut stopMode;
@@ -31,7 +31,9 @@ public class BallTunnel extends SubsystemBase {
   /**
    * Creates a new ballTunnel.
    */
-  public BallTunnel() {
+  public BallTunnel(int motorId) {
+    ballTunnelMotor = new TalonFX(motorId);
+
     initBallTunnelMotor();
 
     velocityControl = new VelocityVoltage(0);

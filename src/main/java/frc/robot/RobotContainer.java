@@ -4,10 +4,7 @@
 
 package frc.robot;
 
-import frc.robot.subsystems.Intake;
-import com.ctre.phoenix6.hardware.Pigeon2;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
-import com.ctre.phoenix6.swerve.jni.SwerveJNI.ModulePosition;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -26,23 +23,16 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.LimelightSubsystem;
-import frc.robot.subsystems.Shooter;
-import frc.robot.subsystems.BallTunnel;
+
+import static frc.robot.Subsystems.m_shooter;
 
 import frc.robot.Constants.DrivetrainConst;
 
 public class RobotContainer {
-
-    /* Setting up bindings for necessary control of the swerve drive platform */
-    private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
-            .withDeadband(DrivetrainConst.MaxSpeed * 0.1).withRotationalDeadband(DrivetrainConst.MaxAngularRate * 0.1) // Add a 10% deadband
-            .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
     private final Telemetry logger = new Telemetry(DrivetrainConst.MaxSpeed);
-
-    private final CommandXboxController joystick = new CommandXboxController(0);
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
@@ -73,9 +63,6 @@ public class RobotContainer {
 
     public static Field2d m_field = new Field2d();
 
-    public static final Intake m_intake = new Intake();
-    public static final Shooter m_shooter = new Shooter();
-
     public RobotContainer() {
         SmartDashboard.putData("Field", m_field);
         configureBindings();
@@ -91,13 +78,7 @@ public class RobotContainer {
         // and Y is defined as to the left according to WPILib convention.
         drivetrain.setDefaultCommand(
                 // Drivetrain will execute this command periodically
-                drivetrain.applyRequest(() -> drive.withVelocityX(joystick.getRightY() * DrivetrainConst.MaxSpeed) // Drive forward with
-                                                                                                   // negative Y
-                                                                                                   // (forward)
-                        .withVelocityY(joystick.getRightX() * DrivetrainConst.MaxSpeed) // Drive left with negative X (left)
-                        .withRotationalRate(-joystick.getLeftX() * DrivetrainConst.MaxAngularRate) // Drive counterclockwise with
-                                                                                    // negative X (left)
-                ));
+                drivetrain.applyRequest(Controls.driveRequest()));
 
         // Idle while the robot is disabled. This ensures the configured
         // neutral mode is applied to the drive motors while disabled.
@@ -105,23 +86,25 @@ public class RobotContainer {
         RobotModeTriggers.disabled().whileTrue(
                 drivetrain.applyRequest(() -> idle).ignoringDisable(true));
 
-        joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
-        joystick.b().whileTrue(drivetrain.applyRequest(
-                () -> point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))));
+        // Controls.joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
+        // Controls.joystick.b().whileTrue(drivetrain.applyRequest(
+        //         () -> point.withModuleDirection(new Rotation2d(-Controls.joystick.getLeftY(), -Controls.joystick.getLeftX()))));
 
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
-         joystick.back().and(joystick.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
-        joystick.back().and(joystick.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
-        joystick.start().and(joystick.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
-        joystick.start().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+        Controls.joystick.back().and(Controls.joystick.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
+        Controls.joystick.back().and(Controls.joystick.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
+        Controls.joystick.start().and(Controls.joystick.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
+        Controls.joystick.start().and(Controls.joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
         // reset the field-centric heading on left bumper press
-        joystick.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
+        Controls.joystick.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
 
         drivetrain.registerTelemetry(logger::telemeterize);
 
-        joystick.rightTrigger().whileTrue(m_shooter.runShooterCommand(56.7, 100)).onFalse(new InstantCommand(() -> m_shooter.stopMotors()));
+        Controls.joystick.a().onTrue(Controls.autoAlignCommand());
+
+        Controls.joystick.rightTrigger().whileTrue(m_shooter.runShooterCommand(56.7, 100)).onFalse(new InstantCommand(() -> m_shooter.stopMotors()));
         //joystick.rightBumper().whileTrue(m_intake.runIntakePercent(-0.5)).onFalse(m_intake.stopIntakeCommand());
 
     }
