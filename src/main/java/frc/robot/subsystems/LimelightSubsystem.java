@@ -1,7 +1,3 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.subsystems;
 
 import edu.wpi.first.math.VecBuilder;
@@ -9,11 +5,13 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.LimelightHelpers;
+
 import static frc.robot.Robot.m_poseEstimator;
 import static frc.robot.Robot.m_gyro;
 import static frc.robot.RobotContainer.backLeft;
 import static frc.robot.RobotContainer.frontLeft;
 import static frc.robot.RobotContainer.backRight;
+
 import static frc.robot.RobotContainer.frontRight;
 
 import frc.robot.Constants.DrivetrainConst;
@@ -42,7 +40,6 @@ public class LimelightSubsystem extends SubsystemBase {
     // System.out.println("has target" + hasTarget);
     // System.out.println("ty" + ty);
 
-    
   }
 
   public void updateOdometry() {
@@ -104,25 +101,26 @@ public class LimelightSubsystem extends SubsystemBase {
     }
   }
 
-  public static double limelight_aim_proportional() {
+  public double limelight_aim_proportional() {
     // kp is the constant of proportionality
     double kP = .035;
     double targetingAngularVelocity = LimelightHelpers.getTX("limelight") * kP;
     targetingAngularVelocity *= DrivetrainConst.MaxAngularRate;
 
-
     // invert since tx is positive when the target is to the right of the crosshair
     targetingAngularVelocity *= -1.0;
 
     return targetingAngularVelocity;
+
   }
 
-  public static double limelight_range_proportional() {
+  public double limelight_range_proportional() {
     double kP = .1;
     double targetingForwardSpeed = LimelightHelpers.getTY("limelight") * kP;
     targetingForwardSpeed *= DrivetrainConst.MaxSpeed;
     targetingForwardSpeed *= -1.0;
     return targetingForwardSpeed;
+
   }
 
 }

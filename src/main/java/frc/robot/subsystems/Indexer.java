@@ -182,7 +182,7 @@ public class Indexer extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    System.out.println("indexer: " + indexerMotor.getVelocity().getValueAsDouble());
+    // System.out.println("indexer: " + indexerMotor.getVelocity().getValueAsDouble());
   }
 
   @Override

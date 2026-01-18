@@ -4,10 +4,8 @@
 
 package frc.robot;
 
-import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -17,99 +15,101 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
-import frc.robot.subsystems.LimelightSubsystem;
 
 import static frc.robot.Subsystems.m_shooter;
 
 import frc.robot.Constants.DrivetrainConst;
 
 public class RobotContainer {
-    private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
-    private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
+        private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
+        private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
-    private final Telemetry logger = new Telemetry(DrivetrainConst.MaxSpeed);
+        private final Telemetry logger = new Telemetry(DrivetrainConst.MaxSpeed);
 
-    public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+        public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
-    public static SwerveModulePosition frontRight;
+        public static SwerveModulePosition frontRight;
 
-    public static SwerveModulePosition backRight;
+        public static SwerveModulePosition backRight;
 
-    public static SwerveModulePosition frontLeft;
+        public static SwerveModulePosition frontLeft;
 
-    public static SwerveModulePosition backLeft;
+        public static SwerveModulePosition backLeft;
 
-    public static final Translation2d m_frontLeftLocation = new Translation2d(TunerConstants.kFrontLeftXPos,
-            TunerConstants.kFrontLeftYPos);
+        public static final Translation2d m_frontLeftLocation = new Translation2d(TunerConstants.kFrontLeftXPos,
+                        TunerConstants.kFrontLeftYPos);
 
-    public static final Translation2d m_frontRightLocation = new Translation2d(TunerConstants.kFrontRightXPos,
-            TunerConstants.kFrontRightYPos);
+        public static final Translation2d m_frontRightLocation = new Translation2d(TunerConstants.kFrontRightXPos,
+                        TunerConstants.kFrontRightYPos);
 
-    public static final Translation2d m_backLeftLocation = new Translation2d(TunerConstants.kBackLeftXPos,
-            TunerConstants.kBackLeftYPos);
+        public static final Translation2d m_backLeftLocation = new Translation2d(TunerConstants.kBackLeftXPos,
+                        TunerConstants.kBackLeftYPos);
 
-    public static final Translation2d m_backRightLocation = new Translation2d(TunerConstants.kBackRightXPos,
-            TunerConstants.kBackRightYPos);
+        public static final Translation2d m_backRightLocation = new Translation2d(TunerConstants.kBackRightXPos,
+                        TunerConstants.kBackRightYPos);
 
-    public static final SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(m_frontLeftLocation,
-            m_frontRightLocation, m_backLeftLocation, m_backRightLocation);
+        public static final SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(m_frontLeftLocation,
+                        m_frontRightLocation, m_backLeftLocation, m_backRightLocation);
 
-    public static final LimelightSubsystem m_limelight = new LimelightSubsystem();
+        public static Field2d m_field = new Field2d();
 
-    public static Field2d m_field = new Field2d();
+        public RobotContainer() {
+                SmartDashboard.putData("Field", m_field);
+                configureBindings();
 
-    public RobotContainer() {
-        SmartDashboard.putData("Field", m_field);
-        configureBindings();
+                frontLeft = drivetrain.getState().ModulePositions[0];
+                frontRight = drivetrain.getState().ModulePositions[1];
+                backLeft = drivetrain.getState().ModulePositions[2];
+                backRight = drivetrain.getState().ModulePositions[3];
+        }
 
-        frontLeft = drivetrain.getState().ModulePositions[0];
-        frontRight = drivetrain.getState().ModulePositions[1];
-        backLeft = drivetrain.getState().ModulePositions[2];
-        backRight = drivetrain.getState().ModulePositions[3];
-    }
+        private void configureBindings() {
+                // Note that X is defined as forward according to WPILib convention,
+                // and Y is defined as to the left according to WPILib convention.
+                drivetrain.setDefaultCommand(
+                                // Drivetrain will execute this command periodically
+                                drivetrain.applyRequest(DriveControls.driveRequest()));
 
-    private void configureBindings() {
-        // Note that X is defined as forward according to WPILib convention,
-        // and Y is defined as to the left according to WPILib convention.
-        drivetrain.setDefaultCommand(
-                // Drivetrain will execute this command periodically
-                drivetrain.applyRequest(Controls.driveRequest()));
+                // Idle while the robot is disabled. This ensures the configured
+                // neutral mode is applied to the drive motors while disabled.
+                final var idle = new SwerveRequest.Idle();
+                RobotModeTriggers.disabled().whileTrue(
+                                drivetrain.applyRequest(() -> idle).ignoringDisable(true));
 
-        // Idle while the robot is disabled. This ensures the configured
-        // neutral mode is applied to the drive motors while disabled.
-        final var idle = new SwerveRequest.Idle();
-        RobotModeTriggers.disabled().whileTrue(
-                drivetrain.applyRequest(() -> idle).ignoringDisable(true));
+                // Controls.joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
+                // Controls.joystick.b().whileTrue(drivetrain.applyRequest(
+                // () -> point.withModuleDirection(new Rotation2d(-Controls.joystick.getLeftY(),
+                // -Controls.joystick.getLeftX()))));
 
-        // Controls.joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
-        // Controls.joystick.b().whileTrue(drivetrain.applyRequest(
-        //         () -> point.withModuleDirection(new Rotation2d(-Controls.joystick.getLeftY(), -Controls.joystick.getLeftX()))));
+                // Run SysId routines when holding back/start and X/Y.
+                // Note that each routine should be run exactly once in a single log.
+                Controlls.joystick.back().and(Controlls.joystick.y())
+                                .whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
+                Controlls.joystick.back().and(Controlls.joystick.x())
+                                .whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
+                Controlls.joystick.start().and(Controlls.joystick.y())
+                                .whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
+                Controlls.joystick.start().and(Controlls.joystick.x())
+                                .whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
-        // Run SysId routines when holding back/start and X/Y.
-        // Note that each routine should be run exactly once in a single log.
-        Controls.joystick.back().and(Controls.joystick.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
-        Controls.joystick.back().and(Controls.joystick.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
-        Controls.joystick.start().and(Controls.joystick.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
-        Controls.joystick.start().and(Controls.joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+                // reset the field-centric heading on left bumper press
+                Controlls.joystick.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
 
-        // reset the field-centric heading on left bumper press
-        Controls.joystick.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
+                drivetrain.registerTelemetry(logger::telemeterize);
 
-        drivetrain.registerTelemetry(logger::telemeterize);
+                Controlls.joystick.a().onTrue(drivetrain.applyRequest(DriveControls.autoHeading())).onFalse(drivetrain.applyRequest(DriveControls.driveRequest()));
 
-        Controls.joystick.a().onTrue(Controls.autoAlignCommand());
+                Controlls.joystick.rightTrigger().whileTrue(m_shooter.runShooterCommand(56.7, 100))
+                                .onFalse(new InstantCommand(() -> m_shooter.stopMotors()));
+                // joystick.rightBumper().whileTrue(m_intake.runIntakePercent(-0.5)).onFalse(m_intake.stopIntakeCommand());
 
-        Controls.joystick.rightTrigger().whileTrue(m_shooter.runShooterCommand(56.7, 100)).onFalse(new InstantCommand(() -> m_shooter.stopMotors()));
-        //joystick.rightBumper().whileTrue(m_intake.runIntakePercent(-0.5)).onFalse(m_intake.stopIntakeCommand());
+        }
 
-    }
-
-    public Command getAutonomousCommand() {
-        return Commands.print("No autonomous command configured");
-    }
+        public Command getAutonomousCommand() {
+                return Commands.print("No autonomous command configured");
+        }
 }

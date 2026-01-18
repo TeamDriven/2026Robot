@@ -182,7 +182,7 @@ public class BallTunnel extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    System.out.println("ball tunnel: " + ballTunnelMotor.getVelocity().getValueAsDouble());
+    // System.out.println("ball tunnel: " + ballTunnelMotor.getVelocity().getValueAsDouble());
   }
 
   @Override
