@@ -18,14 +18,18 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.BallTunnel;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 
 import static frc.robot.Subsystems.m_shooter;
+import static frc.robot.Subsystems.m_intake;
+import static frc.robot.Subsystems.m_ballTunnel;
 
 import frc.robot.Constants.DrivetrainConst;
-import frc.robot.commands.OutpostAuto;
+import frc.robot.commands.autos.OutpostAuto;
 
 public class RobotContainer {
 	private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
@@ -38,6 +42,7 @@ public class RobotContainer {
 	private final AutoFactory autoFactory;
 	private final OutpostAuto autoRoutines;
 	private final AutoChooser autoChooser = new AutoChooser();
+
 
 	public static SwerveModulePosition frontRight;
 
@@ -111,6 +116,9 @@ public class RobotContainer {
 		// reset the field-centric heading on left bumper press
 		Controlls.joystick.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
 
+		Controlls.joystick.b().whileTrue(m_ballTunnel.runBallTunnelCommand(28,100));
+
+
 		drivetrain.registerTelemetry(logger::telemeterize);
 
 		Controlls.joystick.a().onTrue(drivetrain.applyRequest(DriveControls.autoHeading()))
@@ -118,7 +126,9 @@ public class RobotContainer {
 
 		Controlls.joystick.rightTrigger().whileTrue(m_shooter.runShooterCommand(56.7, 100))
 				.onFalse(new InstantCommand(() -> m_shooter.stopMotors()));
-		// joystick.rightBumper().whileTrue(m_intake.runIntakePercent(-0.5)).onFalse(m_intake.stopIntakeCommand());
+		 Controlls.joystick.rightBumper().whileTrue(m_intake.runIntakePercent(-0.5)).onFalse(m_intake.stopIntakeCommand());
+
+		// new Trigger(m_intake.isSensorTripped()).onTrue(m_intake.feedCommand(50, 100)).onFalse(m_intake.stopIntakeCommand());
 
 	}
 

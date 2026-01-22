@@ -116,6 +116,7 @@ public class LimelightSubsystem extends SubsystemBase {
 
   public double limelight_range_proportional() {
     double kP = .1;
+    //0.1
     double targetingForwardSpeed = LimelightHelpers.getTY("limelight") * kP;
     targetingForwardSpeed *= DrivetrainConst.MaxSpeed;
     targetingForwardSpeed *= -1.0;

@@ -1,5 +1,6 @@
 package frc.robot;
 
+import java.lang.reflect.Parameter;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
@@ -40,13 +41,22 @@ public class DriveControls {
         public static Supplier<SwerveRequest> autoHeading() {
                 final var rot_limelight = m_limelight.limelight_aim_proportional();
                 final var forward_limelight = m_limelight.limelight_range_proportional();
+                final var finalDistance = 0.61;
+                 
 
-                return () -> driveR
-                                .withVelocityX(-m_limelight.limelight_range_proportional() )
+                // 1.11125m for apriltag #12
+                double height = 1.11125;
+
+                // tan(angle) = op/ad
+                // ad = op/tan(angle)
+               
+               return () -> driveR
+                                .withVelocityX((Math.abs(1.11125/Math.tan(LimelightHelpers.getTY("limelight"))) <= finalDistance) ? 0 : -m_limelight.limelight_range_proportional())
                                 .withVelocityY(
                                                 -(isRightStickDrive ? joystick.getRightX() : joystick.getLeftX())
                                                                 * DrivetrainConst.MaxSpeed)
                                 .withRotationalRate(m_limelight.limelight_aim_proportional()
                                                 * DrivetrainConst.MaxAngularRate / 10);
+                                                
         }
 }
