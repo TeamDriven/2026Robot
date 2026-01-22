@@ -23,7 +23,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
  * check its speed and create commands to control it.
  */
 public class Indexer extends SubsystemBase {
-  private TalonFX indexerMotor = new TalonFX(17);
+  private TalonFX indexerMotor;
 
   VelocityVoltage velocityControl;
   NeutralOut stopMode;
@@ -31,7 +31,9 @@ public class Indexer extends SubsystemBase {
   /**
    * Creates a new ballTunnel.
    */
-  public Indexer() {
+  public Indexer(int motorId) {
+    indexerMotor = new TalonFX(motorId);
+
     initIndexerMotor();
 
     velocityControl = new VelocityVoltage(0);
@@ -180,7 +182,7 @@ public class Indexer extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    System.out.println("indexer: " + indexerMotor.getVelocity().getValueAsDouble());
+    // System.out.println("indexer: " + indexerMotor.getVelocity().getValueAsDouble());
   }
 
   @Override

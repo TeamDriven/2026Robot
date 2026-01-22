@@ -22,8 +22,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
  * It provides methods to initialize, run, and stop the ballTunnel motor, as well as
  * check its speed and create commands to control it.
  */
+
 public class BallTunnel extends SubsystemBase {
-  private TalonFX ballTunnelMotor = new TalonFX(17);
+  private TalonFX ballTunnelMotor;
 
   VelocityVoltage velocityControl;
   NeutralOut stopMode;
@@ -31,7 +32,9 @@ public class BallTunnel extends SubsystemBase {
   /**
    * Creates a new ballTunnel.
    */
-  public BallTunnel() {
+  public BallTunnel(int motorId) {
+    ballTunnelMotor = new TalonFX(motorId);
+
     initBallTunnelMotor();
 
     velocityControl = new VelocityVoltage(0);
@@ -90,7 +93,7 @@ public class BallTunnel extends SubsystemBase {
 
       @Override
       public void end(boolean interrupted) {
-        stopIndexerMotor();
+        stopBallTunnelMotor();
       }
     };
   }
@@ -136,7 +139,7 @@ public class BallTunnel extends SubsystemBase {
   /**
    * Stop the ballTunnel motor
    */
-  public void stopIndexerMotor() {
+  public void stopBallTunnelMotor() {
     ballTunnelMotor.setControl(stopMode);
   }
 
@@ -180,7 +183,7 @@ public class BallTunnel extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    System.out.println("ball tunnel: " + ballTunnelMotor.getVelocity().getValueAsDouble());
+    // System.out.println("ball tunnel: " + ballTunnelMotor.getVelocity().getValueAsDouble());
   }
 
   @Override

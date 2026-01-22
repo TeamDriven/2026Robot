@@ -24,8 +24,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
  */
 public class Shooter extends SubsystemBase {
 
-  private TalonFX leftShooterMotor = new TalonFX(15);
-  private TalonFX rightShooterMotor = new TalonFX(16);
+  private TalonFX leftShooterMotor;
+  private TalonFX rightShooterMotor;
 
   VelocityVoltage velocityControl;
   VelocityVoltage slowVelocityControl;
@@ -34,7 +34,9 @@ public class Shooter extends SubsystemBase {
   /**
    * Creates a new Intake.
    */
-  public Shooter() {
+  public Shooter(int leftMotorId, int rightMotorId) {
+    leftShooterMotor = new TalonFX(leftMotorId);
+    rightShooterMotor = new TalonFX(rightMotorId);
     initMotors();
 
     velocityControl = new VelocityVoltage(0);
@@ -193,8 +195,8 @@ public class Shooter extends SubsystemBase {
 
   @Override
   public void periodic() {
-    System.out.println("left: " + leftShooterMotor.getVelocity().getValueAsDouble());
-    System.out.println("right: " + rightShooterMotor.getVelocity().getValueAsDouble());
+    // System.out.println("left: " + leftShooterMotor.getVelocity().getValueAsDouble());
+    // System.out.println("right: " + rightShooterMotor.getVelocity().getValueAsDouble());
   }
 
   @Override
