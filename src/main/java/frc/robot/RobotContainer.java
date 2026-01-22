@@ -130,7 +130,7 @@ public class RobotContainer {
 
 		Controlls.joystick.rightTrigger().whileTrue(m_shooter.runShooterCommand(56.7, 100))
 				.onFalse(new InstantCommand(() -> m_shooter.stopMotors()));
-		 Controlls.joystick.rightBumper().whileTrue(m_intake.runIntakePercent(-0.5)).onFalse(m_intake.stopIntakeCommand());
+		Controlls.joystick.rightBumper().whileTrue(m_intake.runIntakePercent(-0.5)).onFalse(m_intake.stopIntakeCommand());
 
 		// new Trigger(m_intake.isSensorTripped()).onTrue(m_intake.feedCommand(50, 100)).onFalse(m_intake.stopIntakeCommand());
 
