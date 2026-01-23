@@ -133,6 +133,8 @@ public class RobotContainer {
 
 		Controlls.joystick.rightTrigger().whileTrue(m_intake.runIntakePercent(-1)).onFalse(m_intake.runIntakePercent(0));
 		Controlls.joystick.rightBumper().whileTrue(m_indexer.runIndexerPercent(0.5)).onFalse(m_indexer.runIndexerPercent(0));
+		Controlls.joystick.leftTrigger().whileTrue(m_ballTunnel.runIndexerPercent(-0.75)).onFalse(m_ballTunnel.runIndexerPercent(0));
+		Controlls.joystick.leftBumper().whileTrue(m_shooter.runShooterPercent(0.5)).onFalse(m_shooter.runShooterPercent(0));
 
 		// new Trigger(m_intake.isSensorTripped()).onTrue(m_intake.feedCommand(50, 100)).onFalse(m_intake.stopIntakeCommand());
 
