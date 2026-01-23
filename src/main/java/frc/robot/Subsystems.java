@@ -14,9 +14,9 @@ public class Subsystems {
     public static Actuation m_actuation = new Actuation(16);
     public static BallTunnel m_ballTunnel = new BallTunnel(13);
     public static Shooter m_shooter = new Shooter(14, 15);
-    public static Indexer m_indexer = new Indexer(17);
+    public static Indexer m_indexer = new Indexer(18);
     public static AngleController m_AngleController = new AngleController(18);
-    public static Intake m_intake = new Intake(18, 1);
+    public static Intake m_intake = new Intake(13, 1);
     
     public static final LimelightSubsystem m_limelight = new LimelightSubsystem();
 }

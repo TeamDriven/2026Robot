@@ -27,6 +27,7 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
 import static frc.robot.Subsystems.m_shooter;
 import static frc.robot.Subsystems.m_intake;
 import static frc.robot.Subsystems.m_ballTunnel;
+import static frc.robot.Subsystems.m_indexer;
 
 import frc.robot.Constants.DrivetrainConst;
 import frc.robot.commands.autos.OutpostAuto;
@@ -124,9 +125,8 @@ public class RobotContainer {
 		Controlls.joystick.a().onTrue(drivetrain.applyRequest(DriveControls.autoHeading()))
 				.onFalse(drivetrain.applyRequest(DriveControls.driveRequest()));
 
-		Controlls.joystick.rightTrigger().whileTrue(m_shooter.runShooterCommand(56.7, 100))
-				.onFalse(new InstantCommand(() -> m_shooter.stopMotors()));
-		 Controlls.joystick.rightBumper().whileTrue(m_intake.runIntakePercent(-0.5)).onFalse(m_intake.stopIntakeCommand());
+		Controlls.joystick.rightTrigger().whileTrue(m_intake.runIntakePercent(-1)).onFalse(m_intake.runIntakePercent(0));
+		Controlls.joystick.rightBumper().whileTrue(m_indexer.runIndexerPercent(0.5)).onFalse(m_indexer.runIndexerPercent(0));
 
 		// new Trigger(m_intake.isSensorTripped()).onTrue(m_intake.feedCommand(50, 100)).onFalse(m_intake.stopIntakeCommand());
 
