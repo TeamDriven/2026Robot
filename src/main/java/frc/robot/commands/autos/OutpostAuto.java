@@ -1,4 +1,4 @@
-package frc.robot.commands;
+package frc.robot.commands.autos;
 
 import choreo.auto.AutoFactory;
 import choreo.auto.AutoRoutine;

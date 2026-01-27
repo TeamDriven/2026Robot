@@ -3,8 +3,10 @@ package frc.robot.subsystems;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Constants.VisionConsts;
 import frc.robot.LimelightHelpers;
 
 import static frc.robot.Robot.m_poseEstimator;
@@ -125,8 +127,27 @@ public class LimelightSubsystem extends SubsystemBase {
 
   }
 
-    public int getAprilTagId(){
-return 0;
+    public double getAprilTag(){
+        SmartDashboard.putNumber("April Tag Number", LimelightHelpers.getFiducialID(VisionConsts.LIMELIGHT_NAME));
+        return LimelightHelpers.getFiducialID(VisionConsts.LIMELIGHT_NAME);
+    }
+    public double getAprilTagHeight(){
+      double aprilTag = getAprilTag();
+        if (aprilTag == 1 ||aprilTag == 6 || aprilTag == 7 ||aprilTag == 12) {
+          SmartDashboard.putString("Tag Reading", "Trench");
+          return VisionConsts.UP_TO_TRENCH_TAG;
+        } 
+        if (aprilTag == 13 ||aprilTag == 14) {
+          SmartDashboard.putString("Tag Reading", "Corral");
+          return VisionConsts.UP_TO_CORRAL_TAG;
+        } 
+        if (aprilTag == 2 ||aprilTag == 3 || aprilTag == 4 || aprilTag == 5 || aprilTag == 8 ||aprilTag == 9 || aprilTag == 10 ||aprilTag == 11) {
+          SmartDashboard.putString("Tag Reading", "Hub");
+          return VisionConsts.UP_TO_HUB_TAG;
+        }
+
+  return -1;
+
     }
 
 }

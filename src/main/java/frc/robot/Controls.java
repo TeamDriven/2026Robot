@@ -7,11 +7,13 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import frc.robot.Constants.DrivetrainConst;
 
+import frc.robot.Constants.VisionConsts;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import static frc.robot.Subsystems.m_limelight;
 
-public class Controlls {
+public class Controls {
         private static final CommandXboxController joystick = new CommandXboxController(0);
 
         public static final Trigger climberUp = joystick.pov(90);
@@ -50,15 +52,17 @@ public class Controlls {
         }
 
         public static Supplier<SwerveRequest> autoHeading() {
-                final var rot_limelight = m_limelight.limelight_aim_proportional();
-                final var forward_limelight = m_limelight.limelight_range_proportional();
-
+                var rot_limelight = m_limelight.limelight_aim_proportional();
+                var forward_limelight = m_limelight.limelight_range_proportional();
+                var XVelocity = ((m_limelight.getAprilTagHeight() - VisionConsts.LIMELIGHT_HEIGHT)/(Math.tan(VisionConsts.LIMELIGHT_ANGLE + forward_limelight)))-VisionConsts.DIST_TO_STOP;
+                SmartDashboard.putNumber("Limelight X", XVelocity);
                 return () -> driveR
-                                .withVelocityX(-m_limelight.limelight_range_proportional())
+                               .withVelocityX(XVelocity)
+        
                                 .withVelocityY(
                                                 -(isRightStickDrive ? joystick.getRightX() : joystick.getLeftX())
                                                                 * DrivetrainConst.MaxSpeed)
-                                .withRotationalRate(m_limelight.limelight_aim_proportional()
+                                .withRotationalRate(rot_limelight
                                                 * DrivetrainConst.MaxAngularRate / 10);
         }
 }
