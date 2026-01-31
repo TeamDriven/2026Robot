@@ -14,13 +14,14 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Intake extends SubsystemBase {
-    private TalonFX intakeMotor = new TalonFX(13);
+    private TalonFX intakeMotor;
 
     VelocityVoltage velocityControlFeed;
     VoltageOut voltageControl;
     NeutralOut stopMode;
 
-    public Intake() {
+    public Intake(int motorId) {
+        intakeMotor = new TalonFX(motorId);
         initIntakeMotor();
 
         velocityControlFeed = new VelocityVoltage(0);

@@ -17,12 +17,13 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Constants.ActuationConsts;
 
 /**
  * The Actuation subsystem controls the actuation motor that moves a mechanism to a specific position.
  */
 public class Actuation extends SubsystemBase {
-  private TalonFX actuationMotor = new TalonFX(14);
+  private TalonFX actuationMotor;
 
   private MotionMagicVoltage motionMagicControl;
   private NeutralOut stopMode;
@@ -31,7 +32,8 @@ public class Actuation extends SubsystemBase {
   /**
    * Creates a new Actuation.
    */
-  public Actuation() {
+  public Actuation(int motorId) {
+    actuationMotor = new TalonFX(motorId);
     initActuationMotor();
 
     motionMagicControl = new MotionMagicVoltage(0);
@@ -141,7 +143,7 @@ public class Actuation extends SubsystemBase {
       @Override
       public boolean isFinished() {
         double currentPosition = getAngle();
-        return Math.abs(currentPosition * Constants.GearRatio - setPosition * Constants.GearRatio) <= 0.5;
+        return Math.abs(currentPosition * ActuationConsts.GearRatio - setPosition * ActuationConsts.GearRatio) <= 0.5;
       }
     };
   }
@@ -152,7 +154,7 @@ public class Actuation extends SubsystemBase {
    */
   public double getAngle() {
     // return throughboreEncoder.getAbsolutePosition() / actuationTicksPerDegree - actuationOffset;
-    return actuationMotor.getPosition().getValueAsDouble() / Constants.GearRatio;
+    return actuationMotor.getPosition().getValueAsDouble() / ActuationConsts.GearRatio;
     // return actuationMotor.getPosition().getValueAsDouble() / actuationTicksPerDegree;
   }
 

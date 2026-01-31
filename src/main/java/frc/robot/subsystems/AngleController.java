@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import java.util.function.DoubleSupplier;
 
 import frc.robot.Constants;
+import frc.robot.Constants.AngleControllerConsts;
 
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -21,12 +22,13 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
  */
 public class AngleController extends SubsystemBase{
   // private PowerDistribution pdp = new PowerDistribution(30, ModuleType.kRev);
-  private TalonFX angleMotor = new TalonFX(19);
+  private TalonFX angleMotor;
 
   MotionMagicVoltage motionMagicControl;
   NeutralOut stopMode;
 
-  public AngleController() {
+  public AngleController(int motorId) {
+    angleMotor = new TalonFX(motorId);
     initAngleMotor();
 
     motionMagicControl = new MotionMagicVoltage(0);
@@ -119,7 +121,7 @@ public class AngleController extends SubsystemBase{
    */
   public void setPosition(double position) {
     angleMotor.setControl(motionMagicControl
-                              .withPosition(position  * Constants.GEAR_RATIO)
+                              .withPosition(position  * AngleControllerConsts.GEAR_RATIO)
                             );
   }
 
@@ -152,7 +154,7 @@ public class AngleController extends SubsystemBase{
       @Override
       public boolean isFinished() {
         double currentPosition = angleMotor.getPosition().getValueAsDouble();
-        return Math.abs(currentPosition - setPosition  * Constants.GEAR_RATIO) <= 0.5;
+        return Math.abs(currentPosition - setPosition  * AngleControllerConsts.GEAR_RATIO) <= 0.5;
       }
     };
   }
@@ -170,7 +172,7 @@ public class AngleController extends SubsystemBase{
           return true;
         }
         double currentPosition = angleMotor.getPosition().getValueAsDouble();
-        return Math.abs(currentPosition - setPosition.getAsDouble() * Constants.GEAR_RATIO) <= 0.1;
+        return Math.abs(currentPosition - setPosition.getAsDouble() * AngleControllerConsts.GEAR_RATIO) <= 0.1;
       }
     };
   }
@@ -187,7 +189,7 @@ public class AngleController extends SubsystemBase{
    * @return the current angle in degrees
    */
   public double getAngle() {
-    return angleMotor.getPosition().getValueAsDouble() / Constants.GEAR_RATIO;
+    return angleMotor.getPosition().getValueAsDouble() / AngleControllerConsts.GEAR_RATIO;
   }
 
   @Override

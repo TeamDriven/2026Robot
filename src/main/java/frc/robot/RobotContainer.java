@@ -8,6 +8,10 @@ import frc.robot.subsystems.Intake;
 import com.ctre.phoenix6.hardware.Pigeon2;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.jni.SwerveJNI.ModulePosition;
+
+import choreo.auto.AutoChooser;
+import choreo.auto.AutoFactory;
+
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -20,16 +24,21 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
-import frc.robot.subsystems.LimelightSubsystem;
-import frc.robot.subsystems.Shooter;
-import frc.robot.subsystems.BallTunnel;
+
+import static frc.robot.Subsystems.m_shooter;
+import static frc.robot.Subsystems.m_intake;
+import static frc.robot.Subsystems.m_ballTunnel;
+import static frc.robot.Subsystems.m_indexer;
 
 import frc.robot.Constants.DrivetrainConst;
+import frc.robot.commands.OutpostAuto;
+import frc.robot.Controlls.*;
 
 public class RobotContainer {
 
@@ -42,9 +51,10 @@ public class RobotContainer {
 
     private final Telemetry logger = new Telemetry(DrivetrainConst.MaxSpeed);
 
-    private final CommandXboxController joystick = new CommandXboxController(0);
+	public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
-    public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+	private final AutoChooser autoChooser = new AutoChooser();
+
 
     public static SwerveModulePosition frontRight;
 
@@ -69,12 +79,7 @@ public class RobotContainer {
     public static final SwerveDriveKinematics m_kinematics = new SwerveDriveKinematics(m_frontLeftLocation,
             m_frontRightLocation, m_backLeftLocation, m_backRightLocation);
 
-    public static final LimelightSubsystem m_limelight = new LimelightSubsystem();
-
     public static Field2d m_field = new Field2d();
-
-    public static final Intake m_intake = new Intake();
-    public static final Shooter m_shooter = new Shooter();
 
     public RobotContainer() {
         SmartDashboard.putData("Field", m_field);
@@ -91,13 +96,7 @@ public class RobotContainer {
         // and Y is defined as to the left according to WPILib convention.
         drivetrain.setDefaultCommand(
                 // Drivetrain will execute this command periodically
-                drivetrain.applyRequest(() -> drive.withVelocityX(joystick.getRightY() * DrivetrainConst.MaxSpeed) // Drive forward with
-                                                                                                   // negative Y
-                                                                                                   // (forward)
-                        .withVelocityY(joystick.getRightX() * DrivetrainConst.MaxSpeed) // Drive left with negative X (left)
-                        .withRotationalRate(-joystick.getLeftX() * DrivetrainConst.MaxAngularRate) // Drive counterclockwise with
-                                                                                    // negative X (left)
-                ));
+                drivetrain.applyRequest(Controlls.driveRequest()));
 
         // Idle while the robot is disabled. This ensures the configured
         // neutral mode is applied to the drive motors while disabled.
@@ -105,24 +104,28 @@ public class RobotContainer {
         RobotModeTriggers.disabled().whileTrue(
                 drivetrain.applyRequest(() -> idle).ignoringDisable(true));
 
-        joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
-        joystick.b().whileTrue(drivetrain.applyRequest(
-                () -> point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))));
-
         // Run SysId routines when holding back/start and X/Y.
         // Note that each routine should be run exactly once in a single log.
-         joystick.back().and(joystick.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
-        joystick.back().and(joystick.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
-        joystick.start().and(joystick.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
-        joystick.start().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+        // Controlls.joystick.back().and(Controlls.joystick.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
+        // Controlls.joystick.back().and(Controlls.joystick.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
+        // Controlls.joystick.start().and(Controlls.joystick.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
+        // Controlls.joystick.start().and(Controlls.joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
-        // reset the field-centric heading on left bumper press
-        joystick.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
+		// reset the field-centric heading on left bumper press
+		Controlls.resetHeading.onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
+
 
         drivetrain.registerTelemetry(logger::telemeterize);
 
-        joystick.rightTrigger().whileTrue(m_shooter.runShooterCommand(75, 100)).onFalse(new InstantCommand(() -> m_shooter.stopMotors()));
-        //joystick.rightBumper().whileTrue(m_intake.runIntakePercent(-0.5)).onFalse(m_intake.stopIntakeCommand());
+		Controlls.autoLineUp.onTrue(drivetrain.applyRequest(Controlls.autoHeading()))
+				.onFalse(drivetrain.applyRequest(Controlls.driveRequest()));
+
+		Controlls.intakeOut.whileTrue(m_intake.runIntakePercent(-1)).onFalse(m_intake.runIntakePercent(0));
+		Controlls.intakeIn.whileTrue(m_indexer.runIndexerPercent(0.5)).onFalse(m_indexer.runIndexerPercent(0));
+		Controlls.climberDown.whileTrue(m_ballTunnel.runIndexerPercent(-0.75)).onFalse(m_ballTunnel.runIndexerPercent(0));
+		Controlls.shoot.whileTrue(m_shooter.runShooterPercent(0.6)).onFalse(m_shooter.runShooterPercent(0));
+
+		// new Trigger(m_intake.isSensorTripped()).onTrue(m_intake.feedCommand(50, 100)).onFalse(m_intake.stopIntakeCommand());
 
     }
 
