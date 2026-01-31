@@ -21,8 +21,6 @@ import frc.robot.LimelightHelpers;
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
-  private LimelightSubsystem m_limelight;
-
   private final RobotContainer m_robotContainer;
 
   public static final Pigeon2 m_gyro = new Pigeon2(TunerConstants.kPigeonId);
@@ -30,8 +28,6 @@ public class Robot extends TimedRobot {
 
   public Robot() {
     m_robotContainer = new RobotContainer();
-
-    m_limelight = new LimelightSubsystem();
 
     // 2. Get the initial gyro angle (e.g., from your gyroscope sensor)
     Rotation2d initialGyroAngle = m_gyro.getRotation2d();
