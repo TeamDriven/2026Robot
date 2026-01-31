@@ -31,8 +31,6 @@ public class Robot extends TimedRobot {
   public Robot() {
     m_robotContainer = new RobotContainer();
 
-    m_limelight = new LimelightSubsystem();
-
     // 2. Get the initial gyro angle (e.g., from your gyroscope sensor)
     Rotation2d initialGyroAngle = m_gyro.getRotation2d();
 
@@ -63,7 +61,11 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("limelight TX",LimelightHelpers.getTX("limelight"));
     SmartDashboard.putNumber("limelight TY",LimelightHelpers.getTY("limelight"));
     SmartDashboard.putNumber("limelight TA",LimelightHelpers.getTA("limelight"));
-    // System.out.println("X Pos" + m_poseEstimator.getEstimatedPosition().getX());
+    Subsystems.m_limelight.updateOdometry();
+    // Subsystems.m_limelight2.updateOdometry();
+    System.out.println("X Pos: " + m_poseEstimator.getEstimatedPosition().getX());
+    System.out.println("Y Pos: " + m_poseEstimator.getEstimatedPosition().getY());
+    System.out.println("Rot: " + m_poseEstimator.getEstimatedPosition().getRotation());
   }
 
   @Override

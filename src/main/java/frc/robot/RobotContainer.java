@@ -31,14 +31,14 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 
-import static frc.robot.Subsystems.m_shooter;
-import static frc.robot.Subsystems.m_intake;
-import static frc.robot.Subsystems.m_ballTunnel;
-import static frc.robot.Subsystems.m_indexer;
+// import static frc.robot.Subsystems.m_shooter;
+// import static frc.robot.Subsystems.m_intake;
+// import static frc.robot.Subsystems.m_ballTunnel;
+// import static frc.robot.Subsystems.m_indexer;
 
 import frc.robot.Constants.DrivetrainConst;
 import frc.robot.Controls.*;
-import frc.robot.commands.ShootCommand;
+// import frc.robot.commands.ShootCommand;
 import frc.robot.commands.autos.OutpostAuto;
 
 public class RobotContainer {
@@ -52,9 +52,9 @@ public class RobotContainer {
 
     private final Telemetry logger = new Telemetry(DrivetrainConst.MaxSpeed);
 
-	public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+    public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
-	private final AutoChooser autoChooser = new AutoChooser();
+    private final AutoChooser autoChooser = new AutoChooser();
 
 
     public static SwerveModulePosition frontRight;
@@ -118,13 +118,15 @@ public class RobotContainer {
 
         drivetrain.registerTelemetry(logger::telemeterize);
 
-		Controls.autoLineUp.onTrue(drivetrain.applyRequest(Controls.autoHeading()))
+		Controls.autoLineUp.onTrue(drivetrain.applyRequest(Controls.localHeading()))
 				.onFalse(drivetrain.applyRequest(Controls.driveRequest()));
 
-		Controls.intakeOut.whileTrue(m_intake.runIntakePercent(-1)).onFalse(m_intake.runIntakePercent(0));
-		Controls.intakeIn.whileTrue(m_indexer.runIndexerPercent(0.5)).onFalse(m_indexer.runIndexerPercent(0));
-		Controls.climberDown.whileTrue(m_ballTunnel.runIndexerPercent(-0.75)).onFalse(m_ballTunnel.runIndexerPercent(0));
-		Controls.shoot.whileTrue(m_shooter.runShooterPercent(100)).onFalse(m_shooter.runShooterPercent(0));
+
+				
+		// Controls.intakeOut.whileTrue(m_intake.runIntakePercent(-1)).onFalse(m_intake.runIntakePercent(0));
+		// Controls.intakeIn.whileTrue(m_indexer.runIndexerPercent(0.5)).onFalse(m_indexer.runIndexerPercent(0));
+		// Controls.climberDown.whileTrue(m_ballTunnel.runIndexerPercent(-0.75)).onFalse(m_ballTunnel.runIndexerPercent(0));
+		// Controls.shoot.whileTrue(m_shooter.runShooterPercent(100)).onFalse(m_shooter.runShooterPercent(0)); //right bumber
 
 		// Controlls.shoot.whileTrue(ShootCommand(100, 0, -75));
 
