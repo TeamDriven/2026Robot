@@ -10,14 +10,6 @@ import frc.robot.Constants;
 import frc.robot.Constants.VisionConsts;
 import frc.robot.LimelightHelpers;
 
-import static frc.robot.Robot.m_poseEstimator;
-import static frc.robot.Robot.m_gyro;
-import static frc.robot.RobotContainer.backLeft;
-import static frc.robot.RobotContainer.frontLeft;
-import static frc.robot.RobotContainer.backRight;
-
-import static frc.robot.RobotContainer.frontRight;
-
 import java.util.function.DoubleSupplier;
 
 import frc.robot.Constants.DrivetrainConst;
@@ -50,69 +42,8 @@ public class LimelightSubsystem extends SubsystemBase {
 
   }
 
-  public void updateOdometry() {
-
-    m_poseEstimator.update(
-        new Rotation2d(m_gyro.getRotation2d().getRadians()),
-        new SwerveModulePosition[] {
-
-            frontLeft,
-            frontRight,
-            backLeft,
-            backRight
-        });
-
-    boolean useMegaTag2 = true; // set to false to use MegaTag1
-    boolean doRejectUpdate = false;
-    if (useMegaTag2 == false) {
-      LimelightHelpers.PoseEstimate mt1 = LimelightHelpers.getBotPoseEstimate_wpiBlue(limeLightName);
-      // LimelightHelpers.PoseEstimate mt1 = LimelightHelpers.getBotPoseEstimate_wpiRed("limelight");
-
-      if (mt1.tagCount == 1 && mt1.rawFiducials.length == 1) {
-        if (mt1.rawFiducials[0].ambiguity > .7) {
-          doRejectUpdate = true;
-        }
-        if (mt1.rawFiducials[0].distToCamera > 3) {
-          doRejectUpdate = true;
-        }
-      }
-      if (mt1.tagCount == 0) {
-        doRejectUpdate = true;
-      }
-
-      if (!doRejectUpdate) {
-        m_poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.5, .5, 9999999));
-        m_poseEstimator.addVisionMeasurement(
-            mt1.pose,
-            mt1.timestampSeconds);
-      }
-    } else if (useMegaTag2 == true) {
-      LimelightHelpers.SetRobotOrientation(limeLightName,
-          m_poseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
-      LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limeLightName);
-      // LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiRed_MegaTag2("limelight");
-      if (Math.abs(m_gyro.getAngularVelocityZWorld().getValueAsDouble()) > 720) // if our angular velocity is
-                                                                                // greater
-                                                                                // than 720 degrees per second,
-                                                                                // ignore
-                                                                                // vision updates
-      {
-        doRejectUpdate = true;
-      }
-      if (mt2.tagCount == 0) {
-        doRejectUpdate = true;
-      }
-      if (!doRejectUpdate) {
-        m_poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 9999999));
-        m_poseEstimator.addVisionMeasurement(
-            mt2.pose,
-            mt2.timestampSeconds);
-      }
-    }
-  }
-
-  public double limelight_aim_proportional()
-  {
+  
+  public double limelight_aim_proportional() {
     double kP = .035;
     double targetingAngularVelocity = LimelightHelpers.getTX(limeLightName) * kP * -DrivetrainConst.MaxAngularRate;
     // convert to radians per second for our drive method
@@ -126,28 +57,29 @@ public class LimelightSubsystem extends SubsystemBase {
     return targetingForwardSpeed;
   }
 
-    public double getAprilTag(){
-        SmartDashboard.putNumber("April Tag Number", LimelightHelpers.getFiducialID(VisionConsts.LIMELIGHT_NAME));
-        return LimelightHelpers.getFiducialID(VisionConsts.LIMELIGHT_NAME);
+  public double getAprilTag() {
+    SmartDashboard.putNumber("April Tag Number", LimelightHelpers.getFiducialID(VisionConsts.LIMELIGHT_NAME));
+    return LimelightHelpers.getFiducialID(VisionConsts.LIMELIGHT_NAME);
+  }
+
+  public double getAprilTagHeight() {
+    double aprilTag = getAprilTag();
+    if (aprilTag == 1 || aprilTag == 6 || aprilTag == 7 || aprilTag == 12) {
+      SmartDashboard.putString("Tag Reading", "Trench");
+      return VisionConsts.UP_TO_TRENCH_TAG;
+    }
+    if (aprilTag == 13 || aprilTag == 14) {
+      SmartDashboard.putString("Tag Reading", "Corral");
+      return VisionConsts.UP_TO_CORRAL_TAG;
+    }
+    if (aprilTag == 2 || aprilTag == 3 || aprilTag == 4 || aprilTag == 5 || aprilTag == 8 || aprilTag == 9
+        || aprilTag == 10 || aprilTag == 11) {
+      SmartDashboard.putString("Tag Reading", "Hub");
+      return VisionConsts.UP_TO_HUB_TAG;
     }
 
-    public double getAprilTagHeight(){
-      double aprilTag = getAprilTag();
-        if (aprilTag == 1 || aprilTag == 6 || aprilTag == 7 ||aprilTag == 12) {
-          SmartDashboard.putString("Tag Reading", "Trench");
-          return VisionConsts.UP_TO_TRENCH_TAG;
-        } 
-        if (aprilTag == 13 ||aprilTag == 14) {
-          SmartDashboard.putString("Tag Reading", "Corral");
-          return VisionConsts.UP_TO_CORRAL_TAG;
-        } 
-        if (aprilTag == 2 ||aprilTag == 3 || aprilTag == 4 || aprilTag == 5 || aprilTag == 8 ||aprilTag == 9 || aprilTag == 10 ||aprilTag == 11) {
-          SmartDashboard.putString("Tag Reading", "Hub");
-          return VisionConsts.UP_TO_HUB_TAG;
-        }
+    return -1;
 
-  return -1;
-
-    }
+  }
 
 }

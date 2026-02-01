@@ -118,8 +118,8 @@ public class RobotContainer {
 
         drivetrain.registerTelemetry(logger::telemeterize);
 
-		Controls.autoLineUp.onTrue(drivetrain.applyRequest(Controls.localHeading()))
-				.onFalse(drivetrain.applyRequest(Controls.driveRequest()));
+		// Controls.autoLineUp.onTrue(drivetrain.applyRequest(Controls.localHeading()))
+		// 		.onFalse(drivetrain.applyRequest(Controls.driveRequest()));
 
 
 				

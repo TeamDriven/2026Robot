@@ -9,14 +9,15 @@ import com.ctre.phoenix6.hardware.Pigeon2;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.generated.TunerConstants;
-import frc.robot.subsystems.LimelightSubsystem;
-import frc.robot.LimelightHelpers;
 
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
@@ -25,6 +26,7 @@ public class Robot extends TimedRobot {
 
   public static final Pigeon2 m_gyro = new Pigeon2(TunerConstants.kPigeonId);
   public static SwerveDrivePoseEstimator m_poseEstimator;
+  private final boolean kUseLimelight = true;
 
   public Robot() {
     m_robotContainer = new RobotContainer();
@@ -54,16 +56,44 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
-    Pose2d pose = m_poseEstimator.getEstimatedPosition();
-    RobotContainer.m_field.setRobotPose(pose);
-    SmartDashboard.putNumber("limelight TX",LimelightHelpers.getTX("limelight"));
-    SmartDashboard.putNumber("limelight TY",LimelightHelpers.getTY("limelight"));
-    SmartDashboard.putNumber("limelight TA",LimelightHelpers.getTA("limelight"));
-    Subsystems.m_limelight.updateOdometry();
-    // Subsystems.m_limelight2.updateOdometry();
-    System.out.println("X Pos: " + m_poseEstimator.getEstimatedPosition().getX());
-    System.out.println("Y Pos: " + m_poseEstimator.getEstimatedPosition().getY());
-    System.out.println("Rot: " + m_poseEstimator.getEstimatedPosition().getRotation());
+    // drivetrain.updateOdometry();
+    // Pose2d pose = m_poseEstimator.getEstimatedPosition();
+    // // Pose2d pose = new Pose2d(new Translation2d(0, 0), new Rotation2d(0));
+    // // SmartDashboard.putNumber("limelight
+    // TX",LimelightHelpers.getTX("limelight"));
+    // // SmartDashboard.putNumber("limelight
+    // TY",LimelightHelpers.getTY("limelight"));
+    // // SmartDashboard.putNumber("limelight
+    // TA",LimelightHelpers.getTA("limelight"));
+    // System.out.println("X Pos: " +
+    // m_poseEstimator.getEstimatedPosition().getX());
+    // System.out.println("Y Pos: " +
+    // m_poseEstimator.getEstimatedPosition().getY());
+    // System.out.println("Rot: " +
+    // m_poseEstimator.getEstimatedPosition().getRotation());
+    // m_field.setRobotPose(m_poseEstimator.getEstimatedPosition());
+
+    if (kUseLimelight) {
+      var driveState = m_robotContainer.drivetrain.getState();
+      double headingDeg = driveState.Pose.getRotation().getDegrees();
+      double omegaRps = Units.radiansToRotations(driveState.Speeds.omegaRadiansPerSecond);
+
+      LimelightHelpers.SetRobotOrientation("limelight-front", headingDeg, 0, 0, 0, 0, 0);
+      var llMeasurement1 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-front");
+      if (llMeasurement1 != null && llMeasurement1.tagCount > 0 && Math.abs(omegaRps) < 2.0) {
+        m_robotContainer.drivetrain.addVisionMeasurement(llMeasurement1.pose, llMeasurement1.timestampSeconds);
+      }
+
+      LimelightHelpers.SetRobotOrientation("limelight-back", headingDeg, 0, 0, 0, 0, 0);
+      var llMeasurement2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-back");
+      if (llMeasurement2 != null && llMeasurement2.tagCount > 0 && Math.abs(omegaRps) < 2.0) {
+        m_robotContainer.drivetrain.addVisionMeasurement(llMeasurement2.pose, llMeasurement2.timestampSeconds);
+      }
+    }
+    System.out.println("Y " + m_robotContainer.drivetrain.getState().Pose.getX());
+    System.out.println("X " + m_robotContainer.drivetrain.getState().Pose.getY());
+    System.out.println("Rot " + m_robotContainer.drivetrain.getState().Pose.getRotation());
+    RobotContainer.m_field.setRobotPose( m_robotContainer.drivetrain.getState().Pose);
   }
 
   @Override
@@ -127,5 +157,4 @@ public class Robot extends TimedRobot {
   public void simulationPeriodic() {
   }
 
-  
 }

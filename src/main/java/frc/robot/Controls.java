@@ -91,35 +91,35 @@ public class Controls {
                 }
         }
 
-        public static Supplier<SwerveRequest> localHeading() {
+        // public static Supplier<SwerveRequest> localHeading() {
 
-                final DoubleSupplier targetAngle = () -> {
-                        double dx = Constants.FieldConst.RED_HUB.getX()
-                                        - Robot.m_poseEstimator.getEstimatedPosition().getX();
+        //         final DoubleSupplier targetAngle = () -> {
+        //                 double dx = Constants.FieldConst.RED_HUB.getX()
+        //                                 - Robot.m_poseEstimator.getEstimatedPosition().getX();
 
-                        double dy = Constants.FieldConst.RED_HUB.getY()
-                                        - Robot.m_poseEstimator.getEstimatedPosition().getY();
+        //                 double dy = Constants.FieldConst.RED_HUB.getY()
+        //                                 - Robot.m_poseEstimator.getEstimatedPosition().getY();
 
-                        return Math.atan2(-dy, -dx); // radians
-                };
+        //                 return Math.atan2(dy, -dx); // radians
+        //         };
 
-                final DoubleSupplier rotationRate = () -> {
-                        double currentHeading = Robot.m_poseEstimator.getEstimatedPosition().getRotation().getRadians();
-                        double error = targetAngle.getAsDouble() - currentHeading;
+        //         final DoubleSupplier rotationRate = () -> {
+        //                 double currentHeading = Robot.m_poseEstimator.getEstimatedPosition().getRotation().getRadians();
+        //                 double error = targetAngle.getAsDouble() - currentHeading;
 
-                        // Wrap to [-pi, pi]
-                        error = Math.atan2(Math.sin(error), Math.cos(error));
+        //                 // Wrap to [-pi, pi]
+        //                 error = Math.atan2(Math.sin(error), Math.cos(error));
 
-                        return error * DrivetrainConst.MaxAngularRate; // simple P controller
-                };
+        //                 return error * DrivetrainConst.MaxAngularRate; // simple P controller
+        //         };
 
-                return () -> driveF
-                                .withVelocityX(-(isRightStickDrive ? joystick.getRightY() : joystick.getLeftY())
-                                                * DrivetrainConst.MaxSpeed)
-                                .withVelocityY(
-                                                -(isRightStickDrive ? joystick.getRightX() : joystick.getLeftX())
-                                                                * DrivetrainConst.MaxSpeed)
-                                .withRotationalRate(rotationRate.getAsDouble());
-        }
+        //         return () -> driveF
+        //                         .withVelocityX(-(isRightStickDrive ? joystick.getRightY() : joystick.getLeftY())
+        //                                         * DrivetrainConst.MaxSpeed)
+        //                         .withVelocityY(
+        //                                         -(isRightStickDrive ? joystick.getRightX() : joystick.getLeftX())
+        //                                                         * DrivetrainConst.MaxSpeed)
+        //                         .withRotationalRate(rotationRate.getAsDouble());
+        // }
 
 }
