@@ -102,9 +102,9 @@ public class Robot extends TimedRobot {
       // llMeasurement2.timestampSeconds);
       // }
     }
-    SmartDashboard.putNumber("X", m_robotContainer.drivetrain.getState().Pose.getX());
-    SmartDashboard.putNumber("Y", m_robotContainer.drivetrain.getState().Pose.getY());
-    SmartDashboard.putNumber("Rot", m_robotContainer.drivetrain.getState().Pose.getRotation().getDegrees());
+    // SmartDashboard.putNumber("X", m_robotContainer.drivetrain.getState().Pose.getX());
+    // SmartDashboard.putNumber("Y", m_robotContainer.drivetrain.getState().Pose.getY());
+    // SmartDashboard.putNumber("Rot", m_robotContainer.drivetrain.getState().Pose.getRotation().getDegrees());
     RobotContainer.m_field.setRobotPose(m_robotContainer.drivetrain.getState().Pose);
   }
 
