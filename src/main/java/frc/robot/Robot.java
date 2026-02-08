@@ -65,23 +65,8 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
-    // drivetrain.updateOdometry();
-    // Pose2d pose = m_poseEstimator.getEstimatedPosition();
-    // // Pose2d pose = new Pose2d(new Translation2d(0, 0), new Rotation2d(0));
-    // // SmartDashboard.putNumber("limelight
-    // TX",LimelightHelpers.getTX("limelight"));
-    // // SmartDashboard.putNumber("limelight
-    // TY",LimelightHelpers.getTY("limelight"));
-    // // SmartDashboard.putNumber("limelight
-    // TA",LimelightHelpers.getTA("limelight"));
-    // System.out.println("X Pos: " +
-    // m_poseEstimator.getEstimatedPosition().getX());
-    // System.out.println("Y Pos: " +
-    // m_poseEstimator.getEstimatedPosition().getY());
-    // System.out.println("Rot: " +
-    // m_poseEstimator.getEstimatedPosition().getRotation());
-    // m_field.setRobotPose(m_poseEstimator.getEstimatedPosition());
-
+    
+    // Limelight Localization Code
     if (kUseLimelight) {
       var driveState = RobotContainer.drivetrain.getState();
       double omegaRps = Units.radiansToRotations(
@@ -106,16 +91,6 @@ public class Robot extends TimedRobot {
             llMeasurement2.pose,
             llMeasurement2.timestampSeconds);
       }
-
-      // LimelightHelpers.SetRobotOrientation("limelight-back", headingDeg, 0, 0, 0,
-      // 0, 0);
-      // var llMeasurement2 =
-      // LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-back");
-      // if (llMeasurement2 != null && llMeasurement2.tagCount > 0 &&
-      // Math.abs(omegaRps) < 2.0) {
-      // m_robotContainer.drivetrain.addVisionMeasurement(llMeasurement2.pose,
-      // llMeasurement2.timestampSeconds);
-      // }
     }
     SmartDashboard.putNumber("X", m_robotContainer.drivetrain.getState().Pose.getX());
     SmartDashboard.putNumber("Y", m_robotContainer.drivetrain.getState().Pose.getY());

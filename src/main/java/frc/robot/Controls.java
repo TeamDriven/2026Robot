@@ -9,6 +9,7 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import frc.robot.Constants.DrivetrainConst;
 
 import frc.robot.Constants.VisionConsts;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -28,7 +29,8 @@ public class Controls {
         public static final Trigger autoLineUpOn = joystick.a();
         public static final Trigger autoLineUpOff = joystick.b();
 
-        // TODO To change drive to be on left stick make sure isRightStickDrive is false MATYLDA!
+        // TODO To change drive to be on left stick make sure isRightStickDrive is false
+        // MATYLDA!
         public static final boolean isRightStickDrive = true;
 
         private static final SwerveRequest.FieldCentric driveF = new SwerveRequest.FieldCentric()
@@ -55,47 +57,12 @@ public class Controls {
                                                                 * DrivetrainConst.MaxAngularRate);
         }
 
-        // public static Supplier<SwerveRequest> autoHeading() {
-        // var rot_limelight = m_limelight.limelight_aim_proportional();
-        // var forward_limelight = m_limelight.limelight_range_proportional();
-        // var XVelocity = ((m_limelight.getAprilTagHeight() -
-        // VisionConsts.LIMELIGHT_HEIGHT_1)
-        // / (Math.tan(VisionConsts.LIMELIGHT_ANGLE + forward_limelight)))
-        // - VisionConsts.DIST_TO_STOP;
-        // SmartDashboard.putNumber("Limelight X", XVelocity);
-        // return () -> driveR
-        // .withVelocityX(XVelocity)
-        // .withVelocityY(-(isRightStickDrive ? joystick.getRightX() :
-        // joystick.getLeftX()) * DrivetrainConst.MaxSpeed)
-        // .withRotationalRate(rot_limelight * DrivetrainConst.MaxAngularRate / 10);
-        // }
-
-        public static Supplier<SwerveRequest> autoHeading() {
-                final var rot_limelight = m_limelight.limelight_aim_proportional();
-                final var forward_limelight = m_limelight.limelight_range_proportional();
-                var XDistance = ((m_limelight.getAprilTagHeight() - VisionConsts.LIMELIGHT_HEIGHT_1)
-                                / (Math.tan(VisionConsts.LIMELIGHT_ANGLE + LimelightHelpers.getTY("limelight"))));
-                // SmartDashboard.putNumber("Limelight X", XDistance);
-                System.out.println("XDistance: " + XDistance);
-                return () -> driveR
-                                .withVelocityX(lineUpXSupplier(XDistance, m_limelight.limelight_range_proportional()))
-                                .withVelocityY(
-                                                -(isRightStickDrive ? joystick.getRightX() : joystick.getLeftX())
-                                                                * DrivetrainConst.MaxSpeed)
-                                .withRotationalRate(m_limelight.limelight_aim_proportional()
-                                                * DrivetrainConst.MaxAngularRate / 10);
-        }
-
-        private static double lineUpXSupplier(double distance, double input) {
-                if (distance - VisionConsts.DIST_TO_STOP <= 0) {
-                        return 0;
-                } else {
-                        return -input;
-                }
-        }
-
+        /*
+         * Turn towards given Pose2d
+         */
         public static Supplier<SwerveRequest> localHeading(Pose2d target) {
 
+                // Get the target Angle
                 final DoubleSupplier targetAngle = () -> {
                         double dx = target.getX()
                                         - RobotContainer.drivetrain.getState().Pose.getX();
@@ -106,6 +73,7 @@ public class Controls {
                         return Math.atan2(dy, dx); // radians
                 };
 
+                // Get the rotation rate -1 to 1 needed to get to target angle
                 final DoubleSupplier rotationRate = () -> {
                         double currentHeading = RobotContainer.drivetrain.getState().Pose.getRotation().getRadians();
                         double error = targetAngle.getAsDouble() - currentHeading;
@@ -122,6 +90,110 @@ public class Controls {
                                 .withVelocityY(
                                                 -(isRightStickDrive ? joystick.getRightX() : joystick.getLeftX())
                                                                 * DrivetrainConst.MaxSpeed)
+                                .withRotationalRate(rotationRate.getAsDouble());
+        }
+
+        /*
+         * Travel to given Pose2d
+         */
+        public static Supplier<SwerveRequest> goToPositionAndRotation(Pose2d targetPose, Pose2d targetPointTo) {
+                final DoubleSupplier xSpeed = () -> {
+                        double errorX = targetPose.getX()
+                                        - RobotContainer.drivetrain.getState().Pose.getX();
+
+                        return MathUtil.clamp(
+                                        errorX * 0.5,
+                                        -DrivetrainConst.MaxSpeed,
+                                        DrivetrainConst.MaxSpeed);
+                };
+
+                final DoubleSupplier ySpeed = () -> {
+                        double errorY = targetPose.getY()
+                                        - RobotContainer.drivetrain.getState().Pose.getY();
+
+                        return MathUtil.clamp(
+                                        errorY * 0.5,
+                                        -DrivetrainConst.MaxSpeed,
+                                        DrivetrainConst.MaxSpeed);
+                };
+
+                // Get the target Angle
+                final DoubleSupplier targetAngle = () -> {
+                        double dx = targetPointTo.getX()
+                                        - RobotContainer.drivetrain.getState().Pose.getX();
+
+                        double dy = targetPointTo.getY()
+                                        - RobotContainer.drivetrain.getState().Pose.getY();
+
+                        return Math.atan2(dy, dx); // radians
+                };
+
+                // Get the rotation rate -1 to 1 needed to get to target angle
+                final DoubleSupplier rotationRate = () -> {
+                        double currentHeading = RobotContainer.drivetrain.getState().Pose.getRotation().getRadians();
+                        double error = targetAngle.getAsDouble() - currentHeading;
+
+                        // Wrap to [-pi, pi]
+                        error = Math.atan2(Math.sin(error), Math.cos(error));
+
+                        return error * DrivetrainConst.MaxAngularRate; // simple P controller
+                };
+
+                return () -> driveF
+                                .withVelocityX(-xSpeed.getAsDouble())
+                                .withVelocityY(-ySpeed.getAsDouble())
+                                .withRotationalRate(rotationRate.getAsDouble());
+        }
+
+        /*
+         * Travel to given Pose2d
+         */
+        public static Supplier<SwerveRequest> goToPosition(Pose2d target) {
+                final DoubleSupplier xSpeed = () -> {
+                        double errorX = target.getX()
+                                        - RobotContainer.drivetrain.getState().Pose.getX();
+
+                        return MathUtil.clamp(
+                                        errorX * 0.5,
+                                        -DrivetrainConst.MaxSpeed,
+                                        DrivetrainConst.MaxSpeed);
+                };
+
+                final DoubleSupplier ySpeed = () -> {
+                        double errorY = target.getY()
+                                        - RobotContainer.drivetrain.getState().Pose.getY();
+
+                        return MathUtil.clamp(
+                                        errorY * 0.5,
+                                        -DrivetrainConst.MaxSpeed,
+                                        DrivetrainConst.MaxSpeed);
+                };
+
+                // Get the target Angle
+                final DoubleSupplier targetAngle = () -> {
+                        double dx = target.getX()
+                                        - RobotContainer.drivetrain.getState().Pose.getX();
+
+                        double dy = target.getY()
+                                        - RobotContainer.drivetrain.getState().Pose.getY();
+
+                        return Math.atan2(dy, dx); // radians
+                };
+
+                // Get the rotation rate -1 to 1 needed to get to target angle
+                final DoubleSupplier rotationRate = () -> {
+                        double currentHeading = RobotContainer.drivetrain.getState().Pose.getRotation().getRadians();
+                        double error = targetAngle.getAsDouble() - currentHeading;
+
+                        // Wrap to [-pi, pi]
+                        error = Math.atan2(Math.sin(error), Math.cos(error));
+
+                        return error * DrivetrainConst.MaxAngularRate; // simple P controller
+                };
+
+                return () -> driveF
+                                .withVelocityX(-xSpeed.getAsDouble())
+                                .withVelocityY(-ySpeed.getAsDouble())
                                 .withRotationalRate(rotationRate.getAsDouble());
         }
 

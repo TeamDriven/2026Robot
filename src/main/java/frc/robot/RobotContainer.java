@@ -132,10 +132,11 @@ public class RobotContainer {
 
                 drivetrain.registerTelemetry(logger::telemeterize);
 
-                Controls.autoLineUpOn.onTrue(drivetrain.applyRequest(Controls.localHeading(Constants.FieldConst.RED_HUB)));
-                // .onFalse(drivetrain.applyRequest(Controls.driveRequest()));
-                Controls.autoLineUpOff.onTrue(drivetrain.applyRequest(Controls.driveRequest()));
-                
+                // Controls.autoLineUpOn.onTrue(drivetrain.applyRequest(Controls.localHeading(Constants.FieldConst.RED_HUB)));
+                // Controls.autoLineUpOff.onTrue(drivetrain.applyRequest(Controls.driveRequest()));
+                Controls.autoLineUpOn
+                                .onTrue(drivetrain.applyRequest(Controls.goToPositionAndRotation(new Pose2d(14, 5, new Rotation2d(0)), Constants.FieldConst.RED_HUB)))
+                                .onFalse(drivetrain.applyRequest(Controls.driveRequest()));
 
                 // Controls.intakeOut.whileTrue(m_intake.runIntakePercent(-1)).onFalse(m_intake.runIntakePercent(0));
                 // Controls.intakeIn.whileTrue(m_indexer.runIndexerPercent(0.5)).onFalse(m_indexer.runIndexerPercent(0));
