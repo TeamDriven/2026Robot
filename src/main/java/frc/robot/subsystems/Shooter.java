@@ -6,14 +6,19 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.IntakeRollersConsts;
+import frc.robot.Constants.ShooterConsts;
+import frc.robot.generated.TunerConstants;
 
 /**
  * The Shooter class represents the subsystem responsible for controlling the
@@ -25,7 +30,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class Shooter extends SubsystemBase {
 
   private TalonFX leftShooterMotor;
-  private TalonFX rightShooterMotor;
+  private TalonFX rightTopShooterMotor;
+  private TalonFX rightBottomShooterMotor;
 
   VelocityVoltage velocityControl;
   VelocityVoltage slowVelocityControl;
@@ -34,9 +40,10 @@ public class Shooter extends SubsystemBase {
   /**
    * Creates a new Intake.
    */
-  public Shooter(int leftMotorId, int rightMotorId) {
-    leftShooterMotor = new TalonFX(leftMotorId);
-    rightShooterMotor = new TalonFX(rightMotorId);
+  public Shooter(int leftMotorId, int rightBottomMotorId,  int rightTopMotorId) {
+    leftShooterMotor = new TalonFX(leftMotorId, TunerConstants.kCANBus);
+    rightTopShooterMotor = new TalonFX(rightTopMotorId, TunerConstants.kCANBus);
+    rightBottomShooterMotor = new TalonFX(rightBottomMotorId, TunerConstants.kCANBus);
     initMotors();
 
     velocityControl = new VelocityVoltage(0);
@@ -54,6 +61,7 @@ public class Shooter extends SubsystemBase {
 
     configs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     configs.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+    configs.Feedback.SensorToMechanismRatio = ShooterConsts.GearRatio;
     /*
      * Voltage-based velocity requires a feed forward to account for the back-emf of
      * the motor
@@ -79,7 +87,7 @@ public class Shooter extends SubsystemBase {
 
     StatusCode status = StatusCode.StatusCodeNotInitialized;
     for (int i = 0; i < 5; ++i) {
-      status = rightShooterMotor.getConfigurator().apply(configs);
+      status = rightTopShooterMotor.getConfigurator().apply(configs);
       if (status.isOK())
         break;
     }
@@ -87,7 +95,7 @@ public class Shooter extends SubsystemBase {
       System.out.println("Could not apply configs, error code: " + status.toString());
     }
 
-    configs.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+    configs.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
 
     status = StatusCode.StatusCodeNotInitialized;
     for (int i = 0; i < 5; ++i) {
@@ -98,6 +106,21 @@ public class Shooter extends SubsystemBase {
     if (!status.isOK()) {
       System.out.println("Could not apply configs, error code: " + status.toString());
     }
+
+    configs.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+
+    status = StatusCode.StatusCodeNotInitialized;
+    for (int i = 0; i < 5; ++i) {
+      status = rightBottomShooterMotor.getConfigurator().apply(configs);
+      if (status.isOK())
+        break;
+    }
+    if (!status.isOK()) {
+      System.out.println("Could not apply configs, error code: " + status.toString());
+    }
+
+    leftShooterMotor.setControl(new Follower(rightTopShooterMotor.getDeviceID(), MotorAlignmentValue.Aligned));
+    rightBottomShooterMotor.setControl(new Follower(rightTopShooterMotor.getDeviceID(), MotorAlignmentValue.Aligned));
   }
 
   /**
@@ -134,11 +157,7 @@ public class Shooter extends SubsystemBase {
    * @param acceleration in rotations per second squared
    */
   public void runShooter(double velocity, double acceleration) {
-    leftShooterMotor.setControl(velocityControl
-        .withVelocity(velocity)
-        .withAcceleration(acceleration));
-
-    rightShooterMotor.setControl(velocityControl
+    rightTopShooterMotor.setControl(velocityControl
         .withVelocity(velocity)
         .withAcceleration(acceleration));
   }
@@ -158,21 +177,18 @@ public class Shooter extends SubsystemBase {
 
       @Override
       public void execute() {
-        leftShooterMotor.set(speed);
-        rightShooterMotor.set(speed);
+        rightTopShooterMotor.set(speed);
       }
 
       @Override
       public void end(boolean interrupted) {
-        leftShooterMotor.set(0);
-        rightShooterMotor.set(0);
+        rightTopShooterMotor.set(0);
       }
     };
   }
 
   public void stopMotors() {
-    leftShooterMotor.setControl(stopMode);
-    rightShooterMotor.setControl(stopMode);
+    rightTopShooterMotor.setControl(stopMode);
   }
 
   /**
@@ -180,23 +196,14 @@ public class Shooter extends SubsystemBase {
    * 
    * @return a double representing the left shooter velocity
    */
-  public double getLeftVelocity() {
-    return leftShooterMotor.getVelocity().getValueAsDouble();
-  }
-
-  /**
-   * Get the right shooter velocity
-   * 
-   * @return a double representing the right shooter velocity
-   */
-  public double getRightVelocity() {
-    return rightShooterMotor.getVelocity().getValueAsDouble();
+  public double getVelocity() {
+    return rightTopShooterMotor.getVelocity().getValueAsDouble();
   }
 
   @Override
   public void periodic() {
     // System.out.println("left: " + leftShooterMotor.getVelocity().getValueAsDouble());
-    // System.out.println("right: " + rightShooterMotor.getVelocity().getValueAsDouble());
+    System.out.println("right Bottom vel: " + rightTopShooterMotor.getVelocity().getValueAsDouble());
   }
 
   @Override

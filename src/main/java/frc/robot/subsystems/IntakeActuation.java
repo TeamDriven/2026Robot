@@ -17,12 +17,14 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.Constants.ActuationConsts;
+import frc.robot.Constants.BallTunnelConsts;
+import frc.robot.Constants.IntakeActuationConsts;
+import frc.robot.generated.TunerConstants;
 
 /**
  * The Actuation subsystem controls the actuation motor that moves a mechanism to a specific position.
  */
-public class Actuation extends SubsystemBase {
+public class IntakeActuation extends SubsystemBase {
   private TalonFX actuationMotor;
 
   private MotionMagicVoltage motionMagicControl;
@@ -32,8 +34,8 @@ public class Actuation extends SubsystemBase {
   /**
    * Creates a new Actuation.
    */
-  public Actuation(int motorId) {
-    actuationMotor = new TalonFX(motorId);
+  public IntakeActuation(int motorId) {
+    actuationMotor = new TalonFX(motorId, TunerConstants.kCANBus);
     initActuationMotor();
 
     motionMagicControl = new MotionMagicVoltage(0);
@@ -52,6 +54,7 @@ public class Actuation extends SubsystemBase {
 
     configs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     configs.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+    configs.Feedback.SensorToMechanismRatio = IntakeActuationConsts.GearRatio;
     // configs.MotorOutput.DutyCycleNeutralDeadband = 0.05;
 
     configs.CurrentLimits.SupplyCurrentLimitEnable = true;
@@ -143,7 +146,7 @@ public class Actuation extends SubsystemBase {
       @Override
       public boolean isFinished() {
         double currentPosition = getAngle();
-        return Math.abs(currentPosition * ActuationConsts.GearRatio - setPosition * ActuationConsts.GearRatio) <= 0.5;
+        return Math.abs(currentPosition * IntakeActuationConsts.GearRatio - setPosition * IntakeActuationConsts.GearRatio) <= 0.5;
       }
     };
   }
@@ -154,7 +157,7 @@ public class Actuation extends SubsystemBase {
    */
   public double getAngle() {
     // return throughboreEncoder.getAbsolutePosition() / actuationTicksPerDegree - actuationOffset;
-    return actuationMotor.getPosition().getValueAsDouble() / ActuationConsts.GearRatio;
+    return actuationMotor.getPosition().getValueAsDouble() / IntakeActuationConsts.GearRatio;
     // return actuationMotor.getPosition().getValueAsDouble() / actuationTicksPerDegree;
   }
 

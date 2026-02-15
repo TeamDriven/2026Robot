@@ -4,6 +4,7 @@ import java.util.function.DoubleSupplier;
 
 import frc.robot.Constants;
 import frc.robot.Constants.AngleControllerConsts;
+import frc.robot.generated.TunerConstants;
 
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -28,12 +29,14 @@ public class AngleController extends SubsystemBase{
   NeutralOut stopMode;
 
   public AngleController(int motorId) {
-    angleMotor = new TalonFX(motorId);
+    angleMotor = new TalonFX(motorId, TunerConstants.kCANBus);
     initAngleMotor();
-
+    angleMotor.setPosition(0);
+    
     motionMagicControl = new MotionMagicVoltage(0);
               
     stopMode = new NeutralOut();
+
   }
 
   /**
@@ -44,7 +47,8 @@ public class AngleController extends SubsystemBase{
     TalonFXConfiguration configs = new TalonFXConfiguration();
 
     configs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    configs.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+    configs.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+    configs.Feedback.SensorToMechanismRatio = AngleControllerConsts.GEAR_RATIO;
     // configs.MotorOutput.DutyCycleNeutralDeadband = 0.001;
 
     configs.CurrentLimits.SupplyCurrentLimitEnable = true;
@@ -121,7 +125,7 @@ public class AngleController extends SubsystemBase{
    */
   public void setPosition(double position) {
     angleMotor.setControl(motionMagicControl
-                              .withPosition(position  * AngleControllerConsts.GEAR_RATIO)
+                              .withPosition(position)
                             );
   }
 

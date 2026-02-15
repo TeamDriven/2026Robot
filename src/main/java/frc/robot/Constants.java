@@ -15,24 +15,30 @@ public class Constants {
         public static final double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
     }
 
-    // Intake
-    public class IntakeConsts {
+    public class BallTunnelConsts {
+        public static final double MainGearRatio = 3;
+        public static final double DivergentGearRatio = 1;
+    }
 
+    // Intake
+    public class IntakeRollersConsts {
+        public static final double GearRatio = 1; // slow down
     }
     // Actuation
-    public class ActuationConsts {
-        public static final double GearRatio = 1;
+    public class IntakeActuationConsts {
+        public static final double GearRatio = 14.2; // slow down
     }
 
     // Shooter
     public class ShooterConsts {
-
+        public static final double GearRatio = 1.2; // slow down
     }
 
     // AngleController
     public class AngleControllerConsts {
         public static final double ANGLE_CONTROLLER_REST_POS = 0;
-        public static final double GEAR_RATIO = 1;
+        public static final double ANGLE_CONTROLLER_TEST_POS = 45;
+        public static final double GEAR_RATIO = 2; // slow down
     }
 
     public class VisionConsts {

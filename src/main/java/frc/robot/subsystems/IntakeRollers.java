@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
@@ -12,21 +13,28 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.AngleControllerConsts;
+import frc.robot.Constants.BallTunnelConsts;
+import frc.robot.Constants.IntakeRollersConsts;
+import frc.robot.generated.TunerConstants;
 
-public class Intake extends SubsystemBase {
+public class IntakeRollers extends SubsystemBase {
     private TalonFX intakeMotor;
 
+    MotionMagicVoltage motionMagicControl;
     VelocityVoltage velocityControlFeed;
     VoltageOut voltageControl;
     NeutralOut stopMode;
 
-    public Intake(int motorId) {
-        intakeMotor = new TalonFX(motorId);
+    public IntakeRollers(int motorId) {
+        intakeMotor = new TalonFX(motorId, TunerConstants.kCANBus);
         initIntakeMotor();
 
         velocityControlFeed = new VelocityVoltage(0);
 
         voltageControl = new VoltageOut(0);
+
+        motionMagicControl = new MotionMagicVoltage(0);
 
         stopMode = new NeutralOut();
     }
@@ -36,9 +44,14 @@ public class Intake extends SubsystemBase {
 
         configs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         configs.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+        configs.Feedback.SensorToMechanismRatio = IntakeRollersConsts.GearRatio;
 
         configs.CurrentLimits.SupplyCurrentLimitEnable = true;
         configs.CurrentLimits.SupplyCurrentLimit = 30;
+
+        configs.MotionMagic.MotionMagicCruiseVelocity = 15;
+        configs.MotionMagic.MotionMagicAcceleration = 20;
+        configs.MotionMagic.MotionMagicJerk = 50;
 
         /*
          * Voltage-based velocity requires a feed forward to account for the back-emf of
@@ -82,7 +95,7 @@ public class Intake extends SubsystemBase {
         return new Command() {
             @Override
             public void initialize() {
-                addRequirements(Intake.this);
+                addRequirements(IntakeRollers.this);
             }
 
             @Override
@@ -124,7 +137,7 @@ public class Intake extends SubsystemBase {
         return new Command() {
             @Override
             public void initialize() {
-                addRequirements(Intake.this);
+                addRequirements(IntakeRollers.this);
             }
 
             @Override
@@ -159,7 +172,7 @@ public class Intake extends SubsystemBase {
         return new Command() {
             @Override
             public void initialize() {
-                addRequirements(Intake.this);
+                addRequirements(IntakeRollers.this);
             }
 
             @Override
@@ -221,6 +234,11 @@ public class Intake extends SubsystemBase {
     @Override
     public void simulationPeriodic() {
         // This method will be called once per scheduler run during simulation
+    }
+
+    public void setPosition(double position) {
+        intakeMotor.setControl(motionMagicControl
+                .withPosition(position * AngleControllerConsts.GEAR_RATIO));
     }
 
 }

@@ -4,7 +4,12 @@
 
 package frc.robot;
 
-import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.IntakeRollers;
+
+import static frc.robot.Subsystems.m_AngleController;
+import static frc.robot.Subsystems.m_ballTunnel;
+import static frc.robot.Subsystems.m_shooter;
+
 import com.ctre.phoenix6.hardware.Pigeon2;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.jni.SwerveJNI.ModulePosition;
@@ -32,6 +37,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.BallTunnel;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 
 // import static frc.robot.Subsystems.m_shooter;
@@ -149,15 +155,20 @@ public class RobotContainer {
 
                 // Controls.autoLineUpOn.onTrue(drivetrain.applyRequest(Controls.localHeading(Constants.FieldConst.RED_HUB)));
                 // Controls.autoLineUpOff.onTrue(drivetrain.applyRequest(Controls.driveRequest()));
-                Controls.autoLineUpOn
-                                .onTrue(drivetrain.applyRequest(Controls.goToPositionAndRotation(
-                                                new Pose2d(14, 5, new Rotation2d(0)), Constants.FieldConst.RED_HUB)))
-                                .onFalse(drivetrain.applyRequest(Controls.driveRequest()));
+                // Controls.autoLineUpOn
+                // .onTrue(drivetrain.applyRequest(Controls.goToPositionAndRotation(
+                // new Pose2d(14, 5, new Rotation2d(0)), Constants.FieldConst.RED_HUB)))
+                // .onFalse(drivetrain.applyRequest(Controls.driveRequest()));
 
                 // Controls.intakeOut.whileTrue(m_intake.runIntakePercent(-1)).onFalse(m_intake.runIntakePercent(0));
                 // Controls.intakeIn.whileTrue(m_indexer.runIndexerPercent(0.5)).onFalse(m_indexer.runIndexerPercent(0));
                 // Controls.climberDown.whileTrue(m_ballTunnel.runIndexerPercent(-0.75)).onFalse(m_ballTunnel.runIndexerPercent(0));
-                // Controls.shoot.whileTrue(m_shooter.runShooterPercent(100)).onFalse(m_shooter.runShooterPercent(0));
+                Controls.shoot.whileTrue(m_shooter.runShooterCommand(30, 100)).onFalse(m_shooter.runShooterCommand(0, 100));
+                Controls.joystick.y().whileTrue(m_AngleController.setPositionCommand(0.5));
+                                // .onFalse(new InstantCommand(() -> m_AngleController.stopMotor()));
+                Controls.joystick.a().whileTrue(new InstantCommand(() -> m_AngleController.stopMotor()));
+                Controls.joystick.b().whileTrue(m_ballTunnel.runBallTunnelCommand(20, 100)).onFalse(new InstantCommand(() -> m_ballTunnel.stopBallTunnelMotor()));
+                                // .onFalse(new InstantCommand(() -> m_AngleController.stopMotor()));
                 // //right bumber
 
                 // Controlls.shoot.whileTrue(ShootCommand(100, 0, -75));

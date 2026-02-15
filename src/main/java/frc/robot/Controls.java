@@ -25,9 +25,8 @@ public class Controls {
 
         public static final Trigger climberUp = joystick.pov(90);
         public static final Trigger climberDown = joystick.pov(270);
-        public static final Trigger intakeOut = joystick.x();
-        public static final Trigger intakeIn = joystick.b();
-        public static final Trigger cancel = joystick.y();
+        public static final Trigger intake = joystick.leftBumper();
+        public static final Trigger cancel = joystick.leftStick();
         public static final Trigger resetHeading = joystick.start();
         public static final Trigger shoot = joystick.rightBumper();
         public static final Trigger autoLineUpOn = joystick.a();
@@ -102,7 +101,7 @@ public class Controls {
                 final DoubleSupplier xSpeed = () -> {
                         DoubleSupplier errorX = () -> (targetPose.getX()
                                         - RobotContainer.drivetrain.getState().Pose.getX());
-                        System.out.println(errorX.getAsDouble());
+                        // System.out.println(errorX.getAsDouble());
 
                         if (Math.abs(errorX.getAsDouble()) < 0.03) { // 3 cm
                                 return 0.0;
