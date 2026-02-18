@@ -38,7 +38,7 @@ public class Constants {
     public class AngleControllerConsts {
         public static final double ANGLE_CONTROLLER_REST_POS = 0;
         public static final double ANGLE_CONTROLLER_TEST_POS = 45;
-        public static final double GEAR_RATIO = 2; // slow down
+        public static final double GEAR_RATIO = 36;
     }
 
     public class VisionConsts {

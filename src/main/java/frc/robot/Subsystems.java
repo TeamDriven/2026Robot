@@ -11,7 +11,7 @@ import frc.robot.subsystems.IntakeRollers;
 
 public class Subsystems {
     public static IntakeActuation m_intakeActuation = new IntakeActuation(19);
-    public static BallTunnel m_ballTunnel = new BallTunnel(17, 18);
+    public static BallTunnel m_ballTunnel = new BallTunnel( 18);
     public static Shooter m_shooter = new Shooter(13, 14, 15);
     public static AngleController m_AngleController = new AngleController(16);
     public static IntakeRollers m_intakeRollers = new IntakeRollers(20); //todo need to sensor

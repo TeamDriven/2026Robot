@@ -1,5 +1,8 @@
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.Rotation;
+
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 import frc.robot.Constants;
@@ -15,13 +18,17 @@ import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.units.measure.Voltage;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 
 /**
- * The AngleController class represents a subsystem that controls the angle of the shooter.
+ * The AngleController class represents a subsystem that controls the angle of
+ * the shooter.
  */
-public class AngleController extends SubsystemBase{
+public class AngleController extends SubsystemBase {
   // private PowerDistribution pdp = new PowerDistribution(30, ModuleType.kRev);
   private TalonFX angleMotor;
 
@@ -32,9 +39,8 @@ public class AngleController extends SubsystemBase{
     angleMotor = new TalonFX(motorId, TunerConstants.kCANBus);
     initAngleMotor();
     angleMotor.setPosition(0);
-    
     motionMagicControl = new MotionMagicVoltage(0);
-              
+
     stopMode = new NeutralOut();
 
   }
@@ -54,16 +60,21 @@ public class AngleController extends SubsystemBase{
     configs.CurrentLimits.SupplyCurrentLimitEnable = true;
     configs.CurrentLimits.SupplyCurrentLimit = 40;
 
-    configs.MotionMagic.MotionMagicCruiseVelocity = 15;
+    configs.MotionMagic.MotionMagicCruiseVelocity = 50; // 7,530 / 60 = 125.5 rps
     configs.MotionMagic.MotionMagicAcceleration = 20;
     configs.MotionMagic.MotionMagicJerk = 50;
-
-    /* Voltage-based velocity requires a feed forward to account for the back-emf of the motor */
+    // 27 degrees start aiming for 37
+    /*
+     * Voltage-based velocity requires a feed forward to account for the back-emf of
+     * the motor
+     */
     configs.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
-    configs.Slot0.kP = 60; //25 // An error of 1 rotation per second results in 2V output
-    configs.Slot0.kI = 0.5; //4 // An error of 1 rotation per second increases output by 0.5V every second
-    configs.Slot0.kD = 0.0; // A change of 1 rotation per second squared results in 0.01 volts output
-    configs.Slot0.kV = 0.12; // Falcon 500 is a 500kV motor, 500rpm per V = 8.333 rps per V, 1/8.33 = 0.12 volts / Rotation per second
+    // 320 barely under (less than 1 degree)
+    configs.Slot0.kP = 320; // 25 // An error of 1 rotation per second results in 2V output
+    configs.Slot0.kI = 0; // 4 // An error of 1 rotation per second increases output by 0.5V every second
+    configs.Slot0.kD = 0.2; // A change of 1 rotation per second squared results in 0.01 volts output
+    configs.Slot0.kV = 0.93; // Falcon 500 is a 500kV motor, 500rpm per V = 8.333 rps per V, 1/8.33 = 0.12
+                             // volts / Rotation per second
 
     // Peak output of 8 volts
     configs.Voltage.PeakForwardVoltage = 8;
@@ -72,18 +83,21 @@ public class AngleController extends SubsystemBase{
     StatusCode status = StatusCode.StatusCodeNotInitialized;
     for (int i = 0; i < 5; ++i) {
       status = angleMotor.getConfigurator().apply(configs);
-      if (status.isOK()) break;
+      if (status.isOK())
+        break;
     }
-    if(!status.isOK()) {
+    if (!status.isOK()) {
       System.out.println("Could not apply configs, error code: " + status.toString());
     }
   }
 
   /**
    * Run the Angle Controller motor to a given position
+   * 
    * @param position in degrees
    * @return a command that will run the Angle Controller motor
    */
+  // max degree is 55
   public Command setPositionCommand(double position) {
     return new Command() {
       @Override
@@ -93,44 +107,36 @@ public class AngleController extends SubsystemBase{
 
       @Override
       public boolean isFinished() {
-        return true;
+        // double motorRotations = angleMotor.getPosition().getValueAsDouble();
+
+        // // Convert motor rotations -> mechanism degrees
+        // double mechanismDegrees = (motorRotations / AngleControllerConsts.GEAR_RATIO) * 360.0;
+
+        // return Math.abs(mechanismDegrees - position) <= 5.0;
+        return false;
       }
     };
   }
 
   /**
    * Run the Angle Controller motor to a given position
-   * @param position in degrees
-   * @return a command that will run the Angle Controller motor
+   * 
+   * @param position in rotations
    */
-  public Command setPositionCommandSupplier(DoubleSupplier position) {
-    return new Command() {
-      @Override
-      public void execute() {
-        if (!((Double) position.getAsDouble()).equals(Double.NaN)) {
-          setPosition(position.getAsDouble());
-        }
-      }
+  public void setPosition(double rotation) {
+    // .2 rotations -> 4
+    // 1 roation -> 42-18 = 24
+    // max rotation is 3
+    // each roation is equal to 1/36 of the hood
 
-      @Override
-      public boolean isFinished() {
-        return true;
-      }
-    };
-  }
-
-  /**
-   * Run the Angle Controller motor to a given position
-   * @param position in degrees
-   */
-  public void setPosition(double position) {
     angleMotor.setControl(motionMagicControl
-                              .withPosition(position)
-                            );
+        .withPosition(rotation / 360));
+
   }
 
   /**
    * Run the Angle Controller motor at a given percent
+   * 
    * @param percent 1 to -1
    */
   public Command anglePercentControl(double power) {
@@ -148,25 +154,29 @@ public class AngleController extends SubsystemBase{
   }
 
   /**
-   * wait until the Angle Controller motor is at a given position
-   * @param setPosition in degrees
-   * @return a command that will wait until the Angle Controller motor is at a given position
+   * Wait until the Angle Controller motor is at a given position.
+   * 
+   * @param setPosition target position in mechanism degrees
+   * @return a command that waits until the Angle Controller motor is at the given
+   *         position
    */
   public Command waitUntilAtPosition(double setPosition) {
-    // return new WaitUntilCommand(() -> Math.abs(angleMotor.getPosition().getValueAsDouble() - setPosition  * angleTicksPerDegree) <= 0.5);
-    return new Command() {
-      @Override
-      public boolean isFinished() {
-        double currentPosition = angleMotor.getPosition().getValueAsDouble();
-        return Math.abs(currentPosition - setPosition  * AngleControllerConsts.GEAR_RATIO) <= 0.5;
-      }
-    };
+    return new WaitUntilCommand(() -> {
+      double motorRotations = angleMotor.getPosition().getValueAsDouble();
+
+      // Convert motor rotations -> mechanism degrees
+      double mechanismDegrees = (motorRotations) * 360.0;
+
+      return Math.abs(mechanismDegrees - setPosition) <= 1.5; // 1 degree tolerance
+    });
   }
 
   /**
    * wait until the Angle Controller motor is at a given position
+   * 
    * @param setPosition in degrees
-   * @return a command that will wait until the Angle Controller motor is at a given position
+   * @return a command that will wait until the Angle Controller motor is at a
+   *         given position
    */
   public Command waitUntilAtPositionSupplier(DoubleSupplier setPosition) {
     return new Command() {
@@ -180,7 +190,7 @@ public class AngleController extends SubsystemBase{
       }
     };
   }
-  
+
   /**
    * Stops the Angle Controller motor's movement
    */
@@ -190,6 +200,7 @@ public class AngleController extends SubsystemBase{
 
   /**
    * Get the current angle of the Angle Controller motor
+   * 
    * @return the current angle in degrees
    */
   public double getAngle() {
