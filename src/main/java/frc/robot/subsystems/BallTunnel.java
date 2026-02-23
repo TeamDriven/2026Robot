@@ -26,7 +26,7 @@ import frc.robot.generated.TunerConstants;
  * check its speed and create commands to control it.
  */
 public class BallTunnel extends SubsystemBase {
-  // private TalonFX ballTunnelMotor;
+  private TalonFX ballTunnelMotor;
   private TalonFX diverterMotor;
 
   VelocityVoltage velocityControl;
@@ -35,13 +35,13 @@ public class BallTunnel extends SubsystemBase {
   /**
    * Creates a new ballTunnel.
    */
-  public BallTunnel(int DMotorId) {
-    // ballTunnelMotor = new TalonFX(BMotorId, TunerConstants.kCANBus);
+  public BallTunnel(int DMotorId, int BMotorId) {
+    ballTunnelMotor = new TalonFX(BMotorId, TunerConstants.kCANBus);
     diverterMotor = new TalonFX(DMotorId, TunerConstants.kCANBus);
 
     initMotors();
 
-    velocityControl = new VelocityVoltage(0);
+    velocityControl = new VelocityVoltage(0).withEnableFOC(true);
 
     stopMode = new NeutralOut();
   }
@@ -51,33 +51,33 @@ public class BallTunnel extends SubsystemBase {
    */
   public void initMotors() {
     TalonFXConfiguration configs = new TalonFXConfiguration();
+    
+    configs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+    configs.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+    configs.Feedback.SensorToMechanismRatio = BallTunnelConsts.MainGearRatio;
+    
+    configs.CurrentLimits.SupplyCurrentLimitEnable = true;
+    configs.CurrentLimits.SupplyCurrentLimit = 30;
 
-    // configs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-    // configs.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
-    // configs.Feedback.SensorToMechanismRatio = BallTunnelConsts.MainGearRatio;
-
-    // configs.CurrentLimits.SupplyCurrentLimitEnable = true;
-    // configs.CurrentLimits.SupplyCurrentLimit = 30;
-
-    // /* Voltage-based velocity requires a feed forward to account for the back-emf of the motor */
-    // configs.Slot0.kP = 0.6; // An error of 1 rotation per second results in 2V output
-    // configs.Slot0.kI = 0.0; // An error of 1 rotation per second increases output by 0.5V every second
-    // configs.Slot0.kD = 0.001; // A change of 1 rotation per second squared results in 0.01 volts output
-    // configs.Slot0.kV = 0.12; // Falcon 500 is a 500kV motor, 500rpm per V = 8.333 rps per V, 1/8.33 = 0.12 volts / Rotation per second
-    // // Peak output of 8 volts
-    // configs.Voltage.PeakForwardVoltage = 12;
-    // configs.Voltage.PeakReverseVoltage = -12;
+    /* Voltage-based velocity requires a feed forward to account for the back-emf of the motor */
+    configs.Slot0.kP = 0;// 0.0000001; // An error of 1 rotation per second results in 2V output
+    configs.Slot0.kI = 0.0; // An error of 1 rotation per second increases output by 0.5V every second
+    configs.Slot0.kD = 0.1; // A change of 1 rotation per second squared results in 0.01 volts output
+    configs.Slot0.kV = 0.10; // Falcon 500 is a 500kV motor, 500rpm per V = 8.333 rps per V, 1/8.33 = 0.12 volts / Rotation per second
+    // Peak output of 8 volts
+    configs.Voltage.PeakForwardVoltage = 12;
+    configs.Voltage.PeakReverseVoltage = -12;
 
     StatusCode status = StatusCode.StatusCodeNotInitialized;
-    // for (int i = 0; i < 5; ++i) {
-    //   status = ballTunnelMotor.getConfigurator().apply(configs);
-    //   if (status.isOK()) break;
-    // }
-    // if(!status.isOK()) {
-    //   System.out.println("Could not apply configs, error code: " + status.toString());
-    // }
+    for (int i = 0; i < 5; ++i) {
+      status = ballTunnelMotor.getConfigurator().apply(configs);
+      if (status.isOK()) break;
+    }
+    if(!status.isOK()) {
+      System.out.println("Could not apply configs, error code: " + status.toString());
+    }
 
-    // configs = new TalonFXConfiguration();
+    configs = new TalonFXConfiguration();
 
     configs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     configs.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
@@ -137,10 +137,10 @@ public class BallTunnel extends SubsystemBase {
    * @param acceleration in rotations per second squared
    */
   public void runBallTunnel(double velocity, double acceleration) {
-    // ballTunnelMotor.setControl(velocityControl
-    //                         .withVelocity(velocity)
-    //                         .withAcceleration(acceleration)
-    //                       );
+    ballTunnelMotor.setControl(velocityControl
+                            .withVelocity(velocity)
+                            .withAcceleration(acceleration)
+                          );
     diverterMotor.setControl(velocityControl
                             .withVelocity(velocity)
                             .withAcceleration(acceleration)
@@ -178,12 +178,12 @@ public class BallTunnel extends SubsystemBase {
    * @param acceleration in rotations per second squared
    */
   public void spit(double velocity, double acceleration) {
-    // ballTunnelMotor.setControl(velocityControl
-    //                         .withVelocity(velocity)
-    //                         .withAcceleration(acceleration)
-    //                       );
+    ballTunnelMotor.setControl(velocityControl
+                            .withVelocity(velocity)
+                            .withAcceleration(acceleration)
+                          );
     diverterMotor.setControl(velocityControl
-                            .withVelocity(-velocity)
+                            .withVelocity(-10 * velocity) // -
                             .withAcceleration(acceleration)
                           );
   }
@@ -219,7 +219,7 @@ public class BallTunnel extends SubsystemBase {
    * Stop the ballTunnel motor
    */
   public void stopBallTunnelMotor() {
-    // ballTunnelMotor.setControl(stopMode);
+    ballTunnelMotor.setControl(stopMode);
     diverterMotor.setControl(stopMode);
   }
 
@@ -247,8 +247,8 @@ public class BallTunnel extends SubsystemBase {
         if (((Double) velocity.getAsDouble()).equals(Double.NaN)) {
           return true;
         }
-        // return ballTunnelMotor.getVelocity().getValueAsDouble() >= velocity.getAsDouble() * 0.90;
-        return true;
+        return ballTunnelMotor.getVelocity().getValueAsDouble() >= velocity.getAsDouble() * 0.90;
+        // return true;
       }
     };
   }

@@ -30,11 +30,11 @@ public class IntakeRollers extends SubsystemBase {
         intakeMotor = new TalonFX(motorId, TunerConstants.kCANBus);
         initIntakeMotor();
 
-        velocityControlFeed = new VelocityVoltage(0);
+        velocityControlFeed = new VelocityVoltage(0).withEnableFOC(true);
 
-        voltageControl = new VoltageOut(0);
+        voltageControl = new VoltageOut(0).withEnableFOC(true);
 
-        motionMagicControl = new MotionMagicVoltage(0);
+        motionMagicControl = new MotionMagicVoltage(0).withEnableFOC(true);
 
         stopMode = new NeutralOut();
     }
@@ -76,6 +76,7 @@ public class IntakeRollers extends SubsystemBase {
         for (int i = 0; i < 5; ++i) {
             status = intakeMotor.getConfigurator().apply(configs);
             if (status.isOK())
+            
                 break;
         }
         if (!status.isOK()) {

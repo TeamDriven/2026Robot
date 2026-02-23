@@ -47,7 +47,7 @@ public class Shooter extends SubsystemBase {
     rightBottomShooterMotor = new TalonFX(rightBottomMotorId, TunerConstants.kCANBus);
     initMotors();
 
-    velocityControl = new VelocityVoltage(0);
+    velocityControl = new VelocityVoltage(0).withEnableFOC(true);
 
     // sitControl = new VoltageOut(2);
 
