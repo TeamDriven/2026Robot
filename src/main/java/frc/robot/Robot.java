@@ -4,6 +4,9 @@
 
 package frc.robot;
 
+import static frc.robot.Subsystems.m_ballTunnel;
+import static frc.robot.Subsystems.m_shooter;
+
 import com.ctre.phoenix6.hardware.Pigeon2;
 
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -94,6 +97,8 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("X", m_robotContainer.drivetrain.getState().Pose.getX());
     SmartDashboard.putNumber("Y", m_robotContainer.drivetrain.getState().Pose.getY());
     SmartDashboard.putNumber("Rot", m_robotContainer.drivetrain.getState().Pose.getRotation().getDegrees());
+    SmartDashboard.putNumber("Shooter velocity", m_shooter.getVelocity());
+    SmartDashboard.putNumber("ball velocity", m_ballTunnel.getVelocity());
     RobotContainer.m_field.setRobotPose(RobotContainer.drivetrain.getState().Pose);
     Subsystems.m_limelight.getAprilTag();
     Subsystems.m_limelight2.getAprilTag();

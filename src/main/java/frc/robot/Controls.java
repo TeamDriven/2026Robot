@@ -32,7 +32,7 @@ public class Controls {
         public static final Trigger autoLineUpOn = joystick.a();
         public static final Trigger autoLineUpOff = joystick.b();
 
-        public static final boolean isRightStickDrive = true;
+        public static final boolean isRightStickDrive = false;
 
         private static final SwerveRequest.FieldCentric driveF = new SwerveRequest.FieldCentric()
                         .withDeadband(DrivetrainConst.MaxSpeed * 0.1)

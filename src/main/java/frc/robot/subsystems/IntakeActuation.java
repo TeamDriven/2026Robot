@@ -53,8 +53,10 @@ public class IntakeActuation extends SubsystemBase {
     TalonFXConfiguration configs = new TalonFXConfiguration();
 
     configs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-    configs.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+    configs.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     configs.Feedback.SensorToMechanismRatio = IntakeActuationConsts.GearRatio;
+
+  
     // configs.MotorOutput.DutyCycleNeutralDeadband = 0.05;
 
     configs.CurrentLimits.SupplyCurrentLimitEnable = true;

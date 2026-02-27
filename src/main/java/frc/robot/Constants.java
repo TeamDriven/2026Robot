@@ -26,7 +26,9 @@ public class Constants {
     }
     // Actuation
     public class IntakeActuationConsts {
-        public static final double GearRatio = 14.2; // slow down
+        //20 -> 40 
+        public static final double GearRatio = 4.44;
+        //14.2; // slow down
     }
 
     // Shooter

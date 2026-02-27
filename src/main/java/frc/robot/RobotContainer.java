@@ -6,6 +6,8 @@ package frc.robot;
 
 import static frc.robot.Subsystems.m_AngleController;
 import static frc.robot.Subsystems.m_ballTunnel;
+import static frc.robot.Subsystems.m_intakeActuation;
+import static frc.robot.Subsystems.m_intakeRollers;
 import static frc.robot.Subsystems.m_shooter;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
@@ -30,18 +32,13 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
-
-// import static frc.robot.Subsystems.m_shooter;
-// import static frc.robot.Subsystems.m_intake;
-// import static frc.robot.Subsystems.m_ballTunnel;
-// import static frc.robot.Subsystems.m_indexer;
-
+ 
 import frc.robot.Constants.DrivetrainConst;
+import frc.robot.commands.IntakeOutCommand;
 import frc.robot.commands.ShootCommand;
 import frc.robot.commands.autos.DepotAuto;
 import frc.robot.commands.autos.NeutralDepotAuto;
 import frc.robot.commands.autos.NeutralOutpostAuto;
-// import frc.robot.commands.ShootCommand;
 import frc.robot.commands.autos.OutpostAuto;
 
 public class RobotContainer {
@@ -113,10 +110,6 @@ public class RobotContainer {
                 backLeft = drivetrain.getState().ModulePositions[2];
                 backRight = drivetrain.getState().ModulePositions[3];
 
-                SmartDashboard.putBoolean("test1", false);
-                SmartDashboard.putBoolean("test2", false);
-                SmartDashboard.putBoolean("test3", false);
-
                 configureBindings();
         }
 
@@ -140,8 +133,6 @@ public class RobotContainer {
                 // Controlls.joystick.start().and(Controlls.joystick.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
                 // Controlls.joystick.start().and(Controlls.joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
-                // reset the field-centric heading on left bumper press
-                Controls.resetHeading.onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
 
                 drivetrain.registerTelemetry(logger::telemeterize);
 
@@ -155,24 +146,38 @@ public class RobotContainer {
                 // Controls.intakeOut.whileTrue(m_intake.runIntakePercent(-1)).onFalse(m_intake.runIntakePercent(0));
                 // Controls.intakeIn.whileTrue(m_indexer.runIndexerPercent(0.5)).onFalse(m_indexer.runIndexerPercent(0));
                 // Controls.climberDown.whileTrue(m_ballTunnel.runIndexerPercent(-0.75)).onFalse(m_ballTunnel.runIndexerPercent(0));
-                Controls.shoot.whileTrue(m_shooter.runShooterCommand(30, 100)).onFalse(m_shooter.runShooterCommand(0, 100));
-                Controls.joystick.y().whileTrue(m_AngleController.setPositionCommand(20));
-                Controls.joystick.a().whileTrue(m_AngleController.setPositionCommand(10));
+                // Controls.joystick.y().whileTrue(m_AngleController.setPositionCommand(20));
+                // Controls.joystick.a().whileTrue(m_AngleController.setPositionCommand(10));
                 // Controls.joystick.y().whileTrue(m_AngleController.anglePercentControl(0.1))
                 //                 .onFalse(new InstantCommand(() -> m_AngleController.stopMotor()));
                 // Controls.joystick.a().whileTrue(m_AngleController.anglePercentControl(-0.1))
                 //                 .onFalse(new InstantCommand(() -> m_AngleController.stopMotor()));
                 // Controls.joystick.a().whileTrue(new InstantCommand(() -> m_AngleController.stopMotor()));
-                Controls.joystick.b().whileTrue(m_ballTunnel.runBallTunnelCommand(30, 1)).onFalse(new InstantCommand(() -> m_ballTunnel.stopBallTunnelMotor()));
+                Controls.joystick.b().whileTrue(m_ballTunnel.spitCommand(3, 100)).onFalse(new InstantCommand(() -> m_ballTunnel.stopBallTunnelMotor()));
                                 // .onFalse(new InstantCommand(() -> m_AngleController.stopMotor()));
                 // //right bumber
 
-                Controls.joystick.x().whileTrue(new ShootCommand(28.0, 10, 10.0));
+                //Controls.joystick.povUp().whileTrue(new IntakeOutCommand(20, 70, 100));
+
+                //intake controls
+                Controls.joystick.leftBumper().whileTrue(new IntakeOutCommand(20, 70, 100)).onFalse(m_intakeRollers.stopIntakeCommand());
+                Controls.joystick.leftTrigger().whileTrue(m_intakeActuation.setPositionCommand(0));
+
+                Controls.joystick.x().whileTrue(m_intakeRollers.feedCommand(70, 100));
+  
+              
+                //shoot settings
+        //        Controls.shoot.whileTrue(new ShootCommand(36.742069, 15, 20));
+               Controls.shoot.whileTrue(new ShootCommand(40.5,15 , 20));
+                Controls.joystick.b().whileTrue(m_ballTunnel.spitCommand(30, 100));
+                 //pass setting
+                // Controls.shoot.whileTrue(new ShootCommand(60.742069, 25, 14)); // 2.5
                 // Controlls.shoot.whileTrue(ShootCommand(100, 0, -75));
 
                 // new Trigger(m_intake.isSensorTripped()).onTrue(m_intake.feedCommand(50,
                 // 100)).onFalse(m_intake.stopIntakeCommand());
 
+                Controls.resetHeading.onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
                 Controls.joystick
                                 .button(8)
                                 .onTrue(
@@ -187,6 +192,5 @@ public class RobotContainer {
 
         public Command getAutonomousCommand() {
                 return autoChooser.selectedCommand();
-                // return null;
         }
 }
