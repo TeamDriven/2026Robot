@@ -34,8 +34,6 @@ public class IntakeRollers extends SubsystemBase {
 
         voltageControl = new VoltageOut(0).withEnableFOC(true);
 
-        motionMagicControl = new MotionMagicVoltage(0).withEnableFOC(true);
-
         stopMode = new NeutralOut();
     }
 
@@ -49,26 +47,16 @@ public class IntakeRollers extends SubsystemBase {
         configs.CurrentLimits.SupplyCurrentLimitEnable = true;
         configs.CurrentLimits.SupplyCurrentLimit = 30;
 
-        configs.MotionMagic.MotionMagicCruiseVelocity = 15;
-        configs.MotionMagic.MotionMagicAcceleration = 20;
-        configs.MotionMagic.MotionMagicJerk = 50;
-
         /*
          * Voltage-based velocity requires a feed forward to account for the back-emf of
          * the motor
          */
-        configs.Slot0.kP = 0.11; // An error of 1 rotation per second results in 2V output
-        configs.Slot0.kI = 0.5; // An error of 1 rotation per second increases output by 0.5V every second
-        configs.Slot0.kD = 0.0001; // A change of 1 rotation per second squared results in 0.01 volts output
+        configs.Slot0.kP = 0.5; // An error of 1 rotation per second results in 2V output
+        configs.Slot0.kI = 0.0; // An error of 1 rotation per second increases output by 0.5V every second
+        configs.Slot0.kD = 0.1; // A change of 1 rotation per second squared results in 0.01 volts output
         configs.Slot0.kV = 0.12; // Falcon 500 is a 500kV motor, 500rpm per V = 8.333 rps per V, 1/8.33 = 0.12
                                  // volts / Rotation per second
 
-        configs.Slot1.kP = 4; // An error of 1 rotation per second results in 2V output
-        configs.Slot1.kI = 0.0; // An error of 1 rotation per second increases output by 0.5V every second
-        configs.Slot1.kD = 0.0; // A change of 1 rotation per second squared results in 0.01 volts output
-        configs.Slot1.kV = 0.12; // Falcon 500 is a 500kV motor, 500rpm per V = 8.333 rps per V, 1/8.33 = 0.12
-                                 // volts / Rotation per second
-        // Peak output of 8 volts
         configs.Voltage.PeakForwardVoltage = 12;
         configs.Voltage.PeakReverseVoltage = -12;
 
@@ -125,7 +113,8 @@ public class IntakeRollers extends SubsystemBase {
     public void feedMotor(double velocity, double acceleration) {
         intakeMotor.setControl(velocityControlFeed
                 .withVelocity(velocity)
-                .withAcceleration(acceleration));
+                .withAcceleration(acceleration)
+                .withSlot(0));
     }
 
     /**

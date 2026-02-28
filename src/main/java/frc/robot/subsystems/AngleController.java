@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import java.util.function.DoubleSupplier;
 
+import frc.robot.Constants;
 import frc.robot.Constants.AngleControllerConsts;
 import frc.robot.generated.TunerConstants;
 
@@ -118,11 +119,6 @@ public class AngleController extends SubsystemBase {
    * @param position in rotations
    */
   public void setPosition(double rotation) {
-    // .2 rotations -> 4
-    // 1 roation -> 42-18 = 24
-    // max rotation is 3
-    // each roation is equal to 1/36 of the hood
-
     angleMotor.setControl(motionMagicControl
         .withPosition(rotation / 360));
 
@@ -181,6 +177,20 @@ public class AngleController extends SubsystemBase {
         }
         double currentPosition = angleMotor.getPosition().getValueAsDouble();
         return Math.abs(currentPosition - setPosition.getAsDouble() * AngleControllerConsts.GEAR_RATIO) <= 0.1;
+      }
+    };
+  }
+
+  public Command resetAngleToZeroCommand() {
+       return new Command() {
+      @Override
+      public void execute() {
+        setPosition(Constants.AngleControllerConsts.ANGLE_CONTROLLER_REST_POS);
+      }
+
+      @Override
+      public boolean isFinished() {
+        return angleMotor.getSupplyCurrent().getValueAsDouble() >= Constants.AngleControllerConsts.CURRENT_TOLERANCE; 
       }
     };
   }

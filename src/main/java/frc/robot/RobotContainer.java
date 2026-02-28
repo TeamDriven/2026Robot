@@ -160,15 +160,15 @@ public class RobotContainer {
                 //Controls.joystick.povUp().whileTrue(new IntakeOutCommand(20, 70, 100));
 
                 //intake controls
-                Controls.joystick.leftBumper().whileTrue(new IntakeOutCommand(20, 70, 100)).onFalse(m_intakeRollers.stopIntakeCommand());
+                Controls.joystick.leftBumper().whileTrue(new IntakeOutCommand(1.43, 70, 100)).onFalse(m_intakeRollers.stopIntakeCommand());
                 Controls.joystick.leftTrigger().whileTrue(m_intakeActuation.setPositionCommand(0));
-
-                Controls.joystick.x().whileTrue(m_intakeRollers.feedCommand(70, 100));
-  
+                // Controls.joystick.leftBumper().whileTrue(m_intakeActuation.setPositionCommand(1.43));
+                Controls.joystick.x().whileTrue(m_intakeRollers.feedCommand(90, 100));
+                Controls.joystick.a().whileTrue(m_intakeActuation.resetAngleToZeroCommand()).whileFalse(new InstantCommand(() -> m_intakeActuation.stopMotor()));
               
                 //shoot settings
         //        Controls.shoot.whileTrue(new ShootCommand(36.742069, 15, 20));
-               Controls.shoot.whileTrue(new ShootCommand(40.5,15 , 20));
+               Controls.shoot.whileTrue(new ShootCommand(36,10 , 20));
                 Controls.joystick.b().whileTrue(m_ballTunnel.spitCommand(30, 100));
                  //pass setting
                 // Controls.shoot.whileTrue(new ShootCommand(60.742069, 25, 14)); // 2.5
@@ -178,7 +178,7 @@ public class RobotContainer {
                 // 100)).onFalse(m_intake.stopIntakeCommand());
 
                 Controls.resetHeading.onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
-                Controls.joystick
+               /*  Controls.joystick
                                 .button(8)
                                 .onTrue(
                                                 Commands.runOnce(
@@ -187,7 +187,7 @@ public class RobotContainer {
                                                                                                 .getTranslation(),
                                                                                                 new Rotation2d())),
                                                                 drivetrain)
-                                                                .ignoringDisable(true));
+                                                                .ignoringDisable(true));*/
         }
 
         public Command getAutonomousCommand() {

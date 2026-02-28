@@ -22,12 +22,12 @@ public class Constants {
 
     // Intake
     public class IntakeRollersConsts {
-        public static final double GearRatio = 1; // slow down
+        public static final double GearRatio = 4; // slow down
     }
     // Actuation
     public class IntakeActuationConsts {
         //20 -> 40 
-        public static final double GearRatio = 4.44;
+        public static final double GearRatio = 51/4.4444;
         //14.2; // slow down
     }
 
@@ -41,6 +41,7 @@ public class Constants {
         public static final double ANGLE_CONTROLLER_REST_POS = 0;
         public static final double ANGLE_CONTROLLER_TEST_POS = 45;
         public static final double GEAR_RATIO = 36;
+        public static final double CURRENT_TOLERANCE = 2;
     }
 
     public class VisionConsts {
