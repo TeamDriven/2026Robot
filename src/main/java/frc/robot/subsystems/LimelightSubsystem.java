@@ -82,6 +82,73 @@ public class LimelightSubsystem extends SubsystemBase {
 
   }
 
+  /*
+   * 
+   * 
+   public void updateOdometry() {
+    m_poseEstimator.update(
+        m_gyro.getRotation2d(),
+        new SwerveModulePosition[] {
+          RobotContainer.drivetrain.getState().ModulePositions[0],
+           RobotContainer.drivetrain.getState().ModulePositions[1],
+          RobotContainer.drivetrain.getState().ModulePositions[2],
+          RobotContainer.drivetrain.getState().ModulePositions[3]
+        });
+
+
+    boolean useMegaTag2 = true; //set to false to use MegaTag1
+    boolean doRejectUpdate = false;
+    if(useMegaTag2 == false)
+    {
+      LimelightHelpers.PoseEstimate mt1 = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-back");
+      
+      if(mt1.tagCount == 1 && mt1.rawFiducials.length == 1)
+      {
+        if(mt1.rawFiducials[0].ambiguity > .7)
+        {
+          doRejectUpdate = true;
+        }
+        if(mt1.rawFiducials[0].distToCamera > 3)
+        {
+          doRejectUpdate = true;
+        }
+      }
+      if(mt1.tagCount == 0)
+      {
+        doRejectUpdate = true;
+      }
+
+      if(!doRejectUpdate)
+      {
+        m_poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.5,.5,9999999));
+        m_poseEstimator.addVisionMeasurement(
+            mt1.pose,
+            mt1.timestampSeconds);
+      }
+    }
+    else if (useMegaTag2 == true)
+    {
+      LimelightHelpers.SetRobotOrientation("limelight-back", m_poseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
+      LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-back");
+      if(Math.abs(m_gyro.getAngularVelocityZWorld().getValueAsDouble()) > 720) // if our angular velocity is greater than 720 degrees per second, ignore vision updates
+      {
+        doRejectUpdate = true;
+      }
+      if(mt2.tagCount == 0)
+      {
+        doRejectUpdate = true;
+      }
+      if(!doRejectUpdate)
+      {
+        m_poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7,.7,9999999));
+        m_poseEstimator.addVisionMeasurement(
+            mt2.pose,
+            mt2.timestampSeconds);
+      }
+    }
+  }
+   */
+
 
 
 }

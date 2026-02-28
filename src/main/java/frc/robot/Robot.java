@@ -37,7 +37,7 @@ public class Robot extends TimedRobot {
   private final boolean kUseLimelight = true;
 
 
-   private final SwerveDrivePoseEstimator m_poseEstimator =
+   public static final SwerveDrivePoseEstimator m_poseEstimator =
       new SwerveDrivePoseEstimator(
           RobotContainer.m_kinematics,
           m_gyro.getRotation2d(),

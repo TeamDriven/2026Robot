@@ -124,11 +124,6 @@ public class BallTunnel extends SubsystemBase {
       public void execute() {
         runBallTunnel(velocity, acceleration);
       }
-
-      @Override
-      public void end(boolean interrupted) {
-        stopBallTunnelMotor();
-      }
     };
   }
 
@@ -165,11 +160,6 @@ public class BallTunnel extends SubsystemBase {
       @Override
       public void execute() {
         spit(velocity, acceleration);
-      }
-
-      @Override
-      public void end(boolean interrupted) {
-        stopBallTunnelMotor();
       }
     };
   }
@@ -220,7 +210,7 @@ public class BallTunnel extends SubsystemBase {
   /**
    * Stop the ballTunnel motor
    */
-  public void stopBallTunnelMotor() {
+  public void stopBallTunnel() {
     ballTunnelMotor.setControl(stopMode);
     diverterMotor.setControl(stopMode);
   }

@@ -43,6 +43,7 @@ import static frc.robot.RobotContainer.backLeft;
 import static frc.robot.RobotContainer.frontLeft;
 import static frc.robot.RobotContainer.backRight;
 import static frc.robot.RobotContainer.frontRight;
+import static frc.robot.Robot.m_poseEstimator;
 
 /**
  * Class that extends the Phoenix 6 SwerveDrivetrain class and implements
@@ -468,12 +469,12 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         return states;
     }
 
-    // public void setPose(Pose2d pose) {
-    //     System.out.println("Setting pose to X: " + pose.getX() + ", Y: " + pose.getY() + ", Rot: " + pose.getRotation().getDegrees());
-    //     m_poseEstimator.resetPosition(m_gyro.getRotation2d(), getModulePositions(), pose);
-    // }
+    public void setPose(Pose2d pose) {
+        System.out.println("Setting pose to X: " + pose.getX() + ", Y: " + pose.getY() + ", Rot: " + pose.getRotation().getDegrees());
+        m_poseEstimator.resetPosition(m_gyro.getRotation2d(), getModulePositions(), pose);
+    }
 
-    // public Pose2d getPose(){
-    //     return m_poseEstimator.getEstimatedPosition();
-    // }
+    public Pose2d getPose(){
+        return m_poseEstimator.getEstimatedPosition();
+    }
 }

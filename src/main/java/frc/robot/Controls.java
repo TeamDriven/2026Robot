@@ -23,16 +23,7 @@ import static frc.robot.Subsystems.m_limelight;
 public class Controls {
         public static final CommandXboxController joystick = new CommandXboxController(0);
 
-        public static final Trigger climberUp = joystick.pov(90);
-        public static final Trigger climberDown = joystick.pov(270);
-        public static final Trigger intake = joystick.leftBumper();
-        public static final Trigger cancel = joystick.leftStick();
-        public static final Trigger resetHeading = joystick.start();
-        public static final Trigger shoot = joystick.rightBumper();
-        public static final Trigger autoLineUpOn = joystick.a();
-        public static final Trigger autoLineUpOff = joystick.b();
-
-        public static final boolean isRightStickDrive = false;
+        public static final boolean isRightStickDrive = true;
 
         private static final SwerveRequest.FieldCentric driveF = new SwerveRequest.FieldCentric()
                         .withDeadband(DrivetrainConst.MaxSpeed * 0.1)
