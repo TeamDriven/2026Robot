@@ -7,6 +7,7 @@ package frc.robot;
 import static frc.robot.Subsystems.m_ballTunnel;
 import static frc.robot.Subsystems.m_shooter;
 
+import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.hardware.Pigeon2;
 
 import edu.wpi.first.math.VecBuilder;
@@ -33,7 +34,7 @@ public class Robot extends TimedRobot {
 
   private final boolean kUseLimelight = true;
 
-  private final SwerveDrivePoseEstimator m_poseEstimator = new SwerveDrivePoseEstimator(
+  private SwerveDrivePoseEstimator m_poseEstimator = new SwerveDrivePoseEstimator(
       RobotContainer.m_kinematics,
       m_gyro.getRotation2d(),
       new SwerveModulePosition[] {
@@ -46,7 +47,27 @@ public class Robot extends TimedRobot {
       VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)),
       VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30)));
 
+
   public Robot() {
+      // var toApply = new Pigeon2Configuration();
+      // toApply.MountPose.MountPoseYaw = 0;   // Degrees
+      // toApply.MountPose.MountPosePitch = 0; // Degrees
+      // toApply.MountPose.MountPoseRoll = 0;  // Degrees
+      // m_gyro.getConfigurator().apply(toApply);
+
+      // m_poseEstimator = new SwerveDrivePoseEstimator(
+      // RobotContainer.m_kinematics,
+      // m_gyro.getRotation2d(),
+      // new SwerveModulePosition[] {
+      //     RobotContainer.drivetrain.getState().ModulePositions[0],
+      //     RobotContainer.drivetrain.getState().ModulePositions[1],
+      //     RobotContainer.drivetrain.getState().ModulePositions[2],
+      //     RobotContainer.drivetrain.getState().ModulePositions[3]
+      // },
+      // new Pose2d(),
+      // VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)),
+      // VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30)));
+
 
     m_robotContainer = new RobotContainer();
     /*
@@ -113,9 +134,18 @@ public class Robot extends TimedRobot {
       updateOdometry();
       // }
     }
-    SmartDashboard.putNumber("X", m_robotContainer.drivetrain.getState().Pose.getX());
-    SmartDashboard.putNumber("Y", m_robotContainer.drivetrain.getState().Pose.getY());
-    SmartDashboard.putNumber("Rot", m_robotContainer.drivetrain.getState().Pose.getRotation().getDegrees());
+    /**
+     * Axis: Pitch (Lateral), Roll (Longitudinal), Yaw (Vertical).
+      Movement: Pitch (Up/Down), Roll (Side-to-Side/Bank), Yaw (Left/Right).
+     */
+    SmartDashboard.putNumber("X", m_poseEstimator.getEstimatedPosition().getX());
+    SmartDashboard.putNumber("Y", m_poseEstimator.getEstimatedPosition().getY());
+    SmartDashboard.putNumber("Rot", m_poseEstimator.getEstimatedPosition().getRotation().getDegrees());
+
+    SmartDashboard.putNumber("Pig Yaw (Y)", m_gyro.getYaw().getValueAsDouble());
+    SmartDashboard.putNumber("Pig Pitch (x)", m_gyro.getPitch().getValueAsDouble());
+    SmartDashboard.putNumber("Pig Roll (Z)", m_gyro.getRoll().getValueAsDouble());
+
     SmartDashboard.putNumber("Shooter velocity", m_shooter.getVelocity());
     SmartDashboard.putNumber("ball velocity", m_ballTunnel.getVelocity());
     RobotContainer.m_field.setRobotPose(m_poseEstimator.getEstimatedPosition());
@@ -172,7 +202,7 @@ public class Robot extends TimedRobot {
     try {
       System.out.println("Drive Request: " + RobotContainer.drivetrain.getDefaultCommand());
     } catch (Exception e) {
-      System.out.println("gayBoy: " + e);
+      System.out.println("error: " + e);
     }
   }
 

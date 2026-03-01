@@ -30,7 +30,7 @@ public class OutpostAuto {
         shoot1.done().onTrue(Commands.sequence(
                 new WaitCommand(1),
                 climb.cmd()));
-                
+
         return routine;
     }
 }
