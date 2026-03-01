@@ -4,8 +4,6 @@
 
 package frc.robot.subsystems;
 
-import java.util.function.DoubleSupplier;
-
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
@@ -20,7 +18,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
-import frc.robot.Constants.IntakeRollersConsts;
 import frc.robot.Constants.ShooterConsts;
 import frc.robot.generated.TunerConstants;
 
@@ -44,7 +41,7 @@ public class Shooter extends SubsystemBase {
   /**
    * Creates a new Intake.
    */
-  public Shooter(int leftMotorId, int rightBottomMotorId,  int rightTopMotorId) {
+  public Shooter(int leftMotorId, int rightBottomMotorId, int rightTopMotorId) {
     leftShooterMotor = new TalonFX(leftMotorId, TunerConstants.kCANBus);
     rightTopShooterMotor = new TalonFX(rightTopMotorId, TunerConstants.kCANBus);
     rightBottomShooterMotor = new TalonFX(rightBottomMotorId, TunerConstants.kCANBus);
@@ -201,14 +198,14 @@ public class Shooter extends SubsystemBase {
 
   public Command waitUntilAtSpeed(double speed) {
     return new WaitUntilCommand(() -> {
-      return Math.abs(rightTopShooterMotor.getVelocity().getValueAsDouble() - speed) <= 2; //2 rps
+      return Math.abs(rightTopShooterMotor.getVelocity().getValueAsDouble() - speed) <= 2; // 2 rps
     });
   }
 
   @Override
   public void periodic() {
     System.out.println("left: " + leftShooterMotor.getVelocity().getValueAsDouble());
-    SmartDashboard.putNumber("right Bottom vel: " ,rightTopShooterMotor.getVelocity().getValueAsDouble());
+    SmartDashboard.putNumber("right Bottom vel: ", rightTopShooterMotor.getVelocity().getValueAsDouble());
   }
 
   @Override

@@ -4,20 +4,15 @@
 
 package frc.robot;
 
-import static frc.robot.Subsystems.m_AngleController;
 import static frc.robot.Subsystems.m_ballTunnel;
 import static frc.robot.Subsystems.m_intakeActuation;
 import static frc.robot.Subsystems.m_intakeRollers;
-import static frc.robot.Subsystems.m_shooter;
-
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import choreo.auto.AutoChooser;
 import choreo.auto.AutoFactory;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -27,12 +22,11 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
- 
+
 import frc.robot.Constants.DrivetrainConst;
 import frc.robot.commands.IntakeOutCommand;
 import frc.robot.commands.ShootCommand;
@@ -133,7 +127,6 @@ public class RobotContainer {
                 // Controlls.joystick.start().and(Controlls.joystick.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
                 // Controlls.joystick.start().and(Controlls.joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
-
                 drivetrain.registerTelemetry(logger::telemeterize);
 
                 // Controls.autoLineUpOn.onTrue(drivetrain.applyRequest(Controls.localHeading(Constants.FieldConst.RED_HUB)));
@@ -149,28 +142,32 @@ public class RobotContainer {
                 // Controls.joystick.y().whileTrue(m_AngleController.setPositionCommand(20));
                 // Controls.joystick.a().whileTrue(m_AngleController.setPositionCommand(10));
                 // Controls.joystick.y().whileTrue(m_AngleController.anglePercentControl(0.1))
-                //                 .onFalse(new InstantCommand(() -> m_AngleController.stopMotor()));
+                // .onFalse(new InstantCommand(() -> m_AngleController.stopMotor()));
                 // Controls.joystick.a().whileTrue(m_AngleController.anglePercentControl(-0.1))
-                //                 .onFalse(new InstantCommand(() -> m_AngleController.stopMotor()));
-                // Controls.joystick.a().whileTrue(new InstantCommand(() -> m_AngleController.stopMotor()));
-                Controls.joystick.b().whileTrue(m_ballTunnel.spitCommand(3, 100)).onFalse(new InstantCommand(() -> m_ballTunnel.stopBallTunnelMotor()));
-                                // .onFalse(new InstantCommand(() -> m_AngleController.stopMotor()));
+                // .onFalse(new InstantCommand(() -> m_AngleController.stopMotor()));
+                // Controls.joystick.a().whileTrue(new InstantCommand(() ->
+                // m_AngleController.stopMotor()));
+                Controls.joystick.b().whileTrue(m_ballTunnel.spitCommand(3, 100))
+                                .onFalse(new InstantCommand(() -> m_ballTunnel.stopBallTunnelMotor()));
+                // .onFalse(new InstantCommand(() -> m_AngleController.stopMotor()));
                 // //right bumber
 
-                //Controls.joystick.povUp().whileTrue(new IntakeOutCommand(20, 70, 100));
+                // Controls.joystick.povUp().whileTrue(new IntakeOutCommand(20, 70, 100));
 
-                //intake controls
-                Controls.joystick.leftBumper().whileTrue(new IntakeOutCommand(1.43, 70, 100)).onFalse(m_intakeRollers.stopIntakeCommand());
+                // intake controls
+                Controls.joystick.leftBumper().whileTrue(new IntakeOutCommand(1.43, 70, 100))
+                                .onFalse(m_intakeRollers.stopIntakeCommand());
                 Controls.joystick.leftTrigger().whileTrue(m_intakeActuation.setPositionCommand(0));
                 // Controls.joystick.leftBumper().whileTrue(m_intakeActuation.setPositionCommand(1.43));
                 Controls.joystick.x().whileTrue(m_intakeRollers.feedCommand(90, 100));
-                Controls.joystick.a().whileTrue(m_intakeActuation.resetAngleToZeroCommand()).whileFalse(new InstantCommand(() -> m_intakeActuation.stopMotor()));
-              
-                //shoot settings
-        //        Controls.shoot.whileTrue(new ShootCommand(36.742069, 15, 20));
-               Controls.shoot.whileTrue(new ShootCommand(36,10 , 20));
+                Controls.joystick.a().whileTrue(m_intakeActuation.resetAngleToZeroCommand())
+                                .whileFalse(new InstantCommand(() -> m_intakeActuation.stopMotor()));
+
+                // shoot settings
+                // Controls.shoot.whileTrue(new ShootCommand(36.742069, 15, 20));
+                Controls.shoot.whileTrue(new ShootCommand(36, 10, 20));
                 Controls.joystick.b().whileTrue(m_ballTunnel.spitCommand(30, 100));
-                 //pass setting
+                // pass setting
                 // Controls.shoot.whileTrue(new ShootCommand(60.742069, 25, 14)); // 2.5
                 // Controlls.shoot.whileTrue(ShootCommand(100, 0, -75));
 
@@ -178,16 +175,18 @@ public class RobotContainer {
                 // 100)).onFalse(m_intake.stopIntakeCommand());
 
                 Controls.resetHeading.onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
-               /*  Controls.joystick
-                                .button(8)
-                                .onTrue(
-                                                Commands.runOnce(
-                                                                () -> drivetrain.setPose(
-                                                                                new Pose2d(drivetrain.getPose()
-                                                                                                .getTranslation(),
-                                                                                                new Rotation2d())),
-                                                                drivetrain)
-                                                                .ignoringDisable(true));*/
+                /*
+                 * Controls.joystick
+                 * .button(8)
+                 * .onTrue(
+                 * Commands.runOnce(
+                 * () -> drivetrain.setPose(
+                 * new Pose2d(drivetrain.getPose()
+                 * .getTranslation(),
+                 * new Rotation2d())),
+                 * drivetrain)
+                 * .ignoringDisable(true));
+                 */
         }
 
         public Command getAutonomousCommand() {

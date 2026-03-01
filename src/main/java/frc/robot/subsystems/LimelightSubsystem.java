@@ -1,16 +1,10 @@
 package frc.robot.subsystems;
 
-import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 import frc.robot.Constants.VisionConsts;
 import frc.robot.LimelightHelpers;
-
-import java.util.function.DoubleSupplier;
 
 import frc.robot.Constants.DrivetrainConst;
 
@@ -42,7 +36,6 @@ public class LimelightSubsystem extends SubsystemBase {
 
   }
 
-  
   public double limelight_aim_proportional() {
     double kP = .035;
     double targetingAngularVelocity = LimelightHelpers.getTX(limeLightName) * kP * -DrivetrainConst.MaxAngularRate;
@@ -81,7 +74,5 @@ public class LimelightSubsystem extends SubsystemBase {
     return -1;
 
   }
-
-
 
 }

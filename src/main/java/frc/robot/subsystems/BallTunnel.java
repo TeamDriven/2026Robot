@@ -4,8 +4,6 @@
 
 package frc.robot.subsystems;
 
-import static frc.robot.Subsystems.m_ballTunnel;
-
 import java.util.function.DoubleSupplier;
 
 import com.ctre.phoenix6.StatusCode;
@@ -24,7 +22,8 @@ import frc.robot.generated.TunerConstants;
 
 /**
  * The Indexer class represents a subsystem that controls the ballTunnel motor.
- * It provides methods to initialize, run, and stop the ballTunnel motor, as well as
+ * It provides methods to initialize, run, and stop the ballTunnel motor, as
+ * well as
  * check its speed and create commands to control it.
  */
 public class BallTunnel extends SubsystemBase {
@@ -33,7 +32,7 @@ public class BallTunnel extends SubsystemBase {
 
   VelocityVoltage velocityControl;
   NeutralOut stopMode;
-  
+
   /**
    * Creates a new ballTunnel.
    */
@@ -47,25 +46,29 @@ public class BallTunnel extends SubsystemBase {
 
     stopMode = new NeutralOut();
   }
-   
+
   /**
    * Initialize the ballTunnel motor
    */
   public void initMotors() {
     TalonFXConfiguration configs = new TalonFXConfiguration();
-    
+
     configs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     configs.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     configs.Feedback.SensorToMechanismRatio = BallTunnelConsts.MainGearRatio;
-    
+
     configs.CurrentLimits.SupplyCurrentLimitEnable = true;
     configs.CurrentLimits.SupplyCurrentLimit = 30;
 
-    /* Voltage-based velocity requires a feed forward to account for the back-emf of the motor */
+    /*
+     * Voltage-based velocity requires a feed forward to account for the back-emf of
+     * the motor
+     */
     configs.Slot0.kP = 0;// 0.0000001; // An error of 1 rotation per second results in 2V output
     configs.Slot0.kI = 0.0; // An error of 1 rotation per second increases output by 0.5V every second
     configs.Slot0.kD = 0.1; // A change of 1 rotation per second squared results in 0.01 volts output
-    configs.Slot0.kV = 0.10; // Falcon 500 is a 500kV motor, 500rpm per V = 8.333 rps per V, 1/8.33 = 0.12 volts / Rotation per second
+    configs.Slot0.kV = 0.10; // Falcon 500 is a 500kV motor, 500rpm per V = 8.333 rps per V, 1/8.33 = 0.12
+                             // volts / Rotation per second
     // Peak output of 8 volts
     configs.Voltage.PeakForwardVoltage = 12;
     configs.Voltage.PeakReverseVoltage = -12;
@@ -73,9 +76,10 @@ public class BallTunnel extends SubsystemBase {
     StatusCode status = StatusCode.StatusCodeNotInitialized;
     for (int i = 0; i < 5; ++i) {
       status = ballTunnelMotor.getConfigurator().apply(configs);
-      if (status.isOK()) break;
+      if (status.isOK())
+        break;
     }
-    if(!status.isOK()) {
+    if (!status.isOK()) {
       System.out.println("Could not apply configs, error code: " + status.toString());
     }
 
@@ -88,11 +92,15 @@ public class BallTunnel extends SubsystemBase {
     configs.CurrentLimits.SupplyCurrentLimitEnable = true;
     configs.CurrentLimits.SupplyCurrentLimit = 30;
 
-    /* Voltage-based velocity requires a feed forward to account for the back-emf of the motor */
+    /*
+     * Voltage-based velocity requires a feed forward to account for the back-emf of
+     * the motor
+     */
     configs.Slot0.kP = 0.1; // An error of 1 rotation per second results in 2V output
     configs.Slot0.kI = 0.0; // An error of 1 rotation per second increases output by 0.5V every second
     configs.Slot0.kD = 0.001; // A change of 1 rotation per second squared results in 0.01 volts output
-    configs.Slot0.kV = 0.10; // Falcon 500 is a 500kV motor, 500rpm per V = 8.333 rps per V, 1/8.33 = 0.12 volts / Rotation per second
+    configs.Slot0.kV = 0.10; // Falcon 500 is a 500kV motor, 500rpm per V = 8.333 rps per V, 1/8.33 = 0.12
+                             // volts / Rotation per second
     // Peak output of 8 volts
     configs.Voltage.PeakForwardVoltage = 12;
     configs.Voltage.PeakReverseVoltage = -12;
@@ -100,20 +108,22 @@ public class BallTunnel extends SubsystemBase {
     status = StatusCode.StatusCodeNotInitialized;
     for (int i = 0; i < 5; ++i) {
       status = diverterMotor.getConfigurator().apply(configs);
-      if (status.isOK()) break;
+      if (status.isOK())
+        break;
     }
-    if(!status.isOK()) {
+    if (!status.isOK()) {
       System.out.println("Could not apply configs, error code: " + status.toString());
     }
   }
 
   /**
    * Run the ballTunnel motor at a given velocity and acceleration
-   * @param velocity in rotations per second
+   * 
+   * @param velocity     in rotations per second
    * @param acceleration in rotations per second squared
    * @return a command that will run the ballTunnel motor
    */
-  public Command runBallTunnelCommand(double velocity, double acceleration){
+  public Command runBallTunnelCommand(double velocity, double acceleration) {
     return new Command() {
       @Override
       public void initialize() {
@@ -132,30 +142,29 @@ public class BallTunnel extends SubsystemBase {
     };
   }
 
-
   /**
    * Run the ballTunnel motor at a given velocity and acceleration
-   * @param velocity in rotations per second
+   * 
+   * @param velocity     in rotations per second
    * @param acceleration in rotations per second squared
    */
   public void runBallTunnel(double velocity, double acceleration) {
     ballTunnelMotor.setControl(velocityControl
-                            .withVelocity(velocity)
-                            .withAcceleration(acceleration)
-                          );
+        .withVelocity(velocity)
+        .withAcceleration(acceleration));
     diverterMotor.setControl(velocityControl
-                            .withVelocity(velocity)
-                            .withAcceleration(acceleration)
-                          );
+        .withVelocity(velocity)
+        .withAcceleration(acceleration));
   }
 
   /**
    * Run the ballTunnel motor at a given velocity and acceleration
-   * @param velocity in rotations per second
+   * 
+   * @param velocity     in rotations per second
    * @param acceleration in rotations per second squared
    * @return a command that will run the ballTunnel motor
    */
-  public Command spitCommand(double velocity, double acceleration){
+  public Command spitCommand(double velocity, double acceleration) {
     return new Command() {
       @Override
       public void initialize() {
@@ -176,23 +185,22 @@ public class BallTunnel extends SubsystemBase {
 
   /**
    * Run the ballTunnel motor at a given velocity and acceleration
-   * @param velocity in rotations per second
+   * 
+   * @param velocity     in rotations per second
    * @param acceleration in rotations per second squared
    */
   public void spit(double velocity, double acceleration) {
     ballTunnelMotor.setControl(velocityControl
-                            .withVelocity(velocity)
-                            .withAcceleration(acceleration)
-                          );
+        .withVelocity(velocity)
+        .withAcceleration(acceleration));
     diverterMotor.setControl(velocityControl
-                            .withVelocity(-10 * velocity) // -
-                            .withAcceleration(acceleration)
-                          );
+        .withVelocity(-10 * velocity) // -
+        .withAcceleration(acceleration));
   }
-
 
   /**
    * Run the ballTunnel motor at a given percentage speed
+   * 
    * @param speed 1 to -1
    * @return a command that will run the ballTunnel motor
    */
@@ -227,6 +235,7 @@ public class BallTunnel extends SubsystemBase {
 
   /**
    * Checks if the ballTunnel is at a certain speed
+   * 
    * @param velocity the speed to check for in rotations per second
    * @return a command that will wait until the ballTunnel is at a certain speed
    */
@@ -255,7 +264,6 @@ public class BallTunnel extends SubsystemBase {
     };
   }
 
-  
   public Command waitUntilAtSpeed(double speed) {
     return new WaitUntilCommand(() -> {
       return Math.abs(diverterMotor.getVelocity().getValueAsDouble() - speed) <= 2;
@@ -264,6 +272,7 @@ public class BallTunnel extends SubsystemBase {
 
   /**
    * Get the current speed of the ballTunnel
+   * 
    * @return the speed of the ballTunnel in rotations per second
    */
   public double getVelocity() {
@@ -273,7 +282,8 @@ public class BallTunnel extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    // System.out.println("ball tunnel: " + ballTunnelMotor.getVelocity().getValueAsDouble());
+    // System.out.println("ball tunnel: " +
+    // ballTunnelMotor.getVelocity().getValueAsDouble());
   }
 
   @Override

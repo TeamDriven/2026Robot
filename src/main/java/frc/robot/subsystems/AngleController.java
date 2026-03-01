@@ -105,7 +105,8 @@ public class AngleController extends SubsystemBase {
         // double motorRotations = angleMotor.getPosition().getValueAsDouble();
 
         // // Convert motor rotations -> mechanism degrees
-        // double mechanismDegrees = (motorRotations / AngleControllerConsts.GEAR_RATIO) * 360.0;
+        // double mechanismDegrees = (motorRotations / AngleControllerConsts.GEAR_RATIO)
+        // * 360.0;
 
         // return Math.abs(mechanismDegrees - position) <= 5.0;
         return false;
@@ -182,7 +183,7 @@ public class AngleController extends SubsystemBase {
   }
 
   public Command resetAngleToZeroCommand() {
-       return new Command() {
+    return new Command() {
       @Override
       public void execute() {
         setPosition(Constants.AngleControllerConsts.ANGLE_CONTROLLER_REST_POS);
@@ -190,7 +191,7 @@ public class AngleController extends SubsystemBase {
 
       @Override
       public boolean isFinished() {
-        return angleMotor.getSupplyCurrent().getValueAsDouble() >= Constants.AngleControllerConsts.CURRENT_TOLERANCE; 
+        return angleMotor.getSupplyCurrent().getValueAsDouble() >= Constants.AngleControllerConsts.CURRENT_TOLERANCE;
       }
     };
   }

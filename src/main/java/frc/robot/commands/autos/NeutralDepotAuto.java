@@ -3,12 +3,8 @@ package frc.robot.commands.autos;
 import choreo.auto.AutoFactory;
 import choreo.auto.AutoRoutine;
 import choreo.auto.AutoTrajectory;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.Controls;
-import frc.robot.RobotContainer;
 
 public class NeutralDepotAuto {
     private final AutoFactory m_factory;
@@ -36,11 +32,8 @@ public class NeutralDepotAuto {
                 new WaitCommand(1),
                 // start shooter
                 climb1.cmd()));
-                
-        
 
         return routine;
     }
-
 
 }

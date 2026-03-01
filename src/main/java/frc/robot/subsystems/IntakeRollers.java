@@ -14,7 +14,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.AngleControllerConsts;
-import frc.robot.Constants.BallTunnelConsts;
 import frc.robot.Constants.IntakeRollersConsts;
 import frc.robot.generated.TunerConstants;
 
@@ -64,7 +63,7 @@ public class IntakeRollers extends SubsystemBase {
         for (int i = 0; i < 5; ++i) {
             status = intakeMotor.getConfigurator().apply(configs);
             if (status.isOK())
-            
+
                 break;
         }
         if (!status.isOK()) {
