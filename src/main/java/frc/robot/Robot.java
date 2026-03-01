@@ -7,6 +7,8 @@ package frc.robot;
 import static frc.robot.Subsystems.m_ballTunnel;
 import static frc.robot.Subsystems.m_shooter;
 
+import com.ctre.phoenix6.StatusCode;
+import com.ctre.phoenix6.configs.MountPoseConfigs;
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.hardware.Pigeon2;
 
@@ -30,10 +32,11 @@ public class Robot extends TimedRobot {
 
   private final RobotContainer m_robotContainer;
 
-  public static final Pigeon2 m_gyro = new Pigeon2(TunerConstants.kPigeonId, TunerConstants.kCANBus);
+  public static  Pigeon2 m_gyro = new Pigeon2(TunerConstants.kPigeonId, TunerConstants.kCANBus);
 
   private final boolean kUseLimelight = true;
 
+  // public static  SwerveDrivePoseEstimator m_poseEstimator;
   private SwerveDrivePoseEstimator m_poseEstimator = new SwerveDrivePoseEstimator(
       RobotContainer.m_kinematics,
       m_gyro.getRotation2d(),
@@ -48,12 +51,27 @@ public class Robot extends TimedRobot {
       VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30)));
 
 
-  public Robot() {
-      // var toApply = new Pigeon2Configuration();
-      // toApply.MountPose.MountPoseYaw = 0;   // Degrees
-      // toApply.MountPose.MountPosePitch = 0; // Degrees
-      // toApply.MountPose.MountPoseRoll = 0;  // Degrees
-      // m_gyro.getConfigurator().apply(toApply);
+  public Robot() {  
+
+
+    //   var toApply = new Pigeon2Configuration();
+    //   MountPoseConfigs mount = new MountPoseConfigs();
+      
+    //   mount.MountPosePitch = .19452182948589325;
+    //   mount.MountPoseRoll = 178.96127319335938; 
+    //   mount.MountPoseYaw = -91.50044250488281;   // Degrees
+
+    //   toApply.withMountPose(mount);
+
+    //    StatusCode status = StatusCode.StatusCodeNotInitialized;
+    // for (int i = 0; i < 5; ++i) {
+    //   status = m_gyro.getConfigurator().apply(toApply);
+    //   if (status.isOK())
+    //     break;
+    // }
+    // if (!status.isOK()) {
+    //   System.out.println("Could not apply configs, error code: " + status.toString());
+    // }
 
       // m_poseEstimator = new SwerveDrivePoseEstimator(
       // RobotContainer.m_kinematics,
@@ -145,6 +163,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Pig Yaw (Y)", m_gyro.getYaw().getValueAsDouble());
     SmartDashboard.putNumber("Pig Pitch (x)", m_gyro.getPitch().getValueAsDouble());
     SmartDashboard.putNumber("Pig Roll (Z)", m_gyro.getRoll().getValueAsDouble());
+
 
     SmartDashboard.putNumber("Shooter velocity", m_shooter.getVelocity());
     SmartDashboard.putNumber("ball velocity", m_ballTunnel.getVelocity());
@@ -264,6 +283,13 @@ public class Robot extends TimedRobot {
       LimelightHelpers.SetRobotOrientation("limelight-back",
           m_poseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
       LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-back");
+      SmartDashboard.putNumber("poseEstimate x", mt2.pose.getX());
+      SmartDashboard.putNumber("poseEstimate y", mt2.pose.getY());
+      SmartDashboard.putNumber("poseEstimate rot", mt2.pose.getRotation().getDegrees());
+
+      SmartDashboard.putNumber("poseEstimat tagArea" , mt2.avgTagArea);
+      SmartDashboard.putNumber("poseEstimate tagDistance", mt2.avgTagDist);
+
       if (Math.abs(m_gyro.getAngularVelocityZWorld().getValueAsDouble()) > 720) // if our angular velocity is greater
                                                                                 // than 720 degrees per second, ignore
                                                                                 // vision updates

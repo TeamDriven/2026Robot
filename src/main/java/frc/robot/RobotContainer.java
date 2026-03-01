@@ -155,7 +155,7 @@ public class RobotContainer {
                 // Controls.joystick.povUp().whileTrue(new IntakeOutCommand(20, 70, 100));
 
                 // intake controls
-                Controls.joystick.leftBumper().whileTrue(new IntakeOutCommand(1.43, 70, 100))
+                Controls.joystick.leftBumper().whileTrue(new IntakeOutCommand(1.0, 70, 100))
                                 .onFalse(m_intakeRollers.stopIntakeCommand());
                 Controls.joystick.leftTrigger().whileTrue(m_intakeActuation.setPositionCommand(0));
                 // Controls.joystick.leftBumper().whileTrue(m_intakeActuation.setPositionCommand(1.43));
