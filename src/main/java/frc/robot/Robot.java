@@ -4,12 +4,13 @@
 
 package frc.robot;
 
+import static frc.robot.Subsystems.m_AngleController;
 import static frc.robot.Subsystems.m_ballTunnel;
+import static frc.robot.Subsystems.m_intakeActuation;
 import static frc.robot.Subsystems.m_shooter;
 
 import com.ctre.phoenix6.hardware.Pigeon2;
 
-import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -34,28 +35,12 @@ public class Robot extends TimedRobot {
   private final RobotContainer m_robotContainer;
 
   public static final Pigeon2 m_gyro = new Pigeon2(TunerConstants.kPigeonId, TunerConstants.kCANBus);
+  public static SwerveDrivePoseEstimator m_poseEstimator;
   private final boolean kUseLimelight = true;
 
-
-   public static final SwerveDrivePoseEstimator m_poseEstimator =
-      new SwerveDrivePoseEstimator(
-          RobotContainer.m_kinematics,
-          m_gyro.getRotation2d(),
-          new SwerveModulePosition[] {  
-          RobotContainer.drivetrain.getState().ModulePositions[0],
-           RobotContainer.drivetrain.getState().ModulePositions[1],
-          RobotContainer.drivetrain.getState().ModulePositions[2],
-          RobotContainer.drivetrain.getState().ModulePositions[3]
-          },
-          new Pose2d(),
-          VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)),
-          VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30)));
-
   public Robot() {
-
-    
     m_robotContainer = new RobotContainer();
-/* 
+
     // 2. Get the initial gyro angle (e.g., from your gyroscope sensor)
     Rotation2d initialGyroAngle = m_gyro.getRotation2d();
 
@@ -76,22 +61,19 @@ public class Robot extends TimedRobot {
         initialGyroAngle,
         initialModulePositions,
         initialPose);
-*/
+
     WebServer.start(5800, Filesystem.getDeployDirectory().getPath());
     DogLog.setOptions(new DogLogOptions().withCaptureDs(true));
 
-    
   }
-
-  
 
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
-    
+
     // Limelight Localization Code
     if (kUseLimelight) {
-     /*  var driveState = RobotContainer.drivetrain.getState();
+      var driveState = RobotContainer.drivetrain.getState();
       double omegaRps = Units.radiansToRotations(
           driveState.Speeds.omegaRadiansPerSecond);
 
@@ -112,9 +94,9 @@ public class Robot extends TimedRobot {
           && Math.abs(omegaRps) < 2.0) {
         RobotContainer.drivetrain.addVisionMeasurement(
             llMeasurement2.pose,
-            llMeasurement2.timestampSeconds);*/
-            updateOdometry();
-     // }
+            llMeasurement2.timestampSeconds);
+      }
+
     }
     SmartDashboard.putNumber("X", m_robotContainer.drivetrain.getState().Pose.getX());
     SmartDashboard.putNumber("Y", m_robotContainer.drivetrain.getState().Pose.getY());
@@ -129,6 +111,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledInit() {
+    m_intakeActuation.setCoastMode();
   }
 
   @Override
@@ -199,68 +182,4 @@ public class Robot extends TimedRobot {
   @Override
   public void simulationPeriodic() {
   }
-
-   public void updateOdometry() {
-    m_poseEstimator.update(
-        m_gyro.getRotation2d(),
-        new SwerveModulePosition[] {
-          RobotContainer.drivetrain.getState().ModulePositions[0],
-           RobotContainer.drivetrain.getState().ModulePositions[1],
-          RobotContainer.drivetrain.getState().ModulePositions[2],
-          RobotContainer.drivetrain.getState().ModulePositions[3]
-        });
-
-
-    boolean useMegaTag2 = true; //set to false to use MegaTag1
-    boolean doRejectUpdate = false;
-    if(useMegaTag2 == false)
-    {
-      LimelightHelpers.PoseEstimate mt1 = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-back");
-      
-      if(mt1.tagCount == 1 && mt1.rawFiducials.length == 1)
-      {
-        if(mt1.rawFiducials[0].ambiguity > .7)
-        {
-          doRejectUpdate = true;
-        }
-        if(mt1.rawFiducials[0].distToCamera > 3)
-        {
-          doRejectUpdate = true;
-        }
-      }
-      if(mt1.tagCount == 0)
-      {
-        doRejectUpdate = true;
-      }
-
-      if(!doRejectUpdate)
-      {
-        m_poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.5,.5,9999999));
-        m_poseEstimator.addVisionMeasurement(
-            mt1.pose,
-            mt1.timestampSeconds);
-      }
-    }
-    else if (useMegaTag2 == true)
-    {
-      LimelightHelpers.SetRobotOrientation("limelight-back", m_poseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
-      LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-back");
-      if(Math.abs(m_gyro.getAngularVelocityZWorld().getValueAsDouble()) > 720) // if our angular velocity is greater than 720 degrees per second, ignore vision updates
-      {
-        doRejectUpdate = true;
-      }
-      if(mt2.tagCount == 0)
-      {
-        doRejectUpdate = true;
-      }
-      if(!doRejectUpdate)
-      {
-        m_poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7,.7,9999999));
-        m_poseEstimator.addVisionMeasurement(
-            mt2.pose,
-            mt2.timestampSeconds);
-      }
-    }
-  }
-
 }

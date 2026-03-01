@@ -12,14 +12,10 @@ import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 public class ShootCommand extends ParallelCommandGroup {
     public ShootCommand(double shooterSpeed, double shooterAngle, double ballTunnelSpeed) {
         addCommands(
-                m_AngleController.setPositionCommand(shooterAngle),
-                m_shooter.runShooterCommand(shooterSpeed, 100),
+                m_AngleController.runOnce(() -> m_AngleController.setPosition(shooterAngle)),
+                m_shooter.runOnce(() -> m_shooter.runShooter(shooterSpeed, 100)),
                 new SequentialCommandGroup(
-                       m_AngleController.waitUntilAtPosition(shooterAngle),
-                    //    m_ballTunnel.waitUntilAtSpeed(ballTunnelSpeed),
-                    //    m_shooter.waitUntilAtSpeed(shooterSpeed),
-                        new ParallelCommandGroup(
-                            //you will not want to run the ball tunnel until you know that shooter is at the correct speed
-                                m_ballTunnel.runBallTunnelCommand(ballTunnelSpeed, 20))));
+                    m_AngleController.waitUntilAtPosition(shooterAngle),
+                    m_ballTunnel.runOnce(() -> m_ballTunnel.runBallTunnel(ballTunnelSpeed, 35))));
     }
 }

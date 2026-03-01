@@ -140,30 +140,38 @@ public class RobotContainer {
 
                 drivetrain.registerTelemetry(logger::telemeterize);
 
-                // Controls.autoLineUpOn.onTrue(drivetrain.applyRequest(Controls.localHeading(Constants.FieldConst.RED_HUB)));
-                // Controls.autoLineUpOff.onTrue(drivetrain.applyRequest(Controls.driveRequest()));
-                // Controls.autoLineUpOn
-                // .onTrue(drivetrain.applyRequest(Controls.goToPositionAndRotation(
-                // new Pose2d(14, 5, new Rotation2d(0)), Constants.FieldConst.RED_HUB)))
-                // .onFalse(drivetrain.applyRequest(Controls.driveRequest()));
+                joystick.a().onTrue(drivetrain.applyRequest(Controls.localHeading(Constants.FieldConst.RED_HUB))).onFalse(drivetrain.applyRequest(Controls.driveRequest()));
+                // joystick.a().onTrue(drivetrain.applyRequest(Controls.driveRequest()));
+                // joystick.a().onTrue(drivetrain.applyRequest(Controls.goToPositionAndRotation(
+                //                                 new Pose2d(14, 5, new Rotation2d(0)), Constants.FieldConst.RED_HUB)))
+                //                 .onFalse(drivetrain.applyRequest(Controls.driveRequest()));
 
                 // Intake
-                joystick.leftBumper().onTrue(new IntakeOutCommand(1.43, 70, 100)).onFalse(m_intakeRollers.stopIntakeCommand());
+                joystick.leftBumper().onTrue(new IntakeOutCommand(1.43, 70, 100))
+                                .onFalse(m_intakeRollers.runOnce(() -> m_intakeRollers.stopIntakeMotor()));
 
                 // Shoot
-                joystick.rightBumper().and(() -> !isShooting).onTrue(new ShootCommand(20, 10, 14).alongWith(new InstantCommand(() -> changeIsShooting(true))));
-                joystick.rightBumper().and(() -> isShooting).onTrue(new ShootCommand(0, 0.5, 0).alongWith(new InstantCommand(() -> changeIsShooting(false))));
+                joystick.rightBumper().onTrue(new ShootCommand(29, 10,62.5))
+                                .onFalse(m_AngleController.runOnce(() -> m_AngleController.setPosition(0.7)).alongWith(
+                                                new InstantCommand(() -> m_shooter.stopMotors()),
+                                                new InstantCommand(() -> m_ballTunnel.stopBallTunnel())));
 
                 // Spit
-                joystick.b().and(() -> !isShooting).onTrue(m_ballTunnel.spitCommand(14, 100).alongWith(new InstantCommand(() -> changeIsShooting(true))));
-                joystick.b().and(() -> !isShooting).onTrue(new InstantCommand(() -> m_ballTunnel.stopBallTunnel()).alongWith(new InstantCommand(() -> changeIsShooting(true))));
+                // joystick.b().onTrue(m_ballTunnel.spitCommand(14, 100)).onFalse(new
+                // InstantCommand(() -> m_ballTunnel.stopBallTunnel()));
+
+                joystick.x().onTrue(m_AngleController.runOnce(() -> m_AngleController.setPosition(0.7)));
+                joystick.b().onTrue(m_AngleController.runOnce(() -> m_AngleController.setPosition(10)));
 
                 // BallTunnel Manually
-                joystick.pov(0).onTrue(m_ballTunnel.runBallTunnelCommand(14, 100)).onFalse(new InstantCommand(() -> m_ballTunnel.stopBallTunnel()));
-                joystick.pov(180).onTrue(m_ballTunnel.runBallTunnelCommand(14, 100)).onFalse(new InstantCommand(() -> m_ballTunnel.stopBallTunnel()));
+                // joystick.pov(0).onTrue(m_ballTunnel.runBallTunnelCommand(14,
+                // 100)).onFalse(new InstantCommand(() -> m_ballTunnel.stopBallTunnel()));
+                // joystick.pov(180).onTrue(m_ballTunnel.runBallTunnelCommand(14,
+                // 100)).onFalse(new InstantCommand(() -> m_ballTunnel.stopBallTunnel()));
 
                 // Small Mode
-                joystick.back().onTrue(m_AngleController.setPositionCommand(0.5).alongWith(m_intakeActuation.setPositionCommand(0)));
+                joystick.back().onTrue(
+                                m_intakeActuation.setPositionCommand(0).alongWith(m_intakeRollers.stopIntakeCommand()));
 
                 // Reset Heading
                 joystick.start().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));

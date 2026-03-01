@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 public class IntakeOutCommand extends ParallelCommandGroup {
     public IntakeOutCommand(double intakePosition, double intakeVel, double intakeAcc) {
         addCommands(
-                m_intakeActuation.setPositionCommand(intakePosition),
-                m_intakeRollers.feedCommand(intakeVel, intakeAcc));
+                m_intakeActuation.runOnce(() -> m_intakeActuation.setPosition(intakePosition)),
+                m_intakeRollers.runOnce(() -> m_intakeRollers.feedMotor(intakeVel, intakeAcc)));
     }
 }
