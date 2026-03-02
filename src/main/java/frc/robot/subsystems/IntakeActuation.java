@@ -201,10 +201,16 @@ public class IntakeActuation extends SubsystemBase {
     // This method will be called once per scheduler run during simulation
   }
 
-  public void setToCoastMode() {
-   TalonFXConfiguration configs = new TalonFXConfiguration();
-
+  public void setCoastMode() {
+    TalonFXConfiguration configs = new TalonFXConfiguration();
     configs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-   actuationMotor.getConfigurator().apply(configs);
+        StatusCode status = StatusCode.StatusCodeNotInitialized;
+    for (int i = 0; i < 5; ++i) {
+      status = actuationMotor.getConfigurator().apply(configs);
+      if (status.isOK()) break;
+    }
+    if(!status.isOK()) {
+      System.out.println("Could not apply configs, error code: " + status.toString());
+    }
   }
 }

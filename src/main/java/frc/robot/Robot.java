@@ -4,7 +4,9 @@
 
 package frc.robot;
 
+import static frc.robot.Subsystems.m_AngleController;
 import static frc.robot.Subsystems.m_ballTunnel;
+import static frc.robot.Subsystems.m_intakeActuation;
 import static frc.robot.Subsystems.m_shooter;
 
 import com.ctre.phoenix6.StatusCode;
@@ -37,7 +39,7 @@ public class Robot extends TimedRobot {
   private final boolean kUseLimelight = true;
 
   // public static  SwerveDrivePoseEstimator m_poseEstimator;
-  private SwerveDrivePoseEstimator m_poseEstimator = new SwerveDrivePoseEstimator(
+  public static final SwerveDrivePoseEstimator m_poseEstimator = new SwerveDrivePoseEstimator(
       RobotContainer.m_kinematics,
       m_gyro.getRotation2d(),
       new SwerveModulePosition[] {
@@ -175,6 +177,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledInit() {
+    // m_intakeActuation.setCoastMode();
   }
 
   @Override
