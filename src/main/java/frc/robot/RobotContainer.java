@@ -4,7 +4,7 @@
 
 package frc.robot;
 
-import static frc.robot.Subsystems.m_AngleController;
+import static frc.robot.Subsystems.m_angleController;
 import static frc.robot.Subsystems.m_ballTunnel;
 import static frc.robot.Subsystems.m_intakeActuation;
 import static frc.robot.Subsystems.m_intakeRollers;
@@ -109,6 +109,8 @@ public class RobotContainer {
                 autoChooser.addRoutine("Neutral Zone Depot Auto", neutralZoneDepotAuto::neutralZoneAuto);
                 autoChooser.addRoutine("Neutral Zone Outpost Auto", neutralZoneOutpostAuto::neutralZoneAuto);
                 SmartDashboard.putData("Auto Chooser", autoChooser);
+                SmartDashboard.putBoolean("StartfeedCommand", false);
+                SmartDashboard.putBoolean("endFeedCommand", false);
 
                 frontLeft = drivetrain.getState().ModulePositions[0];
                 frontRight = drivetrain.getState().ModulePositions[1];
@@ -140,31 +142,42 @@ public class RobotContainer {
 
                 drivetrain.registerTelemetry(logger::telemeterize);
 
-                joystick.a().onTrue(drivetrain.applyRequest(Controls.localHeading(Constants.FieldConst.RED_HUB))).onFalse(drivetrain.applyRequest(Controls.driveRequest()));
+                joystick.x().onTrue(drivetrain.applyRequest(Controls.localHeading(Constants.FieldConst.RED_HUB)))
+                                .onFalse(drivetrain.applyRequest(Controls.driveRequest()));
                 // joystick.a().onTrue(drivetrain.applyRequest(Controls.driveRequest()));
                 // joystick.a().onTrue(drivetrain.applyRequest(Controls.goToPositionAndRotation(
-                //                                 new Pose2d(14, 5, new Rotation2d(0)), Constants.FieldConst.RED_HUB)))
-                //                 .onFalse(drivetrain.applyRequest(Controls.driveRequest()));
+                // new Pose2d(14, 5, new Rotation2d(0)), Constants.FieldConst.RED_HUB)))
+                // .onFalse(drivetrain.applyRequest(Controls.driveRequest()));
 
                 // Intake
+                joystick.leftBumper().toggleOnTrue(m_intakeRollers.feedCommand(70, 100)).toggleOnFalse(m_intakeRollers.stopIntakeCommand());
                 // joystick.leftBumper().onTrue(new IntakeOutCommand(1.43, 70, 100))
-                //                 .onFalse(m_intakeRollers.runOnce(() -> m_intakeRollers.stopIntakeMotor()));
-                joystick.leftBumper().whileTrue(m_intakeActuation.setPositionCommand(1.43).andThen(m_intakeRollers.feedCommand(70, 100))).whileFalse(m_intakeRollers.stopIntakeCommand());
+                // .onFalse();
                 joystick.leftTrigger().onTrue(m_intakeActuation.setPositionCommand(0))
-                                .onFalse(new InstantCommand(()-> m_intakeActuation.stopMotor()));
+                                .onFalse(new InstantCommand(() -> m_intakeActuation.stopMotor()).alongWith(m_intakeRollers.stopIntakeCommand()));
+
+                // joystick.leftTrigger().whileTrue(m_intakeActuation.setPositionCommand(0))
+                // .onFalse(new InstantCommand(()-> m_intakeActuation.stopMotor()));
 
                 // Shoot
-                joystick.rightBumper().onTrue(new ShootCommand(29, 10,62.5))
-                                .onFalse(m_AngleController.runOnce(() -> m_AngleController.setPosition(0.7)).alongWith(
+                joystick.rightBumper().onTrue(new ShootCommand(29, 10, 62.5))
+                                .onFalse(m_angleController.runOnce(() -> m_angleController.setPosition(0.7)).alongWith(
+                                                new InstantCommand(() -> m_angleController.setPosition(0)),
                                                 new InstantCommand(() -> m_shooter.stopMotors()),
                                                 new InstantCommand(() -> m_ballTunnel.stopBallTunnel())));
 
+                joystick.rightTrigger().onTrue(new ShootCommand(0, 0, 0))
+                                .onFalse(m_angleController.runOnce(() -> m_angleController.setPosition(0.7)).alongWith(
+                                                new InstantCommand(() -> m_shooter.stopMotors()),
+                                                new InstantCommand(() -> m_ballTunnel.stopBallTunnel())));
+
+                joystick.y().onTrue(m_ballTunnel.spitCommand(14, 100)).onFalse(new InstantCommand(() -> m_ballTunnel.stopBallTunnel()));
                 // Spit
                 // joystick.b().onTrue(m_ballTunnel.spitCommand(14, 100)).onFalse(new
                 // InstantCommand(() -> m_ballTunnel.stopBallTunnel()));
 
-                joystick.x().onTrue(m_AngleController.runOnce(() -> m_AngleController.setPosition(0.7)));
-                joystick.b().onTrue(m_AngleController.runOnce(() -> m_AngleController.setPosition(10)));
+                // joystick.x().onTrue(m_AngleController.runOnce(() -> m_AngleController.setPosition(0.7)));
+                // joystick.b().onTrue(m_AngleController.runOnce(() -> m_AngleController.setPosition(10)));
 
                 // BallTunnel Manually
                 // joystick.pov(0).onTrue(m_ballTunnel.runBallTunnelCommand(14,
@@ -172,9 +185,9 @@ public class RobotContainer {
                 // joystick.pov(180).onTrue(m_ballTunnel.runBallTunnelCommand(14,
                 // 100)).onFalse(new InstantCommand(() -> m_ballTunnel.stopBallTunnel()));
 
-                // Small Mode
-                joystick.back().onTrue(
-                                m_intakeActuation.setPositionCommand(0).alongWith(m_intakeRollers.stopIntakeCommand()));
+                // // Small Mode
+                // joystick.back().onTrue(
+                //                 m_intakeActuation.setPositionCommand(0).alongWith(m_intakeRollers.stopIntakeCommand()));
 
                 // Reset Heading
                 joystick.start().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));

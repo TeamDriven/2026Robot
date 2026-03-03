@@ -10,6 +10,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -117,72 +118,11 @@ public class IntakeRollers extends SubsystemBase {
     }
 
     /**
-     * Run the intake motor at a given voltage
-     * 
-     * @param voltage in volts
-     * @return a command that will run the intake motor
-     */
-    public Command runVoltageCommand(double voltage) {
-        return new Command() {
-            @Override
-            public void initialize() {
-                addRequirements(IntakeRollers.this);
-            }
-
-            @Override
-            public void execute() {
-                runVoltage(voltage);
-            }
-
-            @Override
-            public boolean isFinished() {
-                return true;
-            }
-        };
-    }
-
-    /**
-     * Run the intake motor at a given voltage
-     * 
-     * @param voltage in volts
-     */
-    public void runVoltage(double voltage) {
-        intakeMotor.setControl(voltageControl
-                .withOutput(voltage));
-    }
-
-    /**
-     * Run the intake motor at a given percent
-     * 
-     * @param speed 1 to -1
-     * @return a command that will run the intake motor
-     */
-    public Command runIntakePercent(double speed) {
-        return new Command() {
-            @Override
-            public void initialize() {
-                addRequirements(IntakeRollers.this);
-            }
-
-            @Override
-            public void execute() {
-                intakeMotor.set(speed);
-            }
-
-            @Override
-            public void end(boolean interrupted) {
-                intakeMotor.set(0);
-            }
-        };
-    }
-
-    /**
      * Stop the intake motor
      * 
      * @return a command that will stop the intake motor
      */
     public Command stopIntakeCommand() {
-        // return stopIntakeFast().withTimeout(0.2);
         return new InstantCommand(this::stopIntakeMotor, this);
     }
 
@@ -190,9 +130,7 @@ public class IntakeRollers extends SubsystemBase {
      * Stop the intake motor
      */
     public void stopIntakeMotor() {
-        // System.out.println("Intake stopped");
-        intakeMotor.setControl(stopMode);
-        // intakeMotor.setControl(velocityControlFeed.withVelocity(0).withAcceleration(20));
+        intakeMotor.stopMotor();
     }
 
     /**

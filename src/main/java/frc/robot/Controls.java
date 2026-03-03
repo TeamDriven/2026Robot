@@ -16,7 +16,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 public class Controls {
         public static final CommandXboxController joystick = new CommandXboxController(0);
 
-        public static final boolean isRightStickDrive = true;
+        public static final boolean isRightStickDrive = false;
 
         private static final SwerveRequest.FieldCentric driveF = new SwerveRequest.FieldCentric()
                         .withDeadband(DrivetrainConst.MaxSpeed * 0.1)

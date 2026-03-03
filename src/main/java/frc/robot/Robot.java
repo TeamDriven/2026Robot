@@ -4,7 +4,7 @@
 
 package frc.robot;
 
-import static frc.robot.Subsystems.m_AngleController;
+import static frc.robot.Subsystems.m_angleController;
 import static frc.robot.Subsystems.m_ballTunnel;
 import static frc.robot.Subsystems.m_intakeActuation;
 import static frc.robot.Subsystems.m_shooter;
@@ -177,7 +177,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledInit() {
-    // m_intakeActuation.setCoastMode();
+    m_intakeActuation.setCoastMode();
   }
 
   @Override

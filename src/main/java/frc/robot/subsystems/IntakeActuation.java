@@ -55,8 +55,6 @@ public class IntakeActuation extends SubsystemBase {
     configs.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
     configs.Feedback.SensorToMechanismRatio = IntakeActuationConsts.GearRatio;
 
-    // configs.MotorOutput.DutyCycleNeutralDeadband = 0.05;
-
     configs.CurrentLimits.SupplyCurrentLimitEnable = true;
     configs.CurrentLimits.SupplyCurrentLimit = 40;
 
@@ -123,25 +121,6 @@ public class IntakeActuation extends SubsystemBase {
   }
 
   /**
-   * Run the actuation motor at a given percent
-   * 
-   * @param speed 1 to -1
-   */
-  public Command runActuatorPercent(double speed) {
-    return new Command() {
-      @Override
-      public void execute() {
-        actuationMotor.set(speed);
-      }
-
-      @Override
-      public void end(boolean interrupted) {
-        actuationMotor.set(0);
-      }
-    };
-  }
-
-  /**
    * wait until the actuation motor is at a given position
    * 
    * @param setPosition in degrees
@@ -180,11 +159,7 @@ public class IntakeActuation extends SubsystemBase {
    * @return the actuation motor's current position in degrees
    */
   public double getAngle() {
-    // return throughboreEncoder.getAbsolutePosition() / actuationTicksPerDegree -
-    // actuationOffset;
     return actuationMotor.getPosition().getValueAsDouble() / IntakeActuationConsts.GearRatio;
-    // return actuationMotor.getPosition().getValueAsDouble() /
-    // actuationTicksPerDegree;
   }
 
   public void stopMotor() {
@@ -202,15 +177,6 @@ public class IntakeActuation extends SubsystemBase {
   }
 
   public void setCoastMode() {
-    TalonFXConfiguration configs = new TalonFXConfiguration();
-    configs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-        StatusCode status = StatusCode.StatusCodeNotInitialized;
-    for (int i = 0; i < 5; ++i) {
-      status = actuationMotor.getConfigurator().apply(configs);
-      if (status.isOK()) break;
-    }
-    if(!status.isOK()) {
-      System.out.println("Could not apply configs, error code: " + status.toString());
-    }
+    actuationMotor.setNeutralMode(NeutralModeValue.Coast);
   }
 }
