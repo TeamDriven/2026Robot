@@ -33,13 +33,13 @@ public class Controls {
                 return () -> driveF
                                 .withVelocityX(
                                                 -(isRightStickDrive ? joystick.getRightY() : joystick.getLeftY())
-                                                                * DrivetrainConst.MaxSpeed)
+                                                                * DrivetrainConst.MaxSpeed * 0.5)
                                 .withVelocityY(
                                                 -(isRightStickDrive ? joystick.getRightX() : joystick.getLeftX())
-                                                                * DrivetrainConst.MaxSpeed)
+                                                                * DrivetrainConst.MaxSpeed * 0.5)
                                 .withRotationalRate(
                                                 -(isRightStickDrive ? joystick.getLeftX() : joystick.getRightX())
-                                                                * DrivetrainConst.MaxAngularRate);
+                                                                * DrivetrainConst.MaxAngularRate * 0.5);
         }
 
         /*

@@ -35,7 +35,9 @@ public class IntakeActuation extends SubsystemBase {
    * Creates a new Actuation.
    */
   public IntakeActuation(int motorId) {
-    actuationMotor = new TalonFX(motorId, TunerConstants.kCANBus);
+    // actuationMotor = new TalonFX(motorId, TunerConstants.kCANBus);
+    actuationMotor = new TalonFX(motorId);
+
     initActuationMotor();
 
     motionMagicControl = new MotionMagicVoltage(0).withEnableFOC(true);

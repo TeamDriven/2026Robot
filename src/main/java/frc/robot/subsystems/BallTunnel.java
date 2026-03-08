@@ -29,6 +29,7 @@ import frc.robot.generated.TunerConstants;
 public class BallTunnel extends SubsystemBase {
   private TalonFX ballTunnelMotor;
   private TalonFX diverterMotor;
+  private TalonFX hopperMotor;
 
   VelocityVoltage velocityControl;
   NeutralOut stopMode;
@@ -36,10 +37,13 @@ public class BallTunnel extends SubsystemBase {
   /**
    * Creates a new ballTunnel.
    */
-  public BallTunnel(int DMotorId, int BMotorId) {
-    ballTunnelMotor = new TalonFX(BMotorId, TunerConstants.kCANBus);
-    diverterMotor = new TalonFX(DMotorId, TunerConstants.kCANBus);
-
+  public BallTunnel(int DMotorId, int BMotorId, int HMotorId) {
+    // ballTunnelMotor = new TalonFX(BMotorId, TunerConstants.kCANBus);
+    // diverterMotor = new TalonFX(DMotorId, TunerConstants.kCANBus);
+    // hopperMotor = new TalonFX(HMotorId, TunerConstants.kCANBus);
+    ballTunnelMotor = new TalonFX(BMotorId);
+    diverterMotor = new TalonFX(DMotorId);
+    hopperMotor = new TalonFX(HMotorId);
     initMotors();
 
     velocityControl = new VelocityVoltage(0).withEnableFOC(true);
@@ -114,6 +118,38 @@ public class BallTunnel extends SubsystemBase {
     if (!status.isOK()) {
       System.out.println("Could not apply configs, error code: " + status.toString());
     }
+
+    configs = new TalonFXConfiguration();
+
+    configs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+    configs.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+    configs.Feedback.SensorToMechanismRatio = BallTunnelConsts.DivergentGearRatio;
+
+    configs.CurrentLimits.SupplyCurrentLimitEnable = true;
+    configs.CurrentLimits.SupplyCurrentLimit = 30;
+
+    /*
+     * Voltage-based velocity requires a feed forward to account for the back-emf of
+     * the motor
+     */
+    configs.Slot0.kP = 0.1; // An error of 1 rotation per second results in 2V output
+    configs.Slot0.kI = 0.0; // An error of 1 rotation per second increases output by 0.5V every second
+    configs.Slot0.kD = 0.001; // A change of 1 rotation per second squared results in 0.01 volts output
+    configs.Slot0.kV = 0.10; // Falcon 500 is a 500kV motor, 500rpm per V = 8.333 rps per V, 1/8.33 = 0.12
+                             // volts / Rotation per second
+    // Peak output of 8 volts
+    configs.Voltage.PeakForwardVoltage = 12;
+    configs.Voltage.PeakReverseVoltage = -12;
+
+    status = StatusCode.StatusCodeNotInitialized;
+    for (int i = 0; i < 5; ++i) {
+      status = hopperMotor.getConfigurator().apply(configs);
+      if (status.isOK())
+        break;
+    }
+    if (!status.isOK()) {
+      System.out.println("Could not apply configs, error code: " + status.toString());
+    }
   }
 
   /**
@@ -148,6 +184,9 @@ public class BallTunnel extends SubsystemBase {
         .withVelocity(velocity)
         .withAcceleration(acceleration));
     diverterMotor.setControl(velocityControl
+        .withVelocity(velocity)
+        .withAcceleration(acceleration));
+    hopperMotor.setControl(velocityControl
         .withVelocity(velocity)
         .withAcceleration(acceleration));
   }
@@ -186,6 +225,9 @@ public class BallTunnel extends SubsystemBase {
     diverterMotor.setControl(velocityControl
         .withVelocity(-10 * velocity) // -
         .withAcceleration(acceleration));
+    hopperMotor.setControl(velocityControl
+        .withVelocity( velocity) // -
+        .withAcceleration(acceleration));
   }
 
   /**
@@ -221,6 +263,7 @@ public class BallTunnel extends SubsystemBase {
   public void stopBallTunnel() {
     ballTunnelMotor.setControl(stopMode);
     diverterMotor.setControl(stopMode);
+    hopperMotor.setControl(stopMode);
   }
 
   /**

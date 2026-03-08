@@ -31,7 +31,9 @@ public class AngleController extends SubsystemBase {
   NeutralOut stopMode;
 
   public AngleController(int motorId) {
-    angleMotor = new TalonFX(motorId, TunerConstants.kCANBus);
+    // angleMotor = new TalonFX(motorId, TunerConstants.kCANBus);
+    angleMotor = new TalonFX(motorId);
+
     initAngleMotor();
     angleMotor.setPosition(0);
     motionMagicControl = new MotionMagicVoltage(0).withEnableFOC(true);

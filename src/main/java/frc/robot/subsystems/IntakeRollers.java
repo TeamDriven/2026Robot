@@ -27,7 +27,9 @@ public class IntakeRollers extends SubsystemBase {
     NeutralOut stopMode;
 
     public IntakeRollers(int motorId) {
-        intakeMotor = new TalonFX(motorId, TunerConstants.kCANBus);
+        // intakeMotor = new TalonFX(motorId, TunerConstants.kCANBus);
+        intakeMotor = new TalonFX(motorId);
+
         initIntakeMotor();
 
         velocityControlFeed = new VelocityVoltage(0).withEnableFOC(true);
@@ -51,7 +53,7 @@ public class IntakeRollers extends SubsystemBase {
          * Voltage-based velocity requires a feed forward to account for the back-emf of
          * the motor
          */
-        configs.Slot0.kP = 0.5; // An error of 1 rotation per second results in 2V output
+        configs.Slot0.kP = 0.7; // An error of 1 rotation per second results in 2V output
         configs.Slot0.kI = 0.0; // An error of 1 rotation per second increases output by 0.5V every second
         configs.Slot0.kD = 0.1; // A change of 1 rotation per second squared results in 0.01 volts output
         configs.Slot0.kV = 0.12; // Falcon 500 is a 500kV motor, 500rpm per V = 8.333 rps per V, 1/8.33 = 0.12

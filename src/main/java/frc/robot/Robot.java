@@ -7,6 +7,7 @@ package frc.robot;
 import static frc.robot.Subsystems.m_angleController;
 import static frc.robot.Subsystems.m_ballTunnel;
 import static frc.robot.Subsystems.m_intakeActuation;
+import static frc.robot.Subsystems.m_limelight;
 import static frc.robot.Subsystems.m_shooter;
 
 import com.ctre.phoenix6.StatusCode;
@@ -34,12 +35,48 @@ public class Robot extends TimedRobot {
 
   private final RobotContainer m_robotContainer;
 
-  public static  Pigeon2 m_gyro = new Pigeon2(TunerConstants.kPigeonId, TunerConstants.kCANBus);
+  public static  Pigeon2 m_gyro = new Pigeon2(TunerConstants.kPigeonId);
+  // public static  Pigeon2 m_gyro = new Pigeon2(TunerConstants.kPigeonId, TunerConstants.kCANBus);
 
   private final boolean kUseLimelight = true;
 
-  // public static  SwerveDrivePoseEstimator m_poseEstimator;
-  public static final SwerveDrivePoseEstimator m_poseEstimator = new SwerveDrivePoseEstimator(
+  public static  SwerveDrivePoseEstimator m_poseEstimator;
+  // public static final SwerveDrivePoseEstimator m_poseEstimator = new SwerveDrivePoseEstimator(
+  //     RobotContainer.m_kinematics,
+  //     m_gyro.getRotation2d(),
+  //     new SwerveModulePosition[] {
+  //         RobotContainer.drivetrain.getState().ModulePositions[0],
+  //         RobotContainer.drivetrain.getState().ModulePositions[1],
+  //         RobotContainer.drivetrain.getState().ModulePositions[2],
+  //         RobotContainer.drivetrain.getState().ModulePositions[3]
+  //     },
+  //     new Pose2d(),
+  //     VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)),
+  //     VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30)));
+
+
+  public Robot() {  
+    
+      var toApply = new  Pigeon2Configuration();
+      MountPoseConfigs mount = new MountPoseConfigs();
+      
+      mount.MountPosePitch = .19452182948589325;
+      mount.MountPoseRoll = 178.96127319335938; 
+      mount.MountPoseYaw = -91.50044250488281;   // Degrees
+
+      toApply.withMountPose(mount);
+
+      StatusCode status = StatusCode.StatusCodeNotInitialized;
+    for (int i = 0; i < 5; ++i) {
+      status = m_gyro.getConfigurator().apply(toApply);
+      if (status.isOK())
+        break;
+    }
+    if (!status.isOK()) {
+      System.out.println("Could not apply configs, error code: " + status.toString());
+    }
+
+      m_poseEstimator = new SwerveDrivePoseEstimator(
       RobotContainer.m_kinematics,
       m_gyro.getRotation2d(),
       new SwerveModulePosition[] {
@@ -51,42 +88,6 @@ public class Robot extends TimedRobot {
       new Pose2d(),
       VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)),
       VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30)));
-
-
-  public Robot() {  
-
-
-    //   var toApply = new Pigeon2Configuration();
-    //   MountPoseConfigs mount = new MountPoseConfigs();
-      
-    //   mount.MountPosePitch = .19452182948589325;
-    //   mount.MountPoseRoll = 178.96127319335938; 
-    //   mount.MountPoseYaw = -91.50044250488281;   // Degrees
-
-    //   toApply.withMountPose(mount);
-
-    //    StatusCode status = StatusCode.StatusCodeNotInitialized;
-    // for (int i = 0; i < 5; ++i) {
-    //   status = m_gyro.getConfigurator().apply(toApply);
-    //   if (status.isOK())
-    //     break;
-    // }
-    // if (!status.isOK()) {
-    //   System.out.println("Could not apply configs, error code: " + status.toString());
-    // }
-
-      // m_poseEstimator = new SwerveDrivePoseEstimator(
-      // RobotContainer.m_kinematics,
-      // m_gyro.getRotation2d(),
-      // new SwerveModulePosition[] {
-      //     RobotContainer.drivetrain.getState().ModulePositions[0],
-      //     RobotContainer.drivetrain.getState().ModulePositions[1],
-      //     RobotContainer.drivetrain.getState().ModulePositions[2],
-      //     RobotContainer.drivetrain.getState().ModulePositions[3]
-      // },
-      // new Pose2d(),
-      // VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)),
-      // VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30)));
 
 
     m_robotContainer = new RobotContainer();
@@ -152,6 +153,7 @@ public class Robot extends TimedRobot {
        * llMeasurement2.timestampSeconds);
        */
       updateOdometry();
+
       // }
     }
     /**
@@ -292,6 +294,7 @@ public class Robot extends TimedRobot {
 
       SmartDashboard.putNumber("poseEstimat tagArea" , mt2.avgTagArea);
       SmartDashboard.putNumber("poseEstimate tagDistance", mt2.avgTagDist);
+
 
       if (Math.abs(m_gyro.getAngularVelocityZWorld().getValueAsDouble()) > 720) // if our angular velocity is greater
                                                                                 // than 720 degrees per second, ignore

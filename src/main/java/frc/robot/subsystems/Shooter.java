@@ -42,9 +42,12 @@ public class Shooter extends SubsystemBase {
    * Creates a new Intake.
    */
   public Shooter(int leftMotorId, int rightBottomMotorId, int rightTopMotorId) {
-    leftShooterMotor = new TalonFX(leftMotorId, TunerConstants.kCANBus);
-    rightTopShooterMotor = new TalonFX(rightTopMotorId, TunerConstants.kCANBus);
-    rightBottomShooterMotor = new TalonFX(rightBottomMotorId, TunerConstants.kCANBus);
+    // leftShooterMotor = new TalonFX(leftMotorId, TunerConstants.kCANBus);
+    // rightTopShooterMotor = new TalonFX(rightTopMotorId, TunerConstants.kCANBus);
+    // rightBottomShooterMotor = new TalonFX(rightBottomMotorId, TunerConstants.kCANBus);
+    leftShooterMotor = new TalonFX(leftMotorId);
+    rightTopShooterMotor = new TalonFX(rightTopMotorId);
+    rightBottomShooterMotor = new TalonFX(rightBottomMotorId);
     initMotors();
 
     velocityControl = new VelocityVoltage(0).withEnableFOC(true);
@@ -185,6 +188,14 @@ public class Shooter extends SubsystemBase {
 
   public void stopMotors() {
     rightTopShooterMotor.setControl(stopMode);
+  }
+
+  public double calculateShooterSpeed() {
+    return 0.0;
+  }
+
+  public double calculateHoodAngle() {
+    return 0.0;
   }
 
   /**

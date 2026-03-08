@@ -23,6 +23,7 @@ public class Constants {
     public class BallTunnelConsts {
         public static final double MainGearRatio = 3;
         public static final double DivergentGearRatio = 1;
+        public static final double HopperGearRatio = 3;
     }
 
     // Intake
