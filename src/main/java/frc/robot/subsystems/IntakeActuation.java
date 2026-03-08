@@ -181,4 +181,8 @@ public class IntakeActuation extends SubsystemBase {
   public void setCoastMode() {
     actuationMotor.setNeutralMode(NeutralModeValue.Coast);
   }
+
+  public double getCurrentPosition() {
+    return actuationMotor.getPosition().getValueAsDouble();
+  }
 }

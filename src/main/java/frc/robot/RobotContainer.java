@@ -116,6 +116,7 @@ public class RobotContainer {
                 frontRight = drivetrain.getState().ModulePositions[1];
                 backLeft = drivetrain.getState().ModulePositions[2];
                 backRight = drivetrain.getState().ModulePositions[3];
+                m_intakeActuation.setPosition(m_intakeActuation.getCurrentPosition());
 
                 configureBindings();
         }
