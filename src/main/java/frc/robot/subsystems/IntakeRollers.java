@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import static frc.robot.Subsystems.m_intakeActuation;
+
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
@@ -21,6 +23,8 @@ import frc.robot.generated.TunerConstants;
 public class IntakeRollers extends SubsystemBase {
     private TalonFX intakeMotor;
 
+    public Boolean intakeRunning = false;
+    
     MotionMagicVoltage motionMagicControl;
     VelocityVoltage velocityControlFeed;
     VoltageOut voltageControl;
@@ -101,6 +105,10 @@ public class IntakeRollers extends SubsystemBase {
 
             @Override
             public boolean isFinished() {
+
+            
+                
+                
                 return false;
             }
         };

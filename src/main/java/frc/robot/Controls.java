@@ -10,11 +10,16 @@ import frc.robot.Constants.DrivetrainConst;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.event.BooleanEvent;
+import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 public class Controls {
+       
         public static final CommandXboxController joystick = new CommandXboxController(0);
+
 
         public static final boolean isRightStickDrive = false;
 

@@ -4,9 +4,11 @@
 
 package frc.robot.subsystems;
 
+import static frc.robot.Subsystems.m_intakeRollers;
+
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-
+import com.ctre.phoenix6.controls.DynamicMotionMagicVoltage;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -14,6 +16,7 @@ import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -25,6 +28,7 @@ import frc.robot.generated.TunerConstants;
  * to a specific position.
  */
 public class IntakeActuation extends SubsystemBase {
+  TrapezoidProfile profile = new TrapezoidProfile(new TrapezoidProfile.Constraints(5, 10));
   private TalonFX actuationMotor;
 
   private MotionMagicVoltage motionMagicControl;
@@ -109,17 +113,34 @@ public class IntakeActuation extends SubsystemBase {
     };
   }
 
+    public Command setPositionCommand(double position, double velocity, double acceralation, double jerk) {
+    return new Command() {
+      @Override
+      public void execute() {
+        setPosition(position, velocity, acceralation, jerk);
+      }
+
+      @Override
+      public boolean isFinished() {
+        return true;
+      }
+    };
+  }
+  
+
+    public void setPosition(double position, double velcoity, double accerlation, double jerk) {
+            final DynamicMotionMagicVoltage m_request = new DynamicMotionMagicVoltage(0, velcoity, accerlation).withJerk(jerk);
+    actuationMotor.setControl(m_request.withPosition(position));
+  }
+
+
   /**
    * Run the actuation motor to a given position
    * 
    * @param position in encoder value
    */
   public void setPosition(double position) {
-    // System.out.println("Actuator Up");
-
     actuationMotor.setControl(motionMagicControl.withPosition(position));
-
-    // resetPosition();
   }
 
   /**
@@ -140,12 +161,14 @@ public class IntakeActuation extends SubsystemBase {
     };
   }
 
-  public Command resetAngleToZeroCommand() {
+  public Command resetIntakeCommand() {
     return new Command() {
       @Override
       public void execute() {
-        setPosition(Constants.AngleControllerConsts.ANGLE_CONTROLLER_REST_POS);
+        setPosition(0);
       }
+
+
 
       @Override
       public boolean isFinished() {

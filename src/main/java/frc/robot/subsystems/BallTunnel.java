@@ -37,7 +37,7 @@ public class BallTunnel extends SubsystemBase {
   /**
    * Creates a new ballTunnel.
    */
-  public BallTunnel(int DMotorId, int BMotorId, int HMotorId) {
+  public BallTunnel(int DMotorId, int HMotorId, int BMotorId) {
     // ballTunnelMotor = new TalonFX(BMotorId, TunerConstants.kCANBus);
     // diverterMotor = new TalonFX(DMotorId, TunerConstants.kCANBus);
     // hopperMotor = new TalonFX(HMotorId, TunerConstants.kCANBus);
@@ -198,7 +198,7 @@ public class BallTunnel extends SubsystemBase {
    * @param acceleration in rotations per second squared
    * @return a command that will run the ballTunnel motor
    */
-  public Command spitCommand(double velocity, double acceleration) {
+  public Command spitCommand(double velocityBallTunnel, double velocityHopper, double velocityDiverter, double acceleration) {
     return new Command() {
       @Override
       public void initialize() {
@@ -207,7 +207,7 @@ public class BallTunnel extends SubsystemBase {
 
       @Override
       public void execute() {
-        spit(velocity, acceleration);
+        spit(velocityBallTunnel, velocityHopper, velocityDiverter, acceleration);
       }
     };
   }
@@ -218,15 +218,15 @@ public class BallTunnel extends SubsystemBase {
    * @param velocity     in rotations per second
    * @param acceleration in rotations per second squared
    */
-  public void spit(double velocity, double acceleration) {
+  public void spit(double velocityBallTunnel, double velocityHopper, double velocityDiverter, double acceleration) {
     ballTunnelMotor.setControl(velocityControl
-        .withVelocity(velocity)
+        .withVelocity(velocityBallTunnel * 10)
         .withAcceleration(acceleration));
     diverterMotor.setControl(velocityControl
-        .withVelocity(-10 * velocity) // -
+        .withVelocity(-10 * velocityDiverter) // -
         .withAcceleration(acceleration));
     hopperMotor.setControl(velocityControl
-        .withVelocity( velocity) // -
+        .withVelocity( velocityHopper) // -
         .withAcceleration(acceleration));
   }
 

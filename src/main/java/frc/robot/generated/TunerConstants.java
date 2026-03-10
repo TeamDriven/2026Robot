@@ -66,6 +66,9 @@ public class TunerConstants {
         );
     private static final CANcoderConfiguration encoderInitialConfigs = new CANcoderConfiguration();
     // Configs for the Pigeon 2; leave this null to skip applying Pigeon 2 configs
+    // private static final Pigeon2Configuration pigeonConfigs = new Pigeon2Configuration().withMountPose(
+    //     new MountPoseConfigs().withMountPosePitch(-.19452214241027832).withMountPoseRoll(-178.9611358642578).withMountPoseYaw(91.50047302246094)
+    // );
     private static final Pigeon2Configuration pigeonConfigs = null;
 
     // CAN bus that the devices are located on;
