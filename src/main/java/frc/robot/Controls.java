@@ -13,6 +13,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.event.BooleanEvent;
 import edu.wpi.first.wpilibj.event.EventLoop;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
@@ -59,6 +60,10 @@ public class Controls {
 
                         double dy = target.getY()
                                         - RobotContainer.drivetrain.getState().Pose.getY();
+
+                        SmartDashboard.putNumber("drivetrain pose x", RobotContainer.drivetrain.getState().Pose.getX());
+                        SmartDashboard.putNumber("drivetrain pose y", RobotContainer.drivetrain.getState().Pose.getY());
+                        SmartDashboard.putNumber("drivetrain pose rot", RobotContainer.drivetrain.getState().Pose.getRotation().getDegrees());
 
                         return Math.atan2(dy, dx); // radians
                 };

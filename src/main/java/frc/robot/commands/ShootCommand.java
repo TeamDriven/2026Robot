@@ -8,8 +8,10 @@ import static frc.robot.Subsystems.m_shooter;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.Robot;
 
 public class ShootCommand extends ParallelCommandGroup {
     public ShootCommand(double shooterSpeed, double shooterAngle, double ballTunnelSpeed) {

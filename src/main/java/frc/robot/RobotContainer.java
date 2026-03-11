@@ -37,6 +37,7 @@ import edu.wpi.first.wpilibj2.command.*;
 
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.BallTunnel;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.IntakeRollers;
 import frc.robot.Constants.DrivetrainConst;
@@ -137,26 +138,30 @@ public class RobotContainer {
 
                 drivetrain.registerTelemetry(logger::telemeterize);
 
+                joystick.povDown().onTrue(drivetrain.applyRequest(Controls.localHeading(Constants.FieldConst.RED_HUB))).onFalse(drivetrain.applyRequest(Controls.driveRequest()));
+
+
                 // Intake
                 joystick.b().onTrue(m_intakeActuation.setPositionCommand(1.45));
                 joystick.x().onTrue(m_intakeActuation.setPositionCommand(0).andThen(new WaitCommand(5)).andThen(m_intakeRollers.stopIntakeCommand()));
                 joystick.leftBumper().whileTrue(m_intakeRollers.feedCommand(90, 100)).whileFalse(m_intakeRollers.stopIntakeCommand());
 
                 joystick.rightBumper().toggleOnTrue(new ShootCommand(29, 10, 62.5))
-                                .toggleOnFalse(m_angleController.runOnce(() -> m_angleController.setPosition(0.7)).alongWith(
+                                .toggleOnFalse(m_angleController.runOnce(() -> m_angleController.setPosition(2)).alongWith(
                                                 new InstantCommand(() -> m_angleController.setPosition(0)),
                                                 new InstantCommand(() -> m_shooter.stopMotors()),
                                                 new InstantCommand(() -> m_ballTunnel.stopBallTunnel())));
 
-                                                //need to feed in the pass values
-                joystick.rightTrigger().onTrue(new ShootCommand(0, 0, 0))
-                                .onFalse(m_angleController.runOnce(() -> m_angleController.setPosition(0.7)).alongWith(
+                joystick.leftTrigger().whileTrue(m_ballTunnel.spitCommand(20, 62, 14, 100).alongWith(m_angleController.runOnce(() -> m_angleController.setPosition(2)))).whileFalse(new InstantCommand(() -> m_ballTunnel.stopBallTunnel()));
+
+                joystick.a().onTrue(new InstantCommand(() -> m_ballTunnel.runBallTunnel(-62.5, 100))).onFalse(new InstantCommand(() -> m_ballTunnel.stopBallTunnel()));
+                joystick.y().onTrue(new InstantCommand(() -> m_ballTunnel.runBallTunnel(62.5, 100))).onFalse(new InstantCommand(() -> m_ballTunnel.stopBallTunnel()));
+
+                joystick.rightTrigger().toggleOnTrue(new ShootCommand(40, 25, 62.5))
+                                .toggleOnFalse(m_angleController.runOnce(() -> m_angleController.setPosition(2)).alongWith(
+                                                new InstantCommand(() -> m_angleController.setPosition(0)),
                                                 new InstantCommand(() -> m_shooter.stopMotors()),
                                                 new InstantCommand(() -> m_ballTunnel.stopBallTunnel())));
-
-                joystick.leftTrigger().whileTrue(m_ballTunnel.spitCommand(20, 8, 14, 100)).whileFalse(new InstantCommand(() -> m_ballTunnel.stopBallTunnel()));
-
-                joystick.a().onTrue(new InstantCommand(() -> m_intakeActuation.resetIntakeCommand()).andThen(new InstantCommand(() -> m_angleController.resetAngleToZeroCommand())));
 
                 // Reset Heading
                 joystick.start().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));

@@ -8,6 +8,7 @@ import static frc.robot.Subsystems.m_angleController;
 import static frc.robot.Subsystems.m_ballTunnel;
 import static frc.robot.Subsystems.m_intakeActuation;
 import static frc.robot.Subsystems.m_limelight;
+import static frc.robot.Subsystems.m_limelight2;
 import static frc.robot.Subsystems.m_shooter;
 
 import com.ctre.phoenix6.StatusCode;
@@ -298,6 +299,11 @@ public class Robot extends TimedRobot {
 
       SmartDashboard.putNumber("poseEstimat tagArea" , mt2.avgTagArea);
       SmartDashboard.putNumber("poseEstimate tagDistance", mt2.avgTagDist);
+
+          SmartDashboard.putNumber("limelight tx", LimelightHelpers.getTX("limelight-back"));
+          SmartDashboard.putNumber("limelight ty", LimelightHelpers.getTY("limelight-back"));
+          SmartDashboard.putNumber("limelight better tx", LimelightHelpers.getTXNC("limelight-back"));
+          SmartDashboard.putNumber("limelight better ty", LimelightHelpers.getTYNC("limelight-back"));
 
 
       if (Math.abs(m_gyro.getAngularVelocityZWorld().getValueAsDouble()) > 720) // if our angular velocity is greater
