@@ -76,7 +76,7 @@ public class Constants {
     }
 
     public class FieldConst {
-        public static final Pose2d BLUE_HUB = new Pose2d(4.03, 4.035, new Rotation2d(0));
+        public static final Pose2d BLUE_HUB = new Pose2d(4.015994, 4.625594, new Rotation2d(0));
         public static final Pose2d RED_HUB = new Pose2d(11.86815, 4.034536, new Rotation2d(0));
         
 

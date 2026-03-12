@@ -138,7 +138,8 @@ public class RobotContainer {
 
                 drivetrain.registerTelemetry(logger::telemeterize);
 
-                joystick.povDown().onTrue(drivetrain.applyRequest(Controls.localHeading(Constants.FieldConst.RED_HUB))).onFalse(drivetrain.applyRequest(Controls.driveRequest()));
+                // joystick.povDown().onTrue(drivetrain.applyRequest(Controls.localHeading(Constants.FieldConst.BLUE_HUB))).onFalse(drivetrain.applyRequest(Controls.driveRequest()));
+                joystick.povDown().onTrue(drivetrain.applyRequest(Controls.localHeading(Constants.FieldConst.BLUE_HUB))).onFalse(drivetrain.applyRequest(Controls.driveRequest()));
 
 
                 // Intake
@@ -165,16 +166,16 @@ public class RobotContainer {
 
                 // Reset Heading
                 joystick.start().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
-                joystick
-                                .button(8)
-                                .onTrue(
-                                                Commands.runOnce(
-                                                                () -> drivetrain.setPose(
-                                                                                new Pose2d(drivetrain.getPose()
-                                                                                                .getTranslation(),
-                                                                                                new Rotation2d())),
-                                                                drivetrain)
-                                                                .ignoringDisable(true));
+                // joystick
+                //                 .button(8)
+                //                 .onTrue(
+                //                                 Commands.runOnce(
+                //                                                 () -> drivetrain.setPose(
+                //                                                                 new Pose2d(drivetrain.getPose()
+                //                                                                                 .getTranslation(),
+                //                                                                                 new Rotation2d())),
+                //                                                 drivetrain)
+                //                                                 .ignoringDisable(true));
         }
 
         public Command getAutonomousCommand() {

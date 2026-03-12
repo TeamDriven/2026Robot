@@ -2,13 +2,16 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.hardware.Pigeon2;
 
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.VisionConsts;
 import frc.robot.LimelightHelpers;
-
+import frc.robot.RobotContainer;
 import frc.robot.Constants.DrivetrainConst;
+
 
 public class LimelightSubsystem extends SubsystemBase {
   public LimelightHelpers helper = new LimelightHelpers();
@@ -21,21 +24,6 @@ public class LimelightSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // updateOdometry();
-
-    double tx = LimelightHelpers.getTX(""); // Horizontal offset from crosshair to target in degrees
-    double ty = LimelightHelpers.getTY(""); // Vertical offset from crosshair to target in degrees
-    double ta = LimelightHelpers.getTA(""); // Target area (0% to 100% of image)
-    boolean hasTarget = LimelightHelpers.getTV(""); // Do you have a valid target?
-    double targetId = NetworkTableInstance.getDefault().getTable(limeLightName).getEntry("tid").getDouble(0);
-
-    double txnc = LimelightHelpers.getTXNC(""); // Horizontal offset from principal pixel/point to target in degrees
-    double tync = LimelightHelpers.getTYNC(""); // Vertical offset from principal pixel/point to target in degrees
-
-    // System.out.println("tx" + tx);
-    // System.out.println("has target" + hasTarget);
-    // System.out.println("ty" + ty);
-
   }
 
   public double limelight_aim_proportional() {

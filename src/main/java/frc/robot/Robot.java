@@ -36,59 +36,10 @@ public class Robot extends TimedRobot {
 
   private final RobotContainer m_robotContainer;
 
-  public static  Pigeon2 m_gyro = new Pigeon2(TunerConstants.kPigeonId);
-  // public static  Pigeon2 m_gyro = new Pigeon2(TunerConstants.kPigeonId, TunerConstants.kCANBus);
-
   private final boolean kUseLimelight = true;
-
-  public static  SwerveDrivePoseEstimator m_poseEstimator;
-  // public static final SwerveDrivePoseEstimator m_poseEstimator = new SwerveDrivePoseEstimator(
-  //     RobotContainer.m_kinematics,
-  //     m_gyro.getRotation2d(),
-  //     new SwerveModulePosition[] {
-  //         RobotContainer.drivetrain.getState().ModulePositions[0],
-  //         RobotContainer.drivetrain.getState().ModulePositions[1],
-  //         RobotContainer.drivetrain.getState().ModulePositions[2],
-  //         RobotContainer.drivetrain.getState().ModulePositions[3]
-  //     },
-  //     new Pose2d(),
-  //     VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)),
-  //     VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30)));
 
 
   public Robot() {  
-    
-      var toApply = new  Pigeon2Configuration();
-      MountPoseConfigs mount = new MountPoseConfigs();
-      
-      mount.MountPosePitch = .19452182948589325;
-      mount.MountPoseRoll = 178.96127319335938; 
-      mount.MountPoseYaw = -91.50044250488281;   // Degrees
-
-      toApply.withMountPose(mount);
-
-      StatusCode status = StatusCode.StatusCodeNotInitialized;
-    for (int i = 0; i < 5; ++i) {
-      status = m_gyro.getConfigurator().apply(toApply);
-      if (status.isOK())
-        break;
-    }
-    if (!status.isOK()) {
-      System.out.println("Could not apply configs, error code: " + status.toString());
-    }
-
-      m_poseEstimator = new SwerveDrivePoseEstimator(
-      RobotContainer.m_kinematics,
-      m_gyro.getRotation2d(),
-      new SwerveModulePosition[] {
-          RobotContainer.drivetrain.getState().ModulePositions[0],
-          RobotContainer.drivetrain.getState().ModulePositions[1],
-          RobotContainer.drivetrain.getState().ModulePositions[2],
-          RobotContainer.drivetrain.getState().ModulePositions[3]
-      },
-      new Pose2d(),
-      VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)),
-      VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30)));
 
 
     m_robotContainer = new RobotContainer();
@@ -161,18 +112,7 @@ public class Robot extends TimedRobot {
      * Axis: Pitch (Lateral), Roll (Longitudinal), Yaw (Vertical).
       Movement: Pitch (Up/Down), Roll (Side-to-Side/Bank), Yaw (Left/Right).
      */
-    SmartDashboard.putNumber("X", m_poseEstimator.getEstimatedPosition().getX());
-    SmartDashboard.putNumber("Y", m_poseEstimator.getEstimatedPosition().getY());
-    SmartDashboard.putNumber("Rot", m_poseEstimator.getEstimatedPosition().getRotation().getDegrees());
 
-    SmartDashboard.putNumber("Pig Yaw (Y)", m_gyro.getYaw().getValueAsDouble());
-    SmartDashboard.putNumber("Pig Pitch (x)", m_gyro.getPitch().getValueAsDouble());
-    SmartDashboard.putNumber("Pig Roll (Z)", m_gyro.getRoll().getValueAsDouble());
-
-
-    SmartDashboard.putNumber("Shooter velocity", m_shooter.getVelocity());
-    SmartDashboard.putNumber("ball velocity", m_ballTunnel.getVelocity());
-    RobotContainer.m_field.setRobotPose(m_poseEstimator.getEstimatedPosition());
     Subsystems.m_limelight.getAprilTag();
     Subsystems.m_limelight2.getAprilTag();
 
@@ -257,15 +197,6 @@ public class Robot extends TimedRobot {
   }
 
   public void updateOdometry() {
-    m_poseEstimator.update(
-        m_gyro.getRotation2d(),
-        new SwerveModulePosition[] {
-            RobotContainer.drivetrain.getState().ModulePositions[0],
-            RobotContainer.drivetrain.getState().ModulePositions[1],
-            RobotContainer.drivetrain.getState().ModulePositions[2],
-            RobotContainer.drivetrain.getState().ModulePositions[3]
-        });
-
     boolean useMegaTag2 = true; // set to false to use MegaTag1
     boolean doRejectUpdate = false;
     if (useMegaTag2 == false) {
@@ -284,14 +215,14 @@ public class Robot extends TimedRobot {
       }
 
       if (!doRejectUpdate) {
-        m_poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.5, .5, 9999999));
-        m_poseEstimator.addVisionMeasurement(
+        RobotContainer.drivetrain.setVisionMeasurementStdDevs(VecBuilder.fill(.5, .5, 9999999));
+       RobotContainer.drivetrain.addVisionMeasurement(
             mt1.pose,
             mt1.timestampSeconds);
       }
     } else if (useMegaTag2 == true) {
       LimelightHelpers.SetRobotOrientation("limelight-back",
-          m_poseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
+         RobotContainer.drivetrain.getPose().getRotation().getDegrees(), 0, 0, 0, 0, 0);
       LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-back");
       SmartDashboard.putNumber("poseEstimate x", mt2.pose.getX());
       SmartDashboard.putNumber("poseEstimate y", mt2.pose.getY());
@@ -306,7 +237,7 @@ public class Robot extends TimedRobot {
           SmartDashboard.putNumber("limelight better ty", LimelightHelpers.getTYNC("limelight-back"));
 
 
-      if (Math.abs(m_gyro.getAngularVelocityZWorld().getValueAsDouble()) > 720) // if our angular velocity is greater
+      if (Math.abs(RobotContainer.drivetrain.getPigeon2().getAngularVelocityZWorld().getValueAsDouble()) > 720) // if our angular velocity is greater
                                                                                 // than 720 degrees per second, ignore
                                                                                 // vision updates
       {
@@ -316,10 +247,10 @@ public class Robot extends TimedRobot {
         doRejectUpdate = true;
       }
       if (!doRejectUpdate) {
-        m_poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 9999999));
-        m_poseEstimator.addVisionMeasurement(
+        RobotContainer.drivetrain.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 9999999)); //technically just need to set it once if you trust it; can change the dynamic (n1, n2) for confidence, like how far they are, which ones, etc
+       RobotContainer.drivetrain.addVisionMeasurement(
             mt2.pose,
-            mt2.timestampSeconds);
+            mt2.timestampSeconds); //can you feed the std devs
       }
     }
   }

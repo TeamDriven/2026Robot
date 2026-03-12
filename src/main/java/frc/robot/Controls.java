@@ -1,5 +1,7 @@
 package frc.robot;
 
+import static frc.robot.Subsystems.m_limelight2;
+
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
@@ -56,21 +58,17 @@ public class Controls {
                 // Get the target Angle
                 final DoubleSupplier targetAngle = () -> {
                         double dx = target.getX()
-                                        - RobotContainer.drivetrain.getState().Pose.getX();
+                                        - m_limelight2.getMegaTag2("limelight-back").pose.getX();
 
                         double dy = target.getY()
-                                        - RobotContainer.drivetrain.getState().Pose.getY();
-
-                        SmartDashboard.putNumber("drivetrain pose x", RobotContainer.drivetrain.getState().Pose.getX());
-                        SmartDashboard.putNumber("drivetrain pose y", RobotContainer.drivetrain.getState().Pose.getY());
-                        SmartDashboard.putNumber("drivetrain pose rot", RobotContainer.drivetrain.getState().Pose.getRotation().getDegrees());
+                                        - m_limelight2.getMegaTag2("limelight-back").pose.getY();
 
                         return Math.atan2(dy, dx); // radians
                 };
 
                 // Get the rotation rate -1 to 1 needed to get to target angle
                 final DoubleSupplier rotationRate = () -> {
-                        double currentHeading = RobotContainer.drivetrain.getState().Pose.getRotation().getRadians();
+                        double currentHeading = m_limelight2.getMegaTag2("limelight-back").pose.getRotation().getRadians();
                         double error = targetAngle.getAsDouble() - currentHeading;
 
                         // Wrap to [-pi, pi]

@@ -29,12 +29,11 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
-import static frc.robot.Robot.m_gyro;
 import static frc.robot.RobotContainer.backLeft;
 import static frc.robot.RobotContainer.frontLeft;
 import static frc.robot.RobotContainer.backRight;
+import static frc.robot.RobotContainer.drivetrain;
 import static frc.robot.RobotContainer.frontRight;
-import static frc.robot.Robot.m_poseEstimator;
 
 /**
  * Class that extends the Phoenix 6 SwerveDrivetrain class and implements
@@ -297,76 +296,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         return m_sysIdRoutineToApply.dynamic(direction);
     }
 
-    // public void updateOdometry() {
-
-    // boolean doRejectUpdate = false;
-    // LimelightHelpers.PoseEstimate mt2;
-    // // System.out.println("Begins set Robot Orientation for " + limeLightName);
-
-    // // if (LimelightHelpers.getTV("limelight-front")) {
-    // LimelightHelpers.SetRobotOrientation("limeLight-front",
-    // m_poseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0,
-    // 0, 0);
-    // // LimelightHelpers.SetRobotOrientation("limeLight-front",
-    // // m_poseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0,
-    // 0,
-    // // 0, 0);
-    // // System.out.println("Creating mt2");
-    // mt2 =
-    // LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limeLight-front");
-
-    // System.out.println("mt2: " + mt2.tagCount);
-    // // LimelightHelpers.PoseEstimate mt2 =
-    // // LimelightHelpers.getBotPoseEstimate_wpiRed_MegaTag2("limelight");
-    // // System.out.println("Math abs");
-    // // if (Math.abs(m_gyro.getAngularVelocityZWorld().getValueAsDouble()) > 720)
-    // {
-    // // doRejectUpdate = true;
-    // // }
-    // // if (mt2.tagCount == 0) {
-    // // doRejectUpdate = true;
-    // // }
-    // if (!doRejectUpdate) {
-    // m_poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7,
-    // 9999999));
-    // m_poseEstimator.addVisionMeasurement(
-    // mt2.pose,
-    // // new Pose2d(new Translation2d(0, 0), new Rotation2d(0)),
-    // mt2.timestampSeconds);
-
-    // }
-    // m_poseEstimator.update(
-    // new Rotation2d(m_gyro.getRotation2d().getRadians()),
-    // new SwerveModulePosition[] {
-    // frontLeft,
-    // frontRight,
-    // backLeft,
-    // backRight
-    // });
-    // // doRejectUpdate = false;
-    // // LimelightHelpers.SetRobotOrientation("limeLight-back",
-    // // m_poseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0,
-    // 0,
-    // // 0, 0);
-
-    // // mt2 =
-    // LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limeLight-back");
-    // // if (Math.abs(m_gyro.getAngularVelocityZWorld().getValueAsDouble()) > 720)
-    // {
-    // // doRejectUpdate = true;
-    // // }
-    // // if (mt2.tagCount == 0) {
-    // // doRejectUpdate = true;
-    // // }
-    // // if (!doRejectUpdate) {
-    // // m_poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7,
-    // // 9999999));
-    // // m_poseEstimator.addVisionMeasurement(
-    // // mt2.pose,
-    // // mt2.timestampSeconds);
-    // // }
-    // }
-
     @Override
     public void periodic() {
         /*
@@ -470,10 +399,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     public void setPose(Pose2d pose) {
         System.out.println("Setting pose to X: " + pose.getX() + ", Y: " + pose.getY() + ", Rot: " + pose.getRotation().getDegrees());
-        m_poseEstimator.resetPosition(m_gyro.getRotation2d(), getModulePositions(), pose);
+        // getState().Pose = pose;
     }
 
     public Pose2d getPose(){
-        return m_poseEstimator.getEstimatedPosition();
+        return getState().Pose;
     }
 }
