@@ -4,6 +4,9 @@
 
 package frc.robot.subsystems;
 
+import static frc.robot.Subsystems.m_angleController;
+import static frc.robot.Subsystems.m_limelight;
+
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
@@ -18,6 +21,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import frc.robot.Constants;
+import frc.robot.RobotContainer;
 import frc.robot.Constants.ShooterConsts;
 import frc.robot.generated.TunerConstants;
 
@@ -42,15 +47,12 @@ public class Shooter extends SubsystemBase {
    * Creates a new Intake.
    */
   public Shooter(int leftMotorId, int rightBottomMotorId, int rightTopMotorId) {
-    // leftShooterMotor = new TalonFX(leftMotorId, TunerConstants.kCANBus);
-    // rightTopShooterMotor = new TalonFX(rightTopMotorId, TunerConstants.kCANBus);
-    // rightBottomShooterMotor = new TalonFX(rightBottomMotorId, TunerConstants.kCANBus);
-    leftShooterMotor = new TalonFX(leftMotorId);
-    rightTopShooterMotor = new TalonFX(rightTopMotorId);
-    rightBottomShooterMotor = new TalonFX(rightBottomMotorId);
+    leftShooterMotor = new TalonFX(leftMotorId, TunerConstants.kCANBus);
+    rightTopShooterMotor = new TalonFX(rightTopMotorId, TunerConstants.kCANBus);
+    rightBottomShooterMotor = new TalonFX(rightBottomMotorId, TunerConstants.kCANBus);
     initMotors();
 
-    velocityControl = new VelocityVoltage(0).withEnableFOC(true);
+    velocityControl = new VelocityVoltage(0).withEnableFOC(true).withFeedForward(7);
 
     // sitControl = new VoltageOut(2);
 
@@ -66,14 +68,19 @@ public class Shooter extends SubsystemBase {
     configs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     configs.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
     configs.Feedback.SensorToMechanismRatio = ShooterConsts.GearRatio;
+    
+    leftShooterMotor.setControl(new Follower(rightTopShooterMotor.getDeviceID(), MotorAlignmentValue.Aligned));
+    rightBottomShooterMotor.setControl(new Follower(rightTopShooterMotor.getDeviceID(), MotorAlignmentValue.Aligned));
     /*
      * Voltage-based velocity requires a feed forward to account for the back-emf of
      * the motor
      */
-    configs.Slot0.kP = 0.8; // An error of 1 rotation per second results in 2V output
+    configs.Slot0.kP = .8; // An error of 1 rotation per second results in 2V output
     configs.Slot0.kI = 0; // An error of 1 rotation per second increases output by 0.5V every second
     configs.Slot0.kD = 0.01; // A change of 1 rotation per second squared results in 0.01 volts output
-    configs.Slot0.kV = 0.19; // Falcon 500 is a 500kV motor, 500rpm per V = 8.333 rps per V, 1/8.33 = 0.12
+    configs.Slot0.kV = 0; // Falcon 500 is a 500kV motor, 500rpm per V = 8.333 rps per V, 1/8.33 = 0.12
+
+    
                              // volts / Rotation per second
 
     // Peak output of 8 volts
@@ -117,8 +124,6 @@ public class Shooter extends SubsystemBase {
       System.out.println("Could not apply configs, error code: " + status.toString());
     }
 
-    leftShooterMotor.setControl(new Follower(rightTopShooterMotor.getDeviceID(), MotorAlignmentValue.Aligned));
-    rightBottomShooterMotor.setControl(new Follower(rightTopShooterMotor.getDeviceID(), MotorAlignmentValue.Aligned));
   }
 
   /**
@@ -190,14 +195,6 @@ public class Shooter extends SubsystemBase {
     rightTopShooterMotor.setControl(stopMode);
   }
 
-  public double calculateShooterSpeed() {
-    return 0.0;
-  }
-
-  public double calculateHoodAngle() {
-    return 0.0;
-  }
-
   /**
    * Get the left shooter velocity
    * 
@@ -223,4 +220,27 @@ public class Shooter extends SubsystemBase {
   public void simulationPeriodic() {
 
   }
+
+  public double calculateShooterSpeed() {
+       double heightDifference = Constants.FieldConst.kHubHeight;
+        double g = 9.81; // Acceleration due to gravity in m/s^2
+        // double angleRadians = Math.toRadians(Constants.RobotConstants.kShooterAngle);
+
+        double angleRadians = Math.toRadians(m_angleController.calculateHoodAngle());
+        double d = Constants.FieldConst.kHubTarget.getX() - m_limelight.getMegaTag2().pose.getX(); // Horizontal distance to target
+
+        // Using the projectile motion formula to calculate initial velocity
+        double numerator = g * d * d;
+        double denominator = 2 * (heightDifference - d * Math.tan(angleRadians)) *
+            Math.pow(Math.cos(angleRadians), 2);
+
+        if (denominator <= 0) {
+            return Double.NaN; // No valid solution
+        }
+
+        return Math.sqrt(numerator / denominator);
+    
+  }
+
+
 }

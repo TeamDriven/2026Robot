@@ -20,7 +20,7 @@ public class ShootCommand extends ParallelCommandGroup {
                 m_shooter.runOnce(() -> m_shooter.runShooter(shooterSpeed, 100)),
                 new SequentialCommandGroup(
                         m_angleController.waitUntilAtPosition(shooterAngle),
-                        m_shooter.waitUntilAtSpeed(shooterSpeed),
+                        // m_shooter.waitUntilAtSpeed(shooterSpeed),
                         new ParallelCommandGroup(
                                 // you will not want to run the ball tunnel until you know that shooter is at
                                 // the correct speed

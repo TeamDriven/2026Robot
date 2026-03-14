@@ -60,17 +60,19 @@ public class LimelightSubsystem extends SubsystemBase {
       SmartDashboard.putString("Tag Reading", "Hub");
       return VisionConsts.UP_TO_HUB_TAG;
     }
-
     return -1;
-
   }
 
-   public LimelightHelpers.PoseEstimate getMegaTag2(String LIMELIGHT_NAME) {
-    return LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(LIMELIGHT_NAME);
+   public LimelightHelpers.PoseEstimate getMegaTag2() {
+    return LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(limeLightName);
   }
 
-  public LimelightHelpers.PoseEstimate getMegaTag1(String LIMELIGHT_NAME) {
-    return LimelightHelpers.getBotPoseEstimate_wpiBlue(LIMELIGHT_NAME);
+  public LimelightHelpers.PoseEstimate getMegaTag1() {
+    return LimelightHelpers.getBotPoseEstimate_wpiBlue(limeLightName);
+  }
+
+  public String getLimelightName() {
+    return limeLightName;
   }
 
 }

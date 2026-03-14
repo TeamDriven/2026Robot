@@ -7,7 +7,10 @@ import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.util.Units;
 
 public class Constants {
     public class DrivetrainConst {
@@ -85,5 +88,15 @@ public class Constants {
 
         public static final Pose2d RED_DEPOT = new Pose2d(16.2352, 2.159, new Rotation2d(0));
         public static final Pose2d BLUE_DEPOT = new Pose2d(0.3048, 8.07 - 2.159, new Rotation2d(0));
+
+        public static final double kHubHeight = Units.inchesToMeters(72);
+        public static final double kHubDistanceFromAlliance = Units.inchesToMeters(158.6);
+        public static final double kHubDistanceLeftEdge = Units.inchesToMeters(138.65);
+        public static final double kHubDistanceRightEdge = Units.inchesToMeters(185.65);
+        public static final Pose3d kHubTarget = new Pose3d(kHubDistanceFromAlliance + 20,
+            (kHubDistanceLeftEdge + kHubDistanceRightEdge) / 2, kHubHeight, new Rotation3d());
+
+        public static final double kFuelWeight = Units.lbsToKilograms(0.474); // Kg
+
     }
 }

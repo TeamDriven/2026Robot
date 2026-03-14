@@ -1,6 +1,6 @@
 package frc.robot;
 
-import static frc.robot.Subsystems.m_limelight2;
+import static frc.robot.Subsystems.m_limelight;
 
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
@@ -41,13 +41,13 @@ public class Controls {
                 return () -> driveF
                                 .withVelocityX(
                                                 -(isRightStickDrive ? joystick.getRightY() : joystick.getLeftY())
-                                                                * DrivetrainConst.MaxSpeed * 0.5)
+                                                                * DrivetrainConst.MaxSpeed)
                                 .withVelocityY(
                                                 -(isRightStickDrive ? joystick.getRightX() : joystick.getLeftX())
-                                                                * DrivetrainConst.MaxSpeed * 0.5)
+                                                                * DrivetrainConst.MaxSpeed)
                                 .withRotationalRate(
                                                 -(isRightStickDrive ? joystick.getLeftX() : joystick.getRightX())
-                                                                * DrivetrainConst.MaxAngularRate * 0.5);
+                                                                * DrivetrainConst.MaxAngularRate);
         }
 
         /*
@@ -58,17 +58,17 @@ public class Controls {
                 // Get the target Angle
                 final DoubleSupplier targetAngle = () -> {
                         double dx = target.getX()
-                                        - m_limelight2.getMegaTag2("limelight-back").pose.getX();
+                                        - m_limelight.getMegaTag2().pose.getX();
 
                         double dy = target.getY()
-                                        - m_limelight2.getMegaTag2("limelight-back").pose.getY();
+                                        - m_limelight.getMegaTag2().pose.getY();
 
                         return Math.atan2(dy, dx); // radians
                 };
 
                 // Get the rotation rate -1 to 1 needed to get to target angle
                 final DoubleSupplier rotationRate = () -> {
-                        double currentHeading = m_limelight2.getMegaTag2("limelight-back").pose.getRotation().getRadians();
+                        double currentHeading = m_limelight.getMegaTag2().pose.getRotation().getRadians();
                         double error = targetAngle.getAsDouble() - currentHeading;
 
                         // Wrap to [-pi, pi]
@@ -204,5 +204,6 @@ public class Controls {
                                 .withVelocityY(-ySpeed.getAsDouble())
                                 .withRotationalRate(0);
         }
+
 
 }

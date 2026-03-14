@@ -147,11 +147,16 @@ public class RobotContainer {
                 joystick.x().onTrue(m_intakeActuation.setPositionCommand(0).andThen(new WaitCommand(5)).andThen(m_intakeRollers.stopIntakeCommand()));
                 joystick.leftBumper().whileTrue(m_intakeRollers.feedCommand(90, 100)).whileFalse(m_intakeRollers.stopIntakeCommand());
 
-                joystick.rightBumper().toggleOnTrue(new ShootCommand(29, 10, 62.5))
-                                .toggleOnFalse(m_angleController.runOnce(() -> m_angleController.setPosition(2)).alongWith(
-                                                new InstantCommand(() -> m_angleController.setPosition(0)),
-                                                new InstantCommand(() -> m_shooter.stopMotors()),
-                                                new InstantCommand(() -> m_ballTunnel.stopBallTunnel())));
+                // joystick.rightBumper().toggleOnTrue(new ShootCommand(29, 10, 62.5))
+                //                 .toggleOnFalse(m_angleController.runOnce(() -> m_angleController.setPosition(2)).alongWith(
+                //                                 new InstantCommand(() -> m_angleController.setPosition(0)),
+                //                                 new InstantCommand(() -> m_shooter.stopMotors()),
+                //                                 new InstantCommand(() -> m_ballTunnel.stopBallTunnel())));
+                joystick.rightBumper().toggleOnTrue(new ShootCommand(39, 12, 62.5))
+                        .toggleOnFalse(m_angleController.runOnce(() -> m_angleController.setPosition(2)).alongWith(
+                                        new InstantCommand(() -> m_angleController.setPosition(0)),
+                                        new InstantCommand(() -> m_shooter.stopMotors()),
+                                        new InstantCommand(() -> m_ballTunnel.stopBallTunnel())));
 
                 joystick.leftTrigger().whileTrue(m_ballTunnel.spitCommand(20, 62, 14, 100).alongWith(m_angleController.runOnce(() -> m_angleController.setPosition(2)))).whileFalse(new InstantCommand(() -> m_ballTunnel.stopBallTunnel()));
 

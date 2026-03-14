@@ -8,7 +8,6 @@ import static frc.robot.Subsystems.m_angleController;
 import static frc.robot.Subsystems.m_ballTunnel;
 import static frc.robot.Subsystems.m_intakeActuation;
 import static frc.robot.Subsystems.m_limelight;
-import static frc.robot.Subsystems.m_limelight2;
 import static frc.robot.Subsystems.m_shooter;
 
 import com.ctre.phoenix6.StatusCode;
@@ -75,6 +74,10 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
+    SmartDashboard.putNumber("shooter velo", m_shooter.getVelocity());
+    SmartDashboard.putNumber("calcualted shooter velo", m_shooter.calculateShooterSpeed());
+    SmartDashboard.putNumber("calculate shooter angle", m_angleController.calculateHoodAngle());
+
 
     // Limelight Localization Code
     if (kUseLimelight) {
@@ -114,7 +117,6 @@ public class Robot extends TimedRobot {
      */
 
     Subsystems.m_limelight.getAprilTag();
-    Subsystems.m_limelight2.getAprilTag();
 
   }
 
@@ -165,9 +167,6 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopPeriodic() {
-    // System.out.println("leftX: " + Controls.joystick.getLeftX());
-    // System.out.println("rightX: " + Controls.joystick.getRightX());
-    // System.out.println("rightY: " + Controls.joystick.getRightY());
     try {
       System.out.println("Drive Request: " + RobotContainer.drivetrain.getDefaultCommand());
     } catch (Exception e) {
@@ -200,7 +199,7 @@ public class Robot extends TimedRobot {
     boolean useMegaTag2 = true; // set to false to use MegaTag1
     boolean doRejectUpdate = false;
     if (useMegaTag2 == false) {
-      LimelightHelpers.PoseEstimate mt1 = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-back");
+      LimelightHelpers.PoseEstimate mt1 = LimelightHelpers.getBotPoseEstimate_wpiBlue(m_limelight.getLimelightName());
 
       if (mt1.tagCount == 1 && mt1.rawFiducials.length == 1) {
         if (mt1.rawFiducials[0].ambiguity > .7) {
@@ -221,21 +220,9 @@ public class Robot extends TimedRobot {
             mt1.timestampSeconds);
       }
     } else if (useMegaTag2 == true) {
-      LimelightHelpers.SetRobotOrientation("limelight-back",
+      LimelightHelpers.SetRobotOrientation(m_limelight.getLimelightName(),
          RobotContainer.drivetrain.getPose().getRotation().getDegrees(), 0, 0, 0, 0, 0);
-      LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-back");
-      SmartDashboard.putNumber("poseEstimate x", mt2.pose.getX());
-      SmartDashboard.putNumber("poseEstimate y", mt2.pose.getY());
-      SmartDashboard.putNumber("poseEstimate rot", mt2.pose.getRotation().getDegrees());
-
-      SmartDashboard.putNumber("poseEstimat tagArea" , mt2.avgTagArea);
-      SmartDashboard.putNumber("poseEstimate tagDistance", mt2.avgTagDist);
-
-          SmartDashboard.putNumber("limelight tx", LimelightHelpers.getTX("limelight-back"));
-          SmartDashboard.putNumber("limelight ty", LimelightHelpers.getTY("limelight-back"));
-          SmartDashboard.putNumber("limelight better tx", LimelightHelpers.getTXNC("limelight-back"));
-          SmartDashboard.putNumber("limelight better ty", LimelightHelpers.getTYNC("limelight-back"));
-
+      LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(m_limelight.getLimelightName());
 
       if (Math.abs(RobotContainer.drivetrain.getPigeon2().getAngularVelocityZWorld().getValueAsDouble()) > 720) // if our angular velocity is greater
                                                                                 // than 720 degrees per second, ignore

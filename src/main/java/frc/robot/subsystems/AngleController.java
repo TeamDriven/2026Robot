@@ -1,8 +1,11 @@
 package frc.robot.subsystems;
 
+import static frc.robot.Subsystems.m_limelight;
+
 import java.util.function.DoubleSupplier;
 
 import frc.robot.Constants;
+import frc.robot.RobotContainer;
 import frc.robot.Constants.AngleControllerConsts;
 import frc.robot.generated.TunerConstants;
 
@@ -15,6 +18,7 @@ import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
@@ -31,8 +35,8 @@ public class AngleController extends SubsystemBase {
   NeutralOut stopMode;
 
   public AngleController(int motorId) {
-    // angleMotor = new TalonFX(motorId, TunerConstants.kCANBus);
-    angleMotor = new TalonFX(motorId);
+    angleMotor = new TalonFX(motorId, TunerConstants.kCANBus);
+    // angleMotor = new TalonFX(motorId);
 
     initAngleMotor();
     angleMotor.setPosition(0);
@@ -217,5 +221,11 @@ public class AngleController extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+  }
+
+  public double calculateHoodAngle() {
+    if(m_limelight.getMegaTag2().avgTagDist > Units.inchesToMeters(170))
+      return 12;
+    return 10;
   }
 }

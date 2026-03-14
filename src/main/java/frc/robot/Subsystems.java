@@ -14,6 +14,5 @@ public class Subsystems {
     public static AngleController m_angleController = new AngleController(16);
     public static IntakeRollers m_intakeRollers = new IntakeRollers(20); // todo need to sensor
 
-    public static final LimelightSubsystem m_limelight = new LimelightSubsystem("limelight-front");
-    public static final LimelightSubsystem m_limelight2 = new LimelightSubsystem("limelight-back");
+    public static final LimelightSubsystem m_limelight = new LimelightSubsystem("limelight-back");
 }
