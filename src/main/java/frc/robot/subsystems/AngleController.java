@@ -18,6 +18,7 @@ import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -220,12 +221,25 @@ public class AngleController extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
+    System.out.println("Distance from hub: " + getDistFromHub(Constants.FieldConst.RED_HUB));
+    System.out.println("Angle: " + calculateHoodAngle());
+  }
+
+  public double getDistFromHub(Pose2d hub) {
+    double distance = RobotContainer.drivetrain.getState().Pose.getTranslation().getDistance(hub.getTranslation());
+    return distance;
   }
 
   public double calculateHoodAngle() {
-    if(m_limelight.getMegaTag2().avgTagDist > Units.inchesToMeters(170))
-      return 12;
-    return 10;
+    // if (getDistFromHub(Constants.FieldConst.RED_HUB) > 3.7) {
+    //   // System.out.println("Angle: " + 12);
+    //   return 12;
+    // }
+    // if (getDistFromHub(Constants.FieldConst.RED_HUB) > 2.7) {
+    //   // System.out.println("Angle: " + 12);
+    //   return 9;
+    // }
+    // System.out.println("Angle: " + 10);
+    return 12;
   }
 }

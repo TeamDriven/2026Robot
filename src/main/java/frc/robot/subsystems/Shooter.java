@@ -68,7 +68,7 @@ public class Shooter extends SubsystemBase {
     configs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
     configs.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
     configs.Feedback.SensorToMechanismRatio = ShooterConsts.GearRatio;
-    
+
     leftShooterMotor.setControl(new Follower(rightTopShooterMotor.getDeviceID(), MotorAlignmentValue.Aligned));
     rightBottomShooterMotor.setControl(new Follower(rightTopShooterMotor.getDeviceID(), MotorAlignmentValue.Aligned));
     /*
@@ -80,8 +80,7 @@ public class Shooter extends SubsystemBase {
     configs.Slot0.kD = 0.01; // A change of 1 rotation per second squared results in 0.01 volts output
     configs.Slot0.kV = 0; // Falcon 500 is a 500kV motor, 500rpm per V = 8.333 rps per V, 1/8.33 = 0.12
 
-    
-                             // volts / Rotation per second
+    // volts / Rotation per second
 
     // Peak output of 8 volts
     configs.Voltage.PeakForwardVoltage = 12;
@@ -210,37 +209,28 @@ public class Shooter extends SubsystemBase {
     });
   }
 
+  public double calcSpeed() {
+    double loss = 1.5;
+    double g = 9.81; // Acceleration due to gravity in m/s^2
+    // double angleRadians = Math.toRadians(Constants.RobotConstants.kShooterAngle);
+
+    double angleRadians = Math.toRadians(m_angleController.calculateHoodAngle());
+    double d = Constants.FieldConst.kHubTarget.getX() - m_limelight.getMegaTag2().pose.getX(); // Horizontal distance to
+                                                                                               // target
+    
+    double top = d * g;
+    double bottom = Math.sin(2 * angleRadians);
+
+    System.out.println("Shooter Speed: "  + (Math.sqrt(loss * top/bottom)));
+
+    return  Math.sqrt(loss * top/bottom); 
+  }
+
   @Override
   public void periodic() {
-    System.out.println("rb: " + rightBottomShooterMotor.getVelocity().getValueAsDouble());
-    SmartDashboard.putNumber("right Bottom vel: " ,rightTopShooterMotor.getVelocity().getValueAsDouble());
+      System.out.println();
   }
 
-  @Override
-  public void simulationPeriodic() {
-
-  }
-
-  public double calculateShooterSpeed() {
-       double heightDifference = Constants.FieldConst.kHubHeight;
-        double g = 9.81; // Acceleration due to gravity in m/s^2
-        // double angleRadians = Math.toRadians(Constants.RobotConstants.kShooterAngle);
-
-        double angleRadians = Math.toRadians(m_angleController.calculateHoodAngle());
-        double d = Constants.FieldConst.kHubTarget.getX() - m_limelight.getMegaTag2().pose.getX(); // Horizontal distance to target
-
-        // Using the projectile motion formula to calculate initial velocity
-        double numerator = g * d * d;
-        double denominator = 2 * (heightDifference - d * Math.tan(angleRadians)) *
-            Math.pow(Math.cos(angleRadians), 2);
-
-        if (denominator <= 0) {
-            return Double.NaN; // No valid solution
-        }
-
-        return Math.sqrt(numerator / denominator);
-    
-  }
 
 
 }

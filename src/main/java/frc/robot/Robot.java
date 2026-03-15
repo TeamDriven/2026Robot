@@ -75,7 +75,7 @@ public class Robot extends TimedRobot {
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
     SmartDashboard.putNumber("shooter velo", m_shooter.getVelocity());
-    SmartDashboard.putNumber("calcualted shooter velo", m_shooter.calculateShooterSpeed());
+    SmartDashboard.putNumber("calcualted shooter velo", m_shooter.calcSpeed());
     SmartDashboard.putNumber("calculate shooter angle", m_angleController.calculateHoodAngle());
 
 

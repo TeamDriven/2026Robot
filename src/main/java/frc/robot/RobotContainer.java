@@ -152,7 +152,7 @@ public class RobotContainer {
                 //                                 new InstantCommand(() -> m_angleController.setPosition(0)),
                 //                                 new InstantCommand(() -> m_shooter.stopMotors()),
                 //                                 new InstantCommand(() -> m_ballTunnel.stopBallTunnel())));
-                joystick.rightBumper().toggleOnTrue(new ShootCommand(39, 12, 62.5))
+                joystick.rightBumper().toggleOnTrue(new ShootCommand(m_shooter.calcSpeed(), m_angleController.calculateHoodAngle(), 62.5))
                         .toggleOnFalse(m_angleController.runOnce(() -> m_angleController.setPosition(2)).alongWith(
                                         new InstantCommand(() -> m_angleController.setPosition(0)),
                                         new InstantCommand(() -> m_shooter.stopMotors()),
