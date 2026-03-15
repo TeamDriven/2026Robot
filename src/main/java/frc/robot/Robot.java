@@ -77,6 +77,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("shooter velo", m_shooter.getVelocity());
     SmartDashboard.putNumber("calcualted shooter velo", m_shooter.calcSpeed());
     SmartDashboard.putNumber("calculate shooter angle", m_angleController.calculateHoodAngle());
+    SmartDashboard.putNumber("avg distance lime", m_limelight.getMegaTag2().avgTagDist);
 
 
     // Limelight Localization Code

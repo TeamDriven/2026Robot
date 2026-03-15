@@ -139,11 +139,11 @@ public class RobotContainer {
                 drivetrain.registerTelemetry(logger::telemeterize);
 
                 // joystick.povDown().onTrue(drivetrain.applyRequest(Controls.localHeading(Constants.FieldConst.BLUE_HUB))).onFalse(drivetrain.applyRequest(Controls.driveRequest()));
-                joystick.povDown().onTrue(drivetrain.applyRequest(Controls.localHeading(Constants.FieldConst.BLUE_HUB))).onFalse(drivetrain.applyRequest(Controls.driveRequest()));
+                joystick.povDown().onTrue(drivetrain.applyRequest(Controls.localHeading(Constants.FieldConst.RED_HUB))).onFalse(drivetrain.applyRequest(Controls.driveRequest()));
 
 
                 // Intake
-                joystick.b().onTrue(m_intakeActuation.setPositionCommand(1.45));
+                joystick.b().onTrue(m_intakeActuation.setPositionCommand(1.2));
                 joystick.x().onTrue(m_intakeActuation.setPositionCommand(0).andThen(new WaitCommand(5)).andThen(m_intakeRollers.stopIntakeCommand()));
                 joystick.leftBumper().whileTrue(m_intakeRollers.feedCommand(90, 100)).whileFalse(m_intakeRollers.stopIntakeCommand());
 
@@ -152,12 +152,18 @@ public class RobotContainer {
                 //                                 new InstantCommand(() -> m_angleController.setPosition(0)),
                 //                                 new InstantCommand(() -> m_shooter.stopMotors()),
                 //                                 new InstantCommand(() -> m_ballTunnel.stopBallTunnel())));
-                joystick.rightBumper().toggleOnTrue(new ShootCommand(m_shooter.calcSpeed(), m_angleController.calculateHoodAngle(), 62.5))
+               joystick.rightBumper().toggleOnTrue(new ShootCommand(m_shooter.calcSpeed(), m_angleController.calculateHoodAngle(), 62.5))
                         .toggleOnFalse(m_angleController.runOnce(() -> m_angleController.setPosition(2)).alongWith(
                                         new InstantCommand(() -> m_angleController.setPosition(0)),
                                         new InstantCommand(() -> m_shooter.stopMotors()),
                                         new InstantCommand(() -> m_ballTunnel.stopBallTunnel())));
 
+
+                joystick.povRight().toggleOnTrue(new ShootCommand(75,30, 62.5))
+                        .toggleOnFalse(m_angleController.runOnce(() -> m_angleController.setPosition(2)).alongWith(
+                                        new InstantCommand(() -> m_angleController.setPosition(0)),
+                                        new InstantCommand(() -> m_shooter.stopMotors()),
+                                        new InstantCommand(() -> m_ballTunnel.stopBallTunnel())));
                 joystick.leftTrigger().whileTrue(m_ballTunnel.spitCommand(20, 62, 14, 100).alongWith(m_angleController.runOnce(() -> m_angleController.setPosition(2)))).whileFalse(new InstantCommand(() -> m_ballTunnel.stopBallTunnel()));
 
                 joystick.a().onTrue(new InstantCommand(() -> m_ballTunnel.runBallTunnel(-62.5, 100))).onFalse(new InstantCommand(() -> m_ballTunnel.stopBallTunnel()));
