@@ -208,4 +208,5 @@ public class IntakeActuation extends SubsystemBase {
   public double getCurrentPosition() {
     return actuationMotor.getPosition().getValueAsDouble();
   }
+
 }

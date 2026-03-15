@@ -215,6 +215,7 @@ public class Shooter extends SubsystemBase {
     // double angleRadians = Math.toRadians(Constants.RobotConstants.kShooterAngle);
 
     double angleRadians = Math.toRadians(m_angleController.calculateHoodAngle());
+
     double d = Constants.FieldConst.kHubTarget.getX() - m_limelight.getMegaTag2().pose.getX(); // Horizontal distance to
                                                                                                // target
     

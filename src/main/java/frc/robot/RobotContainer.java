@@ -47,6 +47,8 @@ import frc.robot.commands.autos.DepotAuto;
 import frc.robot.commands.autos.NeutralDepotAuto;
 import frc.robot.commands.autos.NeutralOutpostAuto;
 import frc.robot.commands.autos.OutpostAuto;
+import frc.robot.commands.autos.OutpostNeutralAuto;
+
 import static frc.robot.Controls.joystick;
 
 public class RobotContainer {
@@ -70,6 +72,7 @@ public class RobotContainer {
         private final NeutralOutpostAuto neutralZoneOutpostAuto;
         private final NeutralDepotAuto neutralZoneDepotAuto;
         private final DepotAuto depotAuto;
+        private final OutpostNeutralAuto outpostNeutralAuto;
         private final AutoChooser autoChooser = new AutoChooser();
 
         public static SwerveModulePosition frontRight;
@@ -106,14 +109,15 @@ public class RobotContainer {
                 neutralZoneOutpostAuto = new NeutralOutpostAuto(autoFactory);
                 neutralZoneDepotAuto = new NeutralDepotAuto(autoFactory);
                 depotAuto = new DepotAuto(autoFactory);
+                outpostNeutralAuto = new OutpostNeutralAuto(autoFactory);
 
                 autoChooser.addRoutine("Depot Auto", depotAuto::simplePathAuto);
                 autoChooser.addRoutine("Outpost Auto", outpostAuto::simplePathAuto);
                 autoChooser.addRoutine("Neutral Zone Depot Auto", neutralZoneDepotAuto::neutralZoneAuto);
                 autoChooser.addRoutine("Neutral Zone Outpost Auto", neutralZoneOutpostAuto::neutralZoneAuto);
+                autoChooser.addRoutine("OutpostNetural", outpostNeutralAuto::simplePathAuto);
+
                 SmartDashboard.putData("Auto Chooser", autoChooser);
-                SmartDashboard.putBoolean("StartfeedCommand", false);
-                SmartDashboard.putBoolean("endFeedCommand", false);
 
                 frontLeft = drivetrain.getState().ModulePositions[0];
                 frontRight = drivetrain.getState().ModulePositions[1];
@@ -159,34 +163,19 @@ public class RobotContainer {
                                         new InstantCommand(() -> m_ballTunnel.stopBallTunnel())));
 
 
-                joystick.povRight().toggleOnTrue(new ShootCommand(75,30, 62.5))
+                joystick.rightTrigger().toggleOnTrue(new ShootCommand(75,30, 62.5))
                         .toggleOnFalse(m_angleController.runOnce(() -> m_angleController.setPosition(2)).alongWith(
                                         new InstantCommand(() -> m_angleController.setPosition(0)),
                                         new InstantCommand(() -> m_shooter.stopMotors()),
                                         new InstantCommand(() -> m_ballTunnel.stopBallTunnel())));
+                                        
                 joystick.leftTrigger().whileTrue(m_ballTunnel.spitCommand(20, 62, 14, 100).alongWith(m_angleController.runOnce(() -> m_angleController.setPosition(2)))).whileFalse(new InstantCommand(() -> m_ballTunnel.stopBallTunnel()));
 
                 joystick.a().onTrue(new InstantCommand(() -> m_ballTunnel.runBallTunnel(-62.5, 100))).onFalse(new InstantCommand(() -> m_ballTunnel.stopBallTunnel()));
                 joystick.y().onTrue(new InstantCommand(() -> m_ballTunnel.runBallTunnel(62.5, 100))).onFalse(new InstantCommand(() -> m_ballTunnel.stopBallTunnel()));
 
-                joystick.rightTrigger().toggleOnTrue(new ShootCommand(40, 25, 62.5))
-                                .toggleOnFalse(m_angleController.runOnce(() -> m_angleController.setPosition(2)).alongWith(
-                                                new InstantCommand(() -> m_angleController.setPosition(0)),
-                                                new InstantCommand(() -> m_shooter.stopMotors()),
-                                                new InstantCommand(() -> m_ballTunnel.stopBallTunnel())));
-
                 // Reset Heading
                 joystick.start().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
-                // joystick
-                //                 .button(8)
-                //                 .onTrue(
-                //                                 Commands.runOnce(
-                //                                                 () -> drivetrain.setPose(
-                //                                                                 new Pose2d(drivetrain.getPose()
-                //                                                                                 .getTranslation(),
-                //                                                                                 new Rotation2d())),
-                //                                                 drivetrain)
-                //                                                 .ignoringDisable(true));
         }
 
         public Command getAutonomousCommand() {

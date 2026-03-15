@@ -1,5 +1,7 @@
 package frc.robot.commands.autos;
 
+import static frc.robot.Subsystems.m_intakeActuation;
+
 import choreo.auto.AutoFactory;
 import choreo.auto.AutoRoutine;
 import choreo.auto.AutoTrajectory;
@@ -15,7 +17,7 @@ public class NeutralOutpostAuto {
 
     public AutoRoutine neutralZoneAuto() {
         final AutoRoutine routine = m_factory.newRoutine("Neutral Zone Outpost");
-        final AutoTrajectory startPickupAndIntake = routine.trajectory("NeutralZoneOutpost");
+        final AutoTrajectory startPickupAndIntake = routine.trajectory("OutpostNetural");
 
         routine.active().onTrue(
             startPickupAndIntake.cmd());

@@ -26,7 +26,7 @@ public class ShootCommand extends ParallelCommandGroup {
                                 // the correct speed
                                 m_ballTunnel.runBallTunnelCommand(ballTunnelSpeed, 20),
                                 Commands.waitSeconds(2),
-                                m_intakeActuation.setPositionCommand(0, 1, 1, 0),
+                                m_intakeActuation.setPositionCommand(0,15, 20, 0),
                                 m_intakeRollers.feedCommand(85, 100))));
     }
 }
