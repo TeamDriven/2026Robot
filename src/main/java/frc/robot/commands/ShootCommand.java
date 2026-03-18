@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Robot;
+import frc.robot.subsystems.IntakeActuation;
 
 public class ShootCommand extends ParallelCommandGroup {
     public ShootCommand(double shooterSpeed, double shooterAngle, double ballTunnelSpeed) {
@@ -20,13 +21,14 @@ public class ShootCommand extends ParallelCommandGroup {
                 m_shooter.runOnce(() -> m_shooter.runShooter(shooterSpeed, 100)),
                 new SequentialCommandGroup(
                         m_angleController.waitUntilAtPosition(shooterAngle),
-                        // m_shooter.waitUntilAtSpeed(shooterSpeed),
+                        m_shooter.waitUntilAtSpeed(shooterSpeed),
                         new ParallelCommandGroup(
                                 // you will not want to run the ball tunnel until you know that shooter is at
                                 // the correct speed
                                 m_ballTunnel.runBallTunnelCommand(ballTunnelSpeed, 20),
                                 Commands.waitSeconds(2),
-                                m_intakeActuation.setPositionCommand(0,15, 20, 0),
-                                m_intakeRollers.feedCommand(85, 100))));
+                                m_intakeRollers.feedCommand(85, 100),
+                                m_intakeActuation.intakeInSlowCommand())));
+                                
     }
 }

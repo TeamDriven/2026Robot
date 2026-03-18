@@ -52,7 +52,7 @@ public class Shooter extends SubsystemBase {
     rightBottomShooterMotor = new TalonFX(rightBottomMotorId, TunerConstants.kCANBus);
     initMotors();
 
-    velocityControl = new VelocityVoltage(0).withEnableFOC(true).withFeedForward(7);
+    velocityControl = new VelocityVoltage(0).withEnableFOC(true).withFeedForward(4.5);
 
     // sitControl = new VoltageOut(2);
 
@@ -205,12 +205,14 @@ public class Shooter extends SubsystemBase {
 
   public Command waitUntilAtSpeed(double speed) {
     return new WaitUntilCommand(() -> {
-      return Math.abs(rightTopShooterMotor.getVelocity().getValueAsDouble() - speed) <= 2; // 2 rps
+      double motorVelocity = getVelocity();
+      SmartDashboard.putNumber("shooter speed ", motorVelocity);
+      return Math.abs(motorVelocity - speed) <= 2; // 1 degree tolerance
     });
   }
 
   public double calcSpeed() {
-    double loss = 1.5;
+    double loss = 1.25;
     double g = 9.81; // Acceleration due to gravity in m/s^2
     // double angleRadians = Math.toRadians(Constants.RobotConstants.kShooterAngle);
 
@@ -221,8 +223,6 @@ public class Shooter extends SubsystemBase {
     
     double top = d * g;
     double bottom = Math.sin(2 * angleRadians);
-
-    System.out.println("Shooter Speed: "  + (Math.sqrt(loss * top/bottom)));
 
     return  Math.sqrt(loss * top/bottom); 
   }

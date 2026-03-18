@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import static frc.robot.Subsystems.m_intakeActuation;
 import static frc.robot.Subsystems.m_intakeRollers;
 
 import com.ctre.phoenix6.StatusCode;
@@ -113,25 +114,7 @@ public class IntakeActuation extends SubsystemBase {
     };
   }
 
-    public Command setPositionCommand(double position, double velocity, double acceralation, double jerk) {
-    return new Command() {
-      @Override
-      public void execute() {
-        setPosition(position, velocity, acceralation, jerk);
-      }
 
-      @Override
-      public boolean isFinished() {
-        return true;
-      }
-    };
-  }
-  
-
-    public void setPosition(double position, double velcoity, double accerlation, double jerk) {
-            final DynamicMotionMagicVoltage m_request = new DynamicMotionMagicVoltage(0, velcoity, accerlation).withJerk(jerk);
-    actuationMotor.setControl(m_request.withPosition(position));
-  }
 
 
   /**
@@ -161,11 +144,11 @@ public class IntakeActuation extends SubsystemBase {
     };
   }
 
-  public Command resetIntakeCommand() {
+  public Command setPositionUntilSupply(double position) {
     return new Command() {
       @Override
       public void execute() {
-        setPosition(0);
+        setPosition(position);
       }
 
 
@@ -177,7 +160,24 @@ public class IntakeActuation extends SubsystemBase {
       }
     };
   }
-
+    public void driftTo(){
+        final DynamicMotionMagicVoltage m_request =
+        new DynamicMotionMagicVoltage(getCurrentPosition(), 1, 1).withJerk(20);
+        actuationMotor.setControl(m_request.withPosition(0));
+    }
+    public Command intakeInSlowCommand() {
+      return new Command() {
+      @Override
+      public void execute() {
+        driftTo();
+      }
+      @Override
+      public boolean isFinished(){
+        return actuationMotor.getSupplyCurrent()
+            .getValueAsDouble() >= Constants.AngleControllerConsts.CURRENT_TOLERANCE;
+      }
+    };
+  }
   /**
    * Get the actuation motor's current position
    * 

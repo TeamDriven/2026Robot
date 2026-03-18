@@ -15,11 +15,14 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Constants.BallTunnelConsts;
 import frc.robot.generated.TunerConstants;
 
+import frc.robot.subsystems.IntakeActuation;
+import frc.robot.subsystems.IntakeRollers;
 /**
  * The Indexer class represents a subsystem that controls the ballTunnel motor.
  * It provides methods to initialize, run, and stop the ballTunnel motor, as
@@ -207,7 +210,7 @@ public class BallTunnel extends SubsystemBase {
 
       @Override
       public void execute() {
-        spit(velocityBallTunnel, velocityHopper, velocityDiverter, acceleration);
+          spit(velocityBallTunnel, velocityHopper, velocityDiverter, acceleration);
       }
     };
   }

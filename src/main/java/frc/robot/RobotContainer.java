@@ -25,6 +25,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -43,9 +44,7 @@ import frc.robot.subsystems.IntakeRollers;
 import frc.robot.Constants.DrivetrainConst;
 import frc.robot.commands.IntakeOutCommand;
 import frc.robot.commands.ShootCommand;
-import frc.robot.commands.autos.DepotAuto;
-import frc.robot.commands.autos.NeutralDepotAuto;
-import frc.robot.commands.autos.NeutralOutpostAuto;
+import frc.robot.commands.autos.MiddleAuto;
 import frc.robot.commands.autos.OutpostAuto;
 import frc.robot.commands.autos.OutpostNeutralAuto;
 
@@ -62,19 +61,20 @@ public class RobotContainer {
         private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
         private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
+
         private final Telemetry logger = new Telemetry(DrivetrainConst.MaxSpeed);
 
         public static final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
         /* Path follower */
         public static AutoFactory autoFactory;
-        private final OutpostAuto outpostAuto;
-        private final NeutralOutpostAuto neutralZoneOutpostAuto;
-        private final NeutralDepotAuto neutralZoneDepotAuto;
-        private final DepotAuto depotAuto;
+        // private final OutpostAuto outpostAuto;
+        //private final NeutralDepotAuto neutralZoneDepotAuto;
+        //private final DepotAuto depotAuto;
         private final OutpostNeutralAuto outpostNeutralAuto;
+        private final MiddleAuto middleAuto;
         private final AutoChooser autoChooser = new AutoChooser();
-
+        
         public static SwerveModulePosition frontRight;
 
         public static SwerveModulePosition backRight;
@@ -105,18 +105,16 @@ public class RobotContainer {
         public RobotContainer() {
                 SmartDashboard.putData("Field", m_field);
                 autoFactory = drivetrain.createAutoFactory();
-                outpostAuto = new OutpostAuto(autoFactory);
-                neutralZoneOutpostAuto = new NeutralOutpostAuto(autoFactory);
-                neutralZoneDepotAuto = new NeutralDepotAuto(autoFactory);
-                depotAuto = new DepotAuto(autoFactory);
+                //outpostAuto = new OutpostAuto(autoFactory);
+                //neutralZoneDepotAuto = new NeutralDepotAuto(autoFactory);
+                //depotAuto = new DepotAuto(autoFactory);
                 outpostNeutralAuto = new OutpostNeutralAuto(autoFactory);
-
-                autoChooser.addRoutine("Depot Auto", depotAuto::simplePathAuto);
-                autoChooser.addRoutine("Outpost Auto", outpostAuto::simplePathAuto);
-                autoChooser.addRoutine("Neutral Zone Depot Auto", neutralZoneDepotAuto::neutralZoneAuto);
-                autoChooser.addRoutine("Neutral Zone Outpost Auto", neutralZoneOutpostAuto::neutralZoneAuto);
+                middleAuto = new MiddleAuto(autoFactory);
+                //autoChooser.addRoutine("Depot Auto", depotAuto::simplePathAuto);
+                //autoChooser.addRoutine("Outpost Auto", outpostAuto::simplePathAuto);
+                //autoChooser.addRoutine("Neutral Zone Depot Auto", neutralZoneDepotAuto::neutralZoneAuto);
                 autoChooser.addRoutine("OutpostNetural", outpostNeutralAuto::simplePathAuto);
-
+                autoChooser.addRoutine("Middle Auto", middleAuto::middleAuto);
                 SmartDashboard.putData("Auto Chooser", autoChooser);
 
                 frontLeft = drivetrain.getState().ModulePositions[0];
@@ -143,12 +141,14 @@ public class RobotContainer {
                 drivetrain.registerTelemetry(logger::telemeterize);
 
                 // joystick.povDown().onTrue(drivetrain.applyRequest(Controls.localHeading(Constants.FieldConst.BLUE_HUB))).onFalse(drivetrain.applyRequest(Controls.driveRequest()));
-                joystick.povDown().onTrue(drivetrain.applyRequest(Controls.localHeading(Constants.FieldConst.RED_HUB))).onFalse(drivetrain.applyRequest(Controls.driveRequest()));
-
+                
+              joystick.povDown().onTrue(drivetrain.applyRequest(Controls.localHeading(Robot.alliance == Alliance.Red ? Constants.FieldConst.RED_HUB : Constants.FieldConst.BLUE_HUB))).onFalse(drivetrain.applyRequest(Controls.driveRequest()));
+                //joystick.povUp().onTrue(m_intakeActuation.intakeInSlowCommand());
+                
 
                 // Intake
-                joystick.b().onTrue(m_intakeActuation.setPositionCommand(1.2));
-                joystick.x().onTrue(m_intakeActuation.setPositionCommand(0).andThen(new WaitCommand(5)).andThen(m_intakeRollers.stopIntakeCommand()));
+                joystick.b().onTrue(m_intakeActuation.setPositionUntilSupply(1.39));
+                joystick.x().onTrue(m_intakeActuation.setPositionUntilSupply(0).andThen(new WaitCommand(5)).andThen(m_intakeRollers.stopIntakeCommand()));
                 joystick.leftBumper().whileTrue(m_intakeRollers.feedCommand(90, 100)).whileFalse(m_intakeRollers.stopIntakeCommand());
 
                 // joystick.rightBumper().toggleOnTrue(new ShootCommand(29, 10, 62.5))
@@ -156,11 +156,12 @@ public class RobotContainer {
                 //                                 new InstantCommand(() -> m_angleController.setPosition(0)),
                 //                                 new InstantCommand(() -> m_shooter.stopMotors()),
                 //                                 new InstantCommand(() -> m_ballTunnel.stopBallTunnel())));
-               joystick.rightBumper().toggleOnTrue(new ShootCommand(m_shooter.calcSpeed(), m_angleController.calculateHoodAngle(), 62.5))
+               joystick.rightBumper().toggleOnTrue(new ShootCommand(m_shooter.calcSpeed(), 12, 62.5))
                         .toggleOnFalse(m_angleController.runOnce(() -> m_angleController.setPosition(2)).alongWith(
                                         new InstantCommand(() -> m_angleController.setPosition(0)),
                                         new InstantCommand(() -> m_shooter.stopMotors()),
                                         new InstantCommand(() -> m_ballTunnel.stopBallTunnel())));
+                                        //m_intakeActuation.setPositionUntilSupply(1.39)));
 
 
                 joystick.rightTrigger().toggleOnTrue(new ShootCommand(75,30, 62.5))
@@ -169,7 +170,11 @@ public class RobotContainer {
                                         new InstantCommand(() -> m_shooter.stopMotors()),
                                         new InstantCommand(() -> m_ballTunnel.stopBallTunnel())));
                                         
-                joystick.leftTrigger().whileTrue(m_ballTunnel.spitCommand(20, 62, 14, 100).alongWith(m_angleController.runOnce(() -> m_angleController.setPosition(2)))).whileFalse(new InstantCommand(() -> m_ballTunnel.stopBallTunnel()));
+                joystick.leftTrigger().whileTrue(m_ballTunnel.spitCommand(20, 62, 14, 100)
+                .alongWith(m_angleController.runOnce(() -> m_angleController.setPosition(2)))
+                .alongWith(m_intakeRollers.feedCommand(85, 100))
+                .alongWith(m_intakeActuation.intakeInSlowCommand()))
+                .whileFalse(new InstantCommand(() -> m_ballTunnel.stopBallTunnel()));
 
                 joystick.a().onTrue(new InstantCommand(() -> m_ballTunnel.runBallTunnel(-62.5, 100))).onFalse(new InstantCommand(() -> m_ballTunnel.stopBallTunnel()));
                 joystick.y().onTrue(new InstantCommand(() -> m_ballTunnel.runBallTunnel(62.5, 100))).onFalse(new InstantCommand(() -> m_ballTunnel.stopBallTunnel()));

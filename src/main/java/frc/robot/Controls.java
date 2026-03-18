@@ -54,7 +54,6 @@ public class Controls {
          * Turn towards given Pose2d
          */
         public static Supplier<SwerveRequest> localHeading(Pose2d target) {
-
                 // Get the target Angle
                 final DoubleSupplier targetAngle = () -> {
                         double dx = target.getX()

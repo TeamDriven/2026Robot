@@ -221,8 +221,8 @@ public class AngleController extends SubsystemBase {
 
   @Override
   public void periodic() {
-    System.out.println("Distance from hub: " + getDistFromHub(Constants.FieldConst.RED_HUB));
-    System.out.println("Angle: " + calculateHoodAngle());
+    // System.out.println("Distance from hub: " + getDistFromHub(Constants.FieldConst.RED_HUB));
+    // System.out.println("Angle: " + calculateHoodAngle());
   }
 
   public double getDistFromHub(Pose2d hub) {

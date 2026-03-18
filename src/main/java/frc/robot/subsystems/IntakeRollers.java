@@ -154,18 +154,6 @@ public class IntakeRollers extends SubsystemBase {
 
     @Override
     public void periodic() {
-        // This method will be called once per scheduler run
-        // System.out.println(intakeMotor.getDeviceTemp().toString());
-        // System.out.println(pdp.getCurrent(16));
-        // System.out.println(getNoteSensor());
-        // if (getNoteSensor()) {
-        // System.out.println("detect");
-        // }
-        // SmartDashboard.putBoolean("Left Intake Note Sensor", getLeftNoteSensor());
-        // SmartDashboard.putBoolean("Right Intake Note Sensor", getRightNoteSensor());
-
-        // SmartDashboard.putNumber("Intake Speed",
-        // intakeMotor.getVelocity().getValueAsDouble());
     }
 
     @Override

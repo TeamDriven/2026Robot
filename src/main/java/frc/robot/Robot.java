@@ -7,8 +7,11 @@ package frc.robot;
 import static frc.robot.Subsystems.m_angleController;
 import static frc.robot.Subsystems.m_ballTunnel;
 import static frc.robot.Subsystems.m_intakeActuation;
+import static frc.robot.Subsystems.m_intakeRollers;
 import static frc.robot.Subsystems.m_limelight;
 import static frc.robot.Subsystems.m_shooter;
+
+import java.util.Optional;
 
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.MountPoseConfigs;
@@ -21,6 +24,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.net.WebServer;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -34,8 +39,8 @@ public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
   private final RobotContainer m_robotContainer;
-
   private final boolean kUseLimelight = true;
+  public static Alliance alliance;
 
 
   public Robot() {  
@@ -136,6 +141,9 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
+    Optional<Alliance> ally = DriverStation.getAlliance();
+    if(ally.isPresent()) alliance = ally.get();
+    
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     if (m_autonomousCommand != null) {
@@ -153,17 +161,29 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousExit() {
+    m_intakeRollers.stopIntakeMotor();
+    m_shooter.stopMotors();
+    m_ballTunnel.stopBallTunnel();
+    m_intakeActuation.setPosition(1.3);
+    m_angleController.resetAngleToZeroCommand();
   }
 
   @Override
   public void teleopInit() {
+        Optional<Alliance> ally = DriverStation.getAlliance();
+    if(ally.isPresent()){
+      if(ally.get() == Alliance.Red) {
+        System.out.println("Red");
+      }
+      else if(ally.get() == Alliance.Blue) {
+        System.out.println("Blue");
+      }
+      alliance = ally.get();
+    } 
+ 
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
-
-    m_intakeActuation.resetIntakeCommand();
-    m_angleController.resetAngleToZeroCommand();
-    
   }
 
   @Override
@@ -173,6 +193,7 @@ public class Robot extends TimedRobot {
     } catch (Exception e) {
       System.out.println("error: " + e);
     }
+    System.out.println("Alliance: " + alliance);
   }
 
   @Override
