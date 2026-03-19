@@ -1,6 +1,8 @@
 package frc.robot;
 
 import frc.robot.generated.TunerConstants;
+import frc.robot.util.interpolable.InterpolatingDouble;
+import frc.robot.util.interpolable.InterpolatingTreeMap;
 
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
@@ -81,7 +83,6 @@ public class Constants {
     public class FieldConst {
         public static final Pose2d BLUE_HUB = new Pose2d(4.611624, 4.034536, new Rotation2d(0));
         public static final Pose2d RED_HUB = new Pose2d(11.86815, 4.034536, new Rotation2d(0));
-        
 
         public static final Pose2d RED_CORRAL = new Pose2d(16.54, 8.07 - 0.85, new Rotation2d(0));
         public static final Pose2d BLUE_CORRAL = new Pose2d(0, 0.85, new Rotation2d(0));
@@ -94,9 +95,44 @@ public class Constants {
         public static final double kHubDistanceLeftEdge = Units.inchesToMeters(138.65);
         public static final double kHubDistanceRightEdge = Units.inchesToMeters(185.65);
         public static final Pose3d kHubTarget = new Pose3d(kHubDistanceFromAlliance + 20,
-            (kHubDistanceLeftEdge + kHubDistanceRightEdge) / 2, kHubHeight, new Rotation3d());
+                (kHubDistanceLeftEdge + kHubDistanceRightEdge) / 2, kHubHeight, new Rotation3d());
 
         public static final double kFuelWeight = Units.lbsToKilograms(0.474); // Kg
 
+    }
+
+    public static class ShootingConst {
+        public static final InterpolatingTreeMap<InterpolatingDouble, InterpolatingDouble> DISTANCE_TO_SHOOT_SPEED = new InterpolatingTreeMap<>();
+        static {
+            DISTANCE_TO_SHOOT_SPEED.put(new InterpolatingDouble(17.0), new InterpolatingDouble(40.0));
+            DISTANCE_TO_SHOOT_SPEED.put(new InterpolatingDouble(17.0), new InterpolatingDouble(45.0));
+            DISTANCE_TO_SHOOT_SPEED.put(new InterpolatingDouble(17.0), new InterpolatingDouble(50.0));
+            DISTANCE_TO_SHOOT_SPEED.put(new InterpolatingDouble(20.0), new InterpolatingDouble(55.0));
+            DISTANCE_TO_SHOOT_SPEED.put(new InterpolatingDouble(20.0), new InterpolatingDouble(60.0));
+            DISTANCE_TO_SHOOT_SPEED.put(new InterpolatingDouble(20.0), new InterpolatingDouble(65.0));
+            DISTANCE_TO_SHOOT_SPEED.put(new InterpolatingDouble(23.0), new InterpolatingDouble(70.0));
+            DISTANCE_TO_SHOOT_SPEED.put(new InterpolatingDouble(23.0), new InterpolatingDouble(75.0));
+            DISTANCE_TO_SHOOT_SPEED.put(new InterpolatingDouble(23.0), new InterpolatingDouble(80.0));
+            DISTANCE_TO_SHOOT_SPEED.put(new InterpolatingDouble(26.0), new InterpolatingDouble(85.0));
+            DISTANCE_TO_SHOOT_SPEED.put(new InterpolatingDouble(26.0), new InterpolatingDouble(90.0));
+            DISTANCE_TO_SHOOT_SPEED.put(new InterpolatingDouble(26.0), new InterpolatingDouble(95.0));
+            DISTANCE_TO_SHOOT_SPEED.put(new InterpolatingDouble(29.0), new InterpolatingDouble(100.0));
+            DISTANCE_TO_SHOOT_SPEED.put(new InterpolatingDouble(29.0), new InterpolatingDouble(105.0));
+            DISTANCE_TO_SHOOT_SPEED.put(new InterpolatingDouble(29.0), new InterpolatingDouble(110.0));
+            DISTANCE_TO_SHOOT_SPEED.put(new InterpolatingDouble(32.0), new InterpolatingDouble(115.0));
+            DISTANCE_TO_SHOOT_SPEED.put(new InterpolatingDouble(32.0), new InterpolatingDouble(120.0));
+            DISTANCE_TO_SHOOT_SPEED.put(new InterpolatingDouble(32.0), new InterpolatingDouble(125.0));
+            DISTANCE_TO_SHOOT_SPEED.put(new InterpolatingDouble(32.0), new InterpolatingDouble(130.0));
+            DISTANCE_TO_SHOOT_SPEED.put(new InterpolatingDouble(35.0), new InterpolatingDouble(135.0));
+            DISTANCE_TO_SHOOT_SPEED.put(new InterpolatingDouble(35.0), new InterpolatingDouble(140.0));
+            DISTANCE_TO_SHOOT_SPEED.put(new InterpolatingDouble(35.0), new InterpolatingDouble(145.0));
+            DISTANCE_TO_SHOOT_SPEED.put(new InterpolatingDouble(35.0), new InterpolatingDouble(150.0));
+            DISTANCE_TO_SHOOT_SPEED.put(new InterpolatingDouble(37.0), new InterpolatingDouble(155.0));
+            DISTANCE_TO_SHOOT_SPEED.put(new InterpolatingDouble(37.0), new InterpolatingDouble(160.0));
+            DISTANCE_TO_SHOOT_SPEED.put(new InterpolatingDouble(39.0), new InterpolatingDouble(165.0));
+            DISTANCE_TO_SHOOT_SPEED.put(new InterpolatingDouble(39.0), new InterpolatingDouble(170.0));
+            DISTANCE_TO_SHOOT_SPEED.put(new InterpolatingDouble(39.0), new InterpolatingDouble(175.0));
+            DISTANCE_TO_SHOOT_SPEED.put(new InterpolatingDouble(40.0), new InterpolatingDouble(180.0));
+        }
     }
 }

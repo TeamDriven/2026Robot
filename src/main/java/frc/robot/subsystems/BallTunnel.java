@@ -166,12 +166,46 @@ public class BallTunnel extends SubsystemBase {
     return new Command() {
       @Override
       public void initialize() {
-        addRequirements(BallTunnel.this);
       }
 
       @Override
       public void execute() {
         runBallTunnel(velocity, acceleration);
+      }
+    };
+  }
+
+   public Command runAllCommand(double velocity, double acceleration) {
+    return new Command() {
+      @Override
+      public void initialize() {
+      }
+
+      @Override
+      public void execute() {
+        runBallTunnel(velocity, acceleration);
+        runHopper(velocity, acceleration);
+      }
+    };
+  }
+
+  
+  /**
+   * Run the ballTunnel motor at a given velocity and acceleration
+   * 
+   * @param velocity     in rotations per second
+   * @param acceleration in rotations per second squared
+   * @return a command that will run the ballTunnel motor
+   */
+  public Command runHopperCommand(double velocity, double acceleration) {
+    return new Command() {
+      @Override
+      public void initialize() {
+      }
+
+      @Override
+      public void execute() {
+        runHopper(velocity, acceleration);
       }
     };
   }
@@ -189,6 +223,9 @@ public class BallTunnel extends SubsystemBase {
     diverterMotor.setControl(velocityControl
         .withVelocity(velocity)
         .withAcceleration(acceleration));
+  }
+
+  public void runHopper(double velocity, double acceleration) {
     hopperMotor.setControl(velocityControl
         .withVelocity(velocity)
         .withAcceleration(acceleration));

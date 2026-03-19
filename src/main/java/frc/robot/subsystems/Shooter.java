@@ -16,6 +16,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import edu.wpi.first.math.util.Units;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -25,6 +26,7 @@ import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.ShooterConsts;
 import frc.robot.generated.TunerConstants;
+import frc.robot.util.interpolable.InterpolatingDouble;
 
 /**
  * The Shooter class represents the subsystem responsible for controlling the
@@ -227,9 +229,18 @@ public class Shooter extends SubsystemBase {
     return  Math.sqrt(loss * top/bottom); 
   }
 
+  public double calcSpeedV2() {
+    double curentDistance = Constants.FieldConst.kHubTarget.getX() - m_limelight.getMegaTag2().pose.getX();
+    double speed = Constants.ShootingConst.DISTANCE_TO_SHOOT_SPEED.getInterpolated(new InterpolatingDouble(Units.metersToInches(curentDistance))).value;
+
+    
+
+    return speed;
+  }
+
   @Override
   public void periodic() {
-      System.out.println();
+      System.out.println("Shoot Speed: " + calcSpeedV2());
   }
 
 

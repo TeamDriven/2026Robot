@@ -156,11 +156,20 @@ public class RobotContainer {
                 //                                 new InstantCommand(() -> m_angleController.setPosition(0)),
                 //                                 new InstantCommand(() -> m_shooter.stopMotors()),
                 //                                 new InstantCommand(() -> m_ballTunnel.stopBallTunnel())));
-               joystick.rightBumper().toggleOnTrue(new ShootCommand(m_shooter.calcSpeed(), 12, 62.5))
+
+
+        //        joystick.rightBumper().toggleOnTrue(new ShootCommand(m_shooter.calcSpeed(), 11, 62.5))
+        //                 .toggleOnFalse(m_angleController.runOnce(() -> m_angleController.setPosition(2)).alongWith(
+        //                                 new InstantCommand(() -> m_angleController.setPosition(0)),
+        //                                 new InstantCommand(() -> m_shooter.stopMotors()),
+        //                                 new InstantCommand(() -> m_ballTunnel.stopBallTunnel())));
+               joystick.rightBumper().toggleOnTrue(new ShootCommand(m_shooter.calcSpeedV2(), 11, 62.5))
                         .toggleOnFalse(m_angleController.runOnce(() -> m_angleController.setPosition(2)).alongWith(
                                         new InstantCommand(() -> m_angleController.setPosition(0)),
                                         new InstantCommand(() -> m_shooter.stopMotors()),
                                         new InstantCommand(() -> m_ballTunnel.stopBallTunnel())));
+
+
                                         //m_intakeActuation.setPositionUntilSupply(1.39)));
 
 
@@ -173,14 +182,14 @@ public class RobotContainer {
                 joystick.leftTrigger().whileTrue(m_ballTunnel.spitCommand(20, 62, 14, 100)
                 .alongWith(m_angleController.runOnce(() -> m_angleController.setPosition(2)))
                 .alongWith(m_intakeRollers.feedCommand(85, 100))
-                .alongWith(m_intakeActuation.intakeInSlowCommand()))
+                .alongWith(m_intakeActuation.intakeInSlowCommand(0.5)))
                 .whileFalse(new InstantCommand(() -> m_ballTunnel.stopBallTunnel()));
 
-                joystick.a().onTrue(new InstantCommand(() -> m_ballTunnel.runBallTunnel(-62.5, 100))).onFalse(new InstantCommand(() -> m_ballTunnel.stopBallTunnel()));
-                joystick.y().onTrue(new InstantCommand(() -> m_ballTunnel.runBallTunnel(62.5, 100))).onFalse(new InstantCommand(() -> m_ballTunnel.stopBallTunnel()));
+                joystick.a().onTrue(new InstantCommand(() -> m_ballTunnel.runBallTunnel(-62.5, 100)).alongWith(new InstantCommand(() -> m_ballTunnel.runHopper(-62.5, 100)))).onFalse(new InstantCommand(() -> m_ballTunnel.stopBallTunnel()));
+                joystick.y().onTrue(new InstantCommand(() -> m_ballTunnel.runBallTunnel(62.5, 100)).alongWith(new InstantCommand(() -> m_ballTunnel.runHopper(62.5, 100)))).onFalse(new InstantCommand(() -> m_ballTunnel.stopBallTunnel()));
 
                 // Reset Heading
-                joystick.start().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
+                joystick.start().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()).alongWith(new InstantCommand(() -> m_angleController.setPosition(0))));
         }
 
         public Command getAutonomousCommand() {

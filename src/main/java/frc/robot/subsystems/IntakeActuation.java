@@ -160,16 +160,16 @@ public class IntakeActuation extends SubsystemBase {
       }
     };
   }
-    public void driftTo(){
+    public void driftTo(double speed){
         final DynamicMotionMagicVoltage m_request =
-        new DynamicMotionMagicVoltage(getCurrentPosition(), 1, 1).withJerk(20);
+        new DynamicMotionMagicVoltage(getCurrentPosition(), speed, 1).withJerk(20);
         actuationMotor.setControl(m_request.withPosition(0));
     }
-    public Command intakeInSlowCommand() {
+    public Command intakeInSlowCommand(double speed) {
       return new Command() {
       @Override
       public void execute() {
-        driftTo();
+        driftTo(speed);
       }
       @Override
       public boolean isFinished(){
