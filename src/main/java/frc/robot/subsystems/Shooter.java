@@ -7,6 +7,8 @@ package frc.robot.subsystems;
 import static frc.robot.Subsystems.m_angleController;
 import static frc.robot.Subsystems.m_limelight;
 
+import java.util.function.DoubleSupplier;
+
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
@@ -17,7 +19,7 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.util.Units;
-
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -25,6 +27,7 @@ import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.ShooterConsts;
+import frc.robot.Robot;
 import frc.robot.generated.TunerConstants;
 import frc.robot.util.interpolable.InterpolatingDouble;
 
@@ -209,7 +212,7 @@ public class Shooter extends SubsystemBase {
     return new WaitUntilCommand(() -> {
       double motorVelocity = getVelocity();
       SmartDashboard.putNumber("shooter speed ", motorVelocity);
-      return Math.abs(motorVelocity - speed) <= 2; // 1 degree tolerance
+      return Math.abs(motorVelocity - speed) <= 4; // 1 degree tolerance
     });
   }
 
@@ -222,27 +225,42 @@ public class Shooter extends SubsystemBase {
 
     double d = Constants.FieldConst.kHubTarget.getX() - m_limelight.getMegaTag2().pose.getX(); // Horizontal distance to
                                                                                                // target
-    
+
     double top = d * g;
     double bottom = Math.sin(2 * angleRadians);
 
-    return  Math.sqrt(loss * top/bottom); 
+    return Math.sqrt(loss * top / bottom);
   }
 
-  public double calcSpeedV2() {
-    double curentDistance = Constants.FieldConst.kHubTarget.getX() - m_limelight.getMegaTag2().pose.getX();
-    double speed = Constants.ShootingConst.DISTANCE_TO_SHOOT_SPEED.getInterpolated(new InterpolatingDouble(Units.metersToInches(curentDistance))).value;
+  public DoubleSupplier calcSpeedV2() {
+    double curentXDistance = 0;
+    double curentYDistance = 0;
 
-    
+    // if (Robot.alliance == Alliance.Red) {
+    curentXDistance = Math.pow(Constants.FieldConst.RED_HUB.getX() - RobotContainer.drivetrain.getPose().getX(), 2);
+    curentYDistance = Math.pow(Constants.FieldConst.RED_HUB.getY() - RobotContainer.drivetrain.getPose().getX(), 2);
+    // } else {
+    // curentXDistance = Math.pow(Constants.FieldConst.BLUE_HUB.getX() -
+    // m_limelight.getMegaTag2().pose.getX(), 2);
+    // curentYDistance = Math.pow(Constants.FieldConst.BLUE_HUB.getY() -
+    // m_limelight.getMegaTag2().pose.getY(), 2);
+    // }
+    double distance = Math.sqrt(curentYDistance + curentXDistance);
+    double speed = Constants.ShootingConst.DISTANCE_TO_SHOOT_SPEED
+        .getInterpolated(new InterpolatingDouble(Units.metersToInches(distance))).value;
 
-    return speed;
+    return () -> speed;
   }
 
   @Override
   public void periodic() {
-      System.out.println("Shoot Speed: " + calcSpeedV2());
+    // double curentXDistance = Math.pow(Constants.FieldConst.RED_HUB.getX() - RobotContainer.drivetrain.getPose().getX(), 2);
+    // System.out.println("distance Meters X: " + curentXDistance);
+    // double curentYDistance = Math.pow(Constants.FieldConst.RED_HUB.getY() - RobotContainer.drivetrain.getPose().getX(), 2);
+    // System.out.println("distance Meters Y: " + curentYDistance);
+    // System.out.println("distance Meters: " + Math.sqrt(curentYDistance + curentXDistance));
+    // // System.out.println("distance Inches: " + Units.metersToInches(distance));
+    // System.out.println("Shooter speed: " + leftShooterMotor.getVelocity());
   }
-
-
 
 }

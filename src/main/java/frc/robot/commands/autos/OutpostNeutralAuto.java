@@ -71,7 +71,7 @@ public class OutpostNeutralAuto {
 
         outpost.done().onTrue(Commands.sequence(
                 new WaitCommand(1),
-                new InstantCommand(() -> m_shooter.runShooter(25, m_angleController.calculateHoodAngle())),
+                new InstantCommand(() -> m_shooter.runShooter(23, m_angleController.calculateHoodAngle())),
                 outpostShooting.cmd()
 
         ));

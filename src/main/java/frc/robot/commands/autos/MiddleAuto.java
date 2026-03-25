@@ -32,7 +32,7 @@ public class MiddleAuto {
 
 
         moveBack.done().onTrue(Commands.sequence(
-             new ShootCommand(23, m_angleController.calculateHoodAngle(), 62.5),
+             new ShootCommand(() -> 23, m_angleController.calculateHoodAngle(), 62.5),
              new WaitCommand(8), 
              new InstantCommand(() -> m_angleController.setPosition(0)),
              new InstantCommand(() -> m_shooter.stopMotors()),

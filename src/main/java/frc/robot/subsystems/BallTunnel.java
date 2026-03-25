@@ -23,6 +23,7 @@ import frc.robot.generated.TunerConstants;
 
 import frc.robot.subsystems.IntakeActuation;
 import frc.robot.subsystems.IntakeRollers;
+
 /**
  * The Indexer class represents a subsystem that controls the ballTunnel motor.
  * It provides methods to initialize, run, and stop the ballTunnel motor, as
@@ -175,7 +176,7 @@ public class BallTunnel extends SubsystemBase {
     };
   }
 
-   public Command runAllCommand(double velocity, double acceleration) {
+  public Command runAllCommand(double velocity, double acceleration) {
     return new Command() {
       @Override
       public void initialize() {
@@ -189,7 +190,6 @@ public class BallTunnel extends SubsystemBase {
     };
   }
 
-  
   /**
    * Run the ballTunnel motor at a given velocity and acceleration
    * 
@@ -238,7 +238,8 @@ public class BallTunnel extends SubsystemBase {
    * @param acceleration in rotations per second squared
    * @return a command that will run the ballTunnel motor
    */
-  public Command spitCommand(double velocityBallTunnel, double velocityHopper, double velocityDiverter, double acceleration) {
+  public Command spitCommand(double velocityBallTunnel, double velocityHopper, double velocityDiverter,
+      double acceleration) {
     return new Command() {
       @Override
       public void initialize() {
@@ -247,7 +248,7 @@ public class BallTunnel extends SubsystemBase {
 
       @Override
       public void execute() {
-          spit(velocityBallTunnel, velocityHopper, velocityDiverter, acceleration);
+        spit(velocityBallTunnel, velocityHopper, velocityDiverter, acceleration);
       }
     };
   }
@@ -266,7 +267,7 @@ public class BallTunnel extends SubsystemBase {
         .withVelocity(-10 * velocityDiverter) // -
         .withAcceleration(acceleration));
     hopperMotor.setControl(velocityControl
-        .withVelocity( velocityHopper) // -
+        .withVelocity(velocityHopper) // -
         .withAcceleration(acceleration));
   }
 
@@ -356,7 +357,7 @@ public class BallTunnel extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     // System.out.println("ball tunnel: " +
-    // ballTunnelMotor.getVelocity().getValueAsDouble());
+    //     ballTunnelMotor.getVelocity().getValueAsDouble());
   }
 
   @Override

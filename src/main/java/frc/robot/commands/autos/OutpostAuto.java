@@ -30,7 +30,7 @@ public class OutpostAuto {
                 shoot1.cmd()));
 
         shoot1.done().onTrue(Commands.sequence(
-                new WaitCommand(1), new ShootCommand(25, 12, 62)
+                new WaitCommand(1), new ShootCommand(() -> 25, 12, 62)
                 ));
 
         return routine;
