@@ -18,6 +18,8 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -30,6 +32,9 @@ import frc.robot.Constants.ShooterConsts;
 import frc.robot.Robot;
 import frc.robot.generated.TunerConstants;
 import frc.robot.util.interpolable.InterpolatingDouble;
+
+import static frc.robot.RobotContainer.xPose;
+import static frc.robot.RobotContainer.yPose;
 
 /**
  * The Shooter class represents the subsystem responsible for controlling the
@@ -49,7 +54,7 @@ public class Shooter extends SubsystemBase {
   NeutralOut stopMode;
 
   /**
-   * Creates a new Intake.
+   * Creates a new Shooter.
    */
   public Shooter(int leftMotorId, int rightBottomMotorId, int rightTopMotorId) {
     leftShooterMotor = new TalonFX(leftMotorId, TunerConstants.kCANBus);
@@ -137,7 +142,7 @@ public class Shooter extends SubsystemBase {
    * @param acceleration in rotations per second squared
    * @return a command that will run the intake motor
    */
-  public Command runShooterCommand(double velocity, double acceleration) {
+  public Command runShooterCommand(double acceleration) {
     return new Command() {
       @Override
       public void initialize() {
@@ -146,6 +151,7 @@ public class Shooter extends SubsystemBase {
 
       @Override
       public void execute() {
+        double velocity = calcSpeedV2(xPose, yPose).getAsDouble();
         runShooter(velocity, acceleration);
       }
 
@@ -169,6 +175,7 @@ public class Shooter extends SubsystemBase {
         .withVelocity(velocity)
         .withAcceleration(acceleration));
   }
+
 
   /**
    * Run the Shooting motors at a given percent
@@ -232,14 +239,13 @@ public class Shooter extends SubsystemBase {
     return Math.sqrt(loss * top / bottom);
   }
 
-  public DoubleSupplier calcSpeedV2() {
+  public DoubleSupplier calcSpeedV2(double x, double y) {
     double curentXDistance = 0;
     double curentYDistance = 0;
 
     // if (Robot.alliance == Alliance.Red) {
-    curentXDistance = Math.pow(Constants.FieldConst.RED_HUB.getX() - RobotContainer.drivetrain.getPose().getX(), 2);
-    curentYDistance = Math.pow(Constants.FieldConst.RED_HUB.getY() - RobotContainer.drivetrain.getPose().getX(), 2);
-    // } else {
+    curentXDistance = Math.pow(Constants.FieldConst.BLUE_HUB.getX() - x, 2);
+    curentYDistance = Math.pow(Constants.FieldConst.BLUE_HUB.getY() - y, 2);
     // curentXDistance = Math.pow(Constants.FieldConst.BLUE_HUB.getX() -
     // m_limelight.getMegaTag2().pose.getX(), 2);
     // curentYDistance = Math.pow(Constants.FieldConst.BLUE_HUB.getY() -
@@ -248,7 +254,12 @@ public class Shooter extends SubsystemBase {
     double distance = Math.sqrt(curentYDistance + curentXDistance);
     double speed = Constants.ShootingConst.DISTANCE_TO_SHOOT_SPEED
         .getInterpolated(new InterpolatingDouble(Units.metersToInches(distance))).value;
-
+    SmartDashboard.putNumber("CalcSpeed.spd", speed);
+    SmartDashboard.putNumber("CalcSpeed.dist", distance);
+    SmartDashboard.putNumber("CalcSpeed.XDist", curentXDistance);
+    SmartDashboard.putNumber("CalcSpeed.YDist", curentYDistance);
+    SmartDashboard.putNumber("getXPose", x);
+    SmartDashboard.putNumber("getYPose", y);
     return () -> speed;
   }
 

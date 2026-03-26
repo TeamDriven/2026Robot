@@ -100,6 +100,10 @@ public class RobotContainer {
 
         public static Field2d m_field = new Field2d();
 
+        public static double xPose;
+
+        public static double yPose;
+
         public static final PowerDistribution m_pdh = new PowerDistribution(30, ModuleType.kRev);
 
         public RobotContainer() {
@@ -122,8 +126,17 @@ public class RobotContainer {
                 backLeft = drivetrain.getState().ModulePositions[2];
                 backRight = drivetrain.getState().ModulePositions[3];
                 m_intakeActuation.setPosition(m_intakeActuation.getCurrentPosition());
-
                 configureBindings();
+
+        }
+
+        public void robotPeriodic(){
+                xPose = drivetrain.getPose().getX();
+                yPose = drivetrain.getPose().getY();
+                SmartDashboard.putNumber("XPose", xPose);
+                SmartDashboard.putNumber("YPose", yPose);
+                
+              
         }
 
         private void configureBindings() {
@@ -158,17 +171,17 @@ public class RobotContainer {
                 //                                 new InstantCommand(() -> m_ballTunnel.stopBallTunnel())));
 
 
-               joystick.rightBumper().toggleOnTrue(new ShootCommand(() -> m_shooter.calcSpeed(), 11, 62.5))
-                        .toggleOnFalse(m_angleController.runOnce(() -> m_angleController.setPosition(2)).alongWith(
-                                        new InstantCommand(() -> m_angleController.setPosition(0)),
-                                        new InstantCommand(() -> m_shooter.stopMotors()),
-                                        new InstantCommand(() -> m_ballTunnel.stopBallTunnel())));
-
-        //        joystick.rightBumper().toggleOnTrue(new ShootCommand(m_shooter.calcSpeedV2(), 11, 62.5))
+        //        joystick.rightBumper().toggleOnTrue(new ShootCommand(() -> m_shooter.calcSpeed(), 11, 62.5))
         //                 .toggleOnFalse(m_angleController.runOnce(() -> m_angleController.setPosition(2)).alongWith(
         //                                 new InstantCommand(() -> m_angleController.setPosition(0)),
         //                                 new InstantCommand(() -> m_shooter.stopMotors()),
         //                                 new InstantCommand(() -> m_ballTunnel.stopBallTunnel())));
+
+               joystick.rightBumper().toggleOnTrue(new ShootCommand(()->0, 11, 62.5))
+                        .toggleOnFalse(m_angleController.runOnce(() -> m_angleController.setPosition(2)).alongWith(
+                                        new InstantCommand(() -> m_angleController.setPosition(0)),
+                                        new InstantCommand(() -> m_shooter.stopMotors()),
+                                        new InstantCommand(() -> m_ballTunnel.stopBallTunnel())));
 
 
                                         //m_intakeActuation.setPositionUntilSupply(1.39)));
