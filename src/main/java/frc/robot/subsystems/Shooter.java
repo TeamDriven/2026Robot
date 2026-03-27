@@ -158,8 +158,15 @@ public class Shooter extends SubsystemBase {
       @Override
       public void end(boolean interrupted) {
         // sitMode();
-        stopMotors();
+       // stopMotors();
       }
+
+      @Override
+      public boolean isFinished(){
+          double velocity = calcSpeedV2(xPose, yPose).getAsDouble();
+double motorVelocity = getVelocity();
+      SmartDashboard.putNumber("shooter speed ", motorVelocity);
+      return Math.abs(motorVelocity - velocity) <= 4;      }
     };
   }
 
@@ -219,8 +226,27 @@ public class Shooter extends SubsystemBase {
     return new WaitUntilCommand(() -> {
       double motorVelocity = getVelocity();
       SmartDashboard.putNumber("shooter speed ", motorVelocity);
-      return Math.abs(motorVelocity - speed) <= 4; // 1 degree tolerance
+      return Math.abs(motorVelocity - speed) <= 2; // 1 degree tolerance
     });
+  }
+
+  public Command stopShooterCommand(){
+    return new Command() {
+      @Override
+      public void initialize() {
+        addRequirements(Shooter.this);
+      }
+
+      @Override
+      public void execute() {
+        stopMotors();
+      }
+
+      @Override
+      public void end(boolean interrupted) {
+        stopMotors();
+      }
+    };
   }
 
   public double calcSpeed() {
@@ -244,8 +270,8 @@ public class Shooter extends SubsystemBase {
     double curentYDistance = 0;
 
     // if (Robot.alliance == Alliance.Red) {
-    curentXDistance = Math.pow(Constants.FieldConst.BLUE_HUB.getX() - x, 2);
-    curentYDistance = Math.pow(Constants.FieldConst.BLUE_HUB.getY() - y, 2);
+    curentXDistance = Math.pow(Constants.FieldConst.RED_HUB.getX() - x, 2);
+    curentYDistance = Math.pow(Constants.FieldConst.RED_HUB.getY() - y, 2);
     // curentXDistance = Math.pow(Constants.FieldConst.BLUE_HUB.getX() -
     // m_limelight.getMegaTag2().pose.getX(), 2);
     // curentYDistance = Math.pow(Constants.FieldConst.BLUE_HUB.getY() -

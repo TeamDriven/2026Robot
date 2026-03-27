@@ -181,7 +181,8 @@ public class RobotContainer {
                         .toggleOnFalse(m_angleController.runOnce(() -> m_angleController.setPosition(2)).alongWith(
                                         new InstantCommand(() -> m_angleController.setPosition(0)),
                                         new InstantCommand(() -> m_shooter.stopMotors()),
-                                        new InstantCommand(() -> m_ballTunnel.stopBallTunnel())));
+                                        new InstantCommand(() -> m_ballTunnel.stopBallTunnel()),
+                                        m_shooter.stopShooterCommand()));
 
 
                                         //m_intakeActuation.setPositionUntilSupply(1.39)));
