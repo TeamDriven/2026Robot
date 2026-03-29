@@ -80,8 +80,6 @@ public class Robot extends TimedRobot {
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
     SmartDashboard.putNumber("shooter velo", m_shooter.getVelocity());
-    SmartDashboard.putNumber("calcualted shooter velo", m_shooter.calcSpeed());
-    SmartDashboard.putNumber("calculate shooter angle", m_angleController.calculateHoodAngle());
     SmartDashboard.putNumber("avg distance lime", m_limelight.getMegaTag2().avgTagDist);
     SmartDashboard.putNumber("xPose", RobotContainer.drivetrain.getPose().getX());
     SmartDashboard.putNumber("yPose", RobotContainer.drivetrain.getPose().getY());
@@ -192,12 +190,11 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopPeriodic() {
-    try {
-      System.out.println("Drive Request: " + RobotContainer.drivetrain.getDefaultCommand());
-    } catch (Exception e) {
-      System.out.println("error: " + e);
-    }
-    System.out.println("Alliance: " + alliance);
+    // try {
+    //   System.out.println("Drive Request: " + RobotContainer.drivetrain.getDefaultCommand());
+    // } catch (Exception e) {
+    //   System.out.println("error: " + e);
+    // }
   }
 
   @Override
