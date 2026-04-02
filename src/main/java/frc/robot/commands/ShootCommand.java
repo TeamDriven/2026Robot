@@ -41,7 +41,7 @@ public class ShootCommand extends ParallelCommandGroup {
                                         new InstantCommand(() -> m_ballTunnel.runHopper(ballTunnelSpeed, 20))),
                                 Commands.waitSeconds(2),
                                 m_intakeRollers.feedCommand(85, 100),
-                                m_intakeActuation.intakeInSlowCommand(0.35))));
+                                m_intakeActuation.intakeInSlowCommand(0.45))));
                                 
 
     }

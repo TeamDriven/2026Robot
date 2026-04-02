@@ -24,20 +24,21 @@ import frc.robot.RobotContainer;
 import frc.robot.commands.ShootCommand;
 import frc.robot.subsystems.IntakeActuation;
 
-public class OutpostNeutralAuto {
+public class DepotNeutral {
     private final AutoFactory m_factory;
 
-    public OutpostNeutralAuto(AutoFactory factory) {
+    public DepotNeutral(AutoFactory factory) {
         m_factory = factory;
     }
 
     public AutoRoutine simplePathAuto() {
-        final AutoRoutine routine = m_factory.newRoutine("Outpost Netural");
-        final AutoTrajectory movement1 = routine.trajectory("OutpostNetural", 0);
-        final AutoTrajectory pickup = routine.trajectory("OutpostNetural", 1);
-        final AutoTrajectory shooting = routine.trajectory("OutpostNetural", 2);
-        final AutoTrajectory outpost = routine.trajectory("OutpostNetural", 3);
-        final AutoTrajectory outpostShooting = routine.trajectory("OutpostNetural", 4);
+        final AutoRoutine routine = m_factory.newRoutine("DepotNetural");
+        // final AutoTrajectory movement1 = routine.trajectory("DepotNetural");
+        final AutoTrajectory movement1 = routine.trajectory("DepotNetural", 0);
+        final AutoTrajectory pickup = routine.trajectory("DepotNetural", 1);
+        final AutoTrajectory shooting = routine.trajectory("DepotNetural", 2);
+        // final AutoTrajectory outpost = routine.trajectory("DepotNetural", 3);
+        // final AutoTrajectory outpostShooting = routine.trajectory("DepotNetural", 4);
 
         routine.active().onTrue(
                 m_intakeActuation.setPositionUntilSupply(1.39).andThen(
@@ -63,33 +64,31 @@ public class OutpostNeutralAuto {
                 new InstantCommand(() -> m_angleController.setPosition(0)),
                 new InstantCommand(() -> m_ballTunnel.stopBallTunnel()),
                 new InstantCommand(() -> m_shooter.stopMotors()),
-                m_intakeActuation.setPositionUntilSupply(1.39),
-                outpost.cmd()
-
-        ));
-
-        outpost.done().onTrue(Commands.sequence(
-                new WaitCommand(1),
-                new InstantCommand(() -> m_shooter.runShooter(23, m_angleController.calculateHoodAngle())),
-                outpostShooting.cmd()
-
-        ));
-
-        outpostShooting.done().onTrue(Commands.sequence(
-                new InstantCommand(() -> m_angleController.setPosition(12)),
-                new InstantCommand(() -> RobotContainer.drivetrain.applyRequest(
-                        Controls.localHeading())),
-                new InstantCommand(() -> m_ballTunnel.runBallTunnel(62.5, 100)).alongWith(
-                        m_intakeRollers.feedCommand(85, 100),
-                        m_intakeActuation.intakeInSlowCommand(0.5)),
-                new WaitCommand(4),
-
-                new InstantCommand(() -> m_angleController.setPosition(0)),
-                new InstantCommand(() -> m_ballTunnel.stopBallTunnel()),
-                new InstantCommand(() -> m_shooter.stopMotors()),
                 m_intakeActuation.setPositionUntilSupply(1.39)
-
         ));
+
+        // outpost.done().onTrue(Commands.sequence(
+        //         new WaitCommand(1),
+        //         new InstantCommand(() -> m_shooter.runShooter(23, m_angleController.calculateHoodAngle())),
+        //         outpostShooting.cmd()
+
+        // ));
+
+        // outpostShooting.done().onTrue(Commands.sequence(
+        //         new InstantCommand(() -> m_angleController.setPosition(12)),
+        //         new InstantCommand(() -> RobotContainer.drivetrain.applyRequest(
+        //                 Controls.localHeading())),
+        //         new InstantCommand(() -> m_ballTunnel.runBallTunnel(62.5, 100)).alongWith(
+        //                 m_intakeRollers.feedCommand(85, 100),
+        //                 m_intakeActuation.intakeInSlowCommand(0.5)),
+        //         new WaitCommand(4),
+
+        //         new InstantCommand(() -> m_angleController.setPosition(0)),
+        //         new InstantCommand(() -> m_ballTunnel.stopBallTunnel()),
+        //         new InstantCommand(() -> m_shooter.stopMotors()),
+        //         m_intakeActuation.setPositionUntilSupply(1.39)
+
+        // ));
 
         return routine;
     }

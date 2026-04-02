@@ -47,6 +47,8 @@ import frc.robot.commands.ShootCommand;
 import frc.robot.commands.autos.MiddleAuto;
 import frc.robot.commands.autos.OutpostAuto;
 import frc.robot.commands.autos.OutpostNeutralAuto;
+import frc.robot.commands.autos.DepotNeutral;
+import frc.robot.commands.autos.DepotNeutral2;
 
 import static frc.robot.Controls.joystick;
 
@@ -72,6 +74,8 @@ public class RobotContainer {
         //private final NeutralDepotAuto neutralZoneDepotAuto;
         //private final DepotAuto depotAuto;
         private final OutpostNeutralAuto outpostNeutralAuto;
+        private final DepotNeutral depotNeutralAuto;
+        private final DepotNeutral2 depotNeutral2Auto;
         private final MiddleAuto middleAuto;
         private final AutoChooser autoChooser = new AutoChooser();
         
@@ -113,11 +117,15 @@ public class RobotContainer {
                 //neutralZoneDepotAuto = new NeutralDepotAuto(autoFactory);
                 //depotAuto = new DepotAuto(autoFactory);
                 outpostNeutralAuto = new OutpostNeutralAuto(autoFactory);
+                depotNeutralAuto = new DepotNeutral(autoFactory);
+                depotNeutral2Auto = new DepotNeutral2(autoFactory);
                 middleAuto = new MiddleAuto(autoFactory);
                 //autoChooser.addRoutine("Depot Auto", depotAuto::simplePathAuto);
                 //autoChooser.addRoutine("Outpost Auto", outpostAuto::simplePathAuto);
                 //autoChooser.addRoutine("Neutral Zone Depot Auto", neutralZoneDepotAuto::neutralZoneAuto);
                 autoChooser.addRoutine("OutpostNetural", outpostNeutralAuto::simplePathAuto);
+                autoChooser.addRoutine("DepotNetural", depotNeutralAuto::simplePathAuto);
+                autoChooser.addRoutine("DepotNetural2", depotNeutral2Auto::simplePathAuto);
                 autoChooser.addRoutine("Middle Auto", middleAuto::middleAuto);
                 SmartDashboard.putData("Auto Chooser", autoChooser);
 
@@ -155,12 +163,12 @@ public class RobotContainer {
 
                 // joystick.povDown().onTrue(drivetrain.applyRequest(Controls.localHeading(Constants.FieldConst.BLUE_HUB))).onFalse(drivetrain.applyRequest(Controls.driveRequest()));
                 
-              joystick.povDown().onTrue(drivetrain.applyRequest(Controls.localHeading(Robot.alliance == Alliance.Red ? Constants.FieldConst.RED_HUB : Constants.FieldConst.BLUE_HUB))).onFalse(drivetrain.applyRequest(Controls.driveRequest()));
+              joystick.povDown().onTrue(drivetrain.applyRequest(Controls.localHeading())).onFalse(drivetrain.applyRequest(Controls.driveRequest()));
                 //joystick.povUp().onTrue(m_intakeActuation.intakeInSlowCommand());
                 
 
                 // Intake
-                joystick.b().onTrue(m_intakeActuation.setPositionUntilSupply(1.35));
+                joystick.b().onTrue(m_intakeActuation.setPositionUntilSupply(1.21));
                 joystick.x().onTrue(m_intakeActuation.setPositionUntilSupply(0).andThen(new WaitCommand(5)).andThen(m_intakeRollers.stopIntakeCommand()));
                 joystick.leftBumper().whileTrue(m_intakeRollers.feedCommand(90, 100)).whileFalse(m_intakeRollers.stopIntakeCommand());
 

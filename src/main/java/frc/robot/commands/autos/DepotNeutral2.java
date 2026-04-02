@@ -24,20 +24,21 @@ import frc.robot.RobotContainer;
 import frc.robot.commands.ShootCommand;
 import frc.robot.subsystems.IntakeActuation;
 
-public class OutpostNeutralAuto {
+public class DepotNeutral2 {
     private final AutoFactory m_factory;
 
-    public OutpostNeutralAuto(AutoFactory factory) {
+    public DepotNeutral2(AutoFactory factory) {
         m_factory = factory;
     }
 
     public AutoRoutine simplePathAuto() {
-        final AutoRoutine routine = m_factory.newRoutine("Outpost Netural");
-        final AutoTrajectory movement1 = routine.trajectory("OutpostNetural", 0);
-        final AutoTrajectory pickup = routine.trajectory("OutpostNetural", 1);
-        final AutoTrajectory shooting = routine.trajectory("OutpostNetural", 2);
-        final AutoTrajectory outpost = routine.trajectory("OutpostNetural", 3);
-        final AutoTrajectory outpostShooting = routine.trajectory("OutpostNetural", 4);
+        final AutoRoutine routine = m_factory.newRoutine("DepotNetural2");
+        // final AutoTrajectory movement1 = routine.trajectory("DepotNetural2");
+        final AutoTrajectory movement1 = routine.trajectory("DepotNetural2", 0);
+        final AutoTrajectory pickup = routine.trajectory("DepotNetural2", 1);
+        final AutoTrajectory shooting = routine.trajectory("DepotNetural2", 2);
+        final AutoTrajectory pickup2 = routine.trajectory("DepotNetural2", 3);
+        final AutoTrajectory shooting2 = routine.trajectory("DepotNetural2", 4);
 
         routine.active().onTrue(
                 m_intakeActuation.setPositionUntilSupply(1.39).andThen(
@@ -46,7 +47,8 @@ public class OutpostNeutralAuto {
 
         movement1.done().onTrue(Commands.parallel(
                 new InstantCommand(() -> m_intakeRollers.feedMotor(90, 100)),
-                pickup.cmd()));
+                pickup.cmd()
+                ));
 
         pickup.done().onTrue(Commands.parallel(
                 new InstantCommand(() -> m_shooter.runShooter(30, m_angleController.calculateHoodAngle())),
@@ -59,30 +61,29 @@ public class OutpostNeutralAuto {
                 new InstantCommand(() -> m_ballTunnel.runBallTunnel(62.5, 100)).alongWith(
                         new InstantCommand(() -> m_intakeRollers.feedMotor(85, 100)), new InstantCommand(() -> m_ballTunnel.runHopper(62.5, 100))),
                 m_intakeActuation.intakeInSlowCommand(0.3),
-                new WaitCommand(4),
+                new WaitCommand(2),
                 new InstantCommand(() -> m_angleController.setPosition(0)),
                 new InstantCommand(() -> m_ballTunnel.stopBallTunnel()),
                 new InstantCommand(() -> m_shooter.stopMotors()),
-                m_intakeActuation.setPositionUntilSupply(1.39),
-                outpost.cmd()
-
+                // m_intakeActuation.setPositionUntilSupply(1.39),
+                pickup2.cmd()
         ));
 
-        outpost.done().onTrue(Commands.sequence(
+        pickup2.done().onTrue(Commands.sequence(
                 new WaitCommand(1),
                 new InstantCommand(() -> m_shooter.runShooter(23, m_angleController.calculateHoodAngle())),
-                outpostShooting.cmd()
+                shooting2.cmd()
 
         ));
 
-        outpostShooting.done().onTrue(Commands.sequence(
+        shooting2.done().onTrue(Commands.sequence(
                 new InstantCommand(() -> m_angleController.setPosition(12)),
                 new InstantCommand(() -> RobotContainer.drivetrain.applyRequest(
                         Controls.localHeading())),
                 new InstantCommand(() -> m_ballTunnel.runBallTunnel(62.5, 100)).alongWith(
                         m_intakeRollers.feedCommand(85, 100),
                         m_intakeActuation.intakeInSlowCommand(0.5)),
-                new WaitCommand(4),
+                new WaitCommand(2),
 
                 new InstantCommand(() -> m_angleController.setPosition(0)),
                 new InstantCommand(() -> m_ballTunnel.stopBallTunnel()),

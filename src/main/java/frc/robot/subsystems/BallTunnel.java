@@ -14,6 +14,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -72,7 +73,7 @@ public class BallTunnel extends SubsystemBase {
      * Voltage-based velocity requires a feed forward to account for the back-emf of
      * the motor
      */
-    configs.Slot0.kP = 0;// 0.0000001; // An error of 1 rotation per second results in 2V output
+    configs.Slot0.kP = 1;// 0.0000001; // An error of 1 rotation per second results in 2V output
     configs.Slot0.kI = 0.0; // An error of 1 rotation per second increases output by 0.5V every second
     configs.Slot0.kD = 0.1; // A change of 1 rotation per second squared results in 0.01 volts output
     configs.Slot0.kV = 0.10; // Falcon 500 is a 500kV motor, 500rpm per V = 8.333 rps per V, 1/8.33 = 0.12
@@ -229,6 +230,7 @@ public class BallTunnel extends SubsystemBase {
     hopperMotor.setControl(velocityControl
         .withVelocity(velocity)
         .withAcceleration(acceleration));
+        getVelocity();
   }
 
   /**
@@ -350,7 +352,11 @@ public class BallTunnel extends SubsystemBase {
    * @return the speed of the ballTunnel in rotations per second
    */
   public double getVelocity() {
+    SmartDashboard.putNumber("diverterVel", diverterMotor.getVelocity().getValueAsDouble());
+    SmartDashboard.putNumber("ballTunnelVel", ballTunnelMotor.getVelocity().getValueAsDouble());
+    SmartDashboard.putNumber("hopperVel", hopperMotor.getVelocity().getValueAsDouble());
     return diverterMotor.getVelocity().getValueAsDouble();
+
   }
 
   @Override

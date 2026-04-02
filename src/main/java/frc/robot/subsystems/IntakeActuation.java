@@ -153,13 +153,12 @@ public class IntakeActuation extends SubsystemBase {
 
       @Override
       public boolean isFinished() {
-        return actuationMotor.getSupplyCurrent()
-            .getValueAsDouble() >= Constants.AngleControllerConsts.CURRENT_TOLERANCE;
+        return actuationMotor.getSupplyCurrent().getValueAsDouble() >= Constants.AngleControllerConsts.CURRENT_TOLERANCE;
       }
 
       // @Override 
       // public void end(boolean interrupted) {
-      //   stopMotor();;
+      //   stopMotor();
       // }
     };
   }

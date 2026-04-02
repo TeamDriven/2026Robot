@@ -2,6 +2,7 @@ package frc.robot;
 
 import static frc.robot.Subsystems.m_limelight;
 
+import java.lang.reflect.Field;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
@@ -9,10 +10,12 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import frc.robot.Constants.DrivetrainConst;
-
+import frc.robot.Constants.FieldConst;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.event.BooleanEvent;
 import edu.wpi.first.wpilibj.event.EventLoop;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -53,8 +56,22 @@ public class Controls {
         /*
          * Turn towards given Pose2d
          */
-        public static Supplier<SwerveRequest> localHeading(Pose2d target) {
-                // Get the target Angle
+        public static Supplier<SwerveRequest> localHeading() {
+                Pose2d target;
+                if (Alliance.Red == DriverStation.getAlliance().get()) {
+                        target = FieldConst.RED_HUB;
+                         SmartDashboard.putString("alliance", "REd");
+
+                }
+                else{
+                        target = FieldConst.BLUE_HUB;
+                        SmartDashboard.putString("alliance", "blue");
+                }
+                        
+                                                                                        
+
+                
+
                 final DoubleSupplier targetAngle = () -> {
                         double dx = target.getX()
                                         - m_limelight.getMegaTag2().pose.getX();
@@ -62,13 +79,15 @@ public class Controls {
                         double dy = target.getY()
                                         - m_limelight.getMegaTag2().pose.getY();
 
+
+
                         return Math.atan2(dy, dx); // radians
                 };
 
                 // Get the rotation rate -1 to 1 needed to get to target angle
                 final DoubleSupplier rotationRate = () -> {
                         double currentHeading = m_limelight.getMegaTag2().pose.getRotation().getRadians();
-                        double error = targetAngle.getAsDouble() - currentHeading;
+                        double error = targetAngle.getAsDouble() - currentHeading +.2;
 
                         // Wrap to [-pi, pi]
                         error = Math.atan2(Math.sin(error), Math.cos(error));

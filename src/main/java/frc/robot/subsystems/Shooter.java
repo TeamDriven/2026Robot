@@ -21,6 +21,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -269,7 +270,7 @@ double motorVelocity = getVelocity();
     double curentXDistance = 0;
     double curentYDistance = 0;
 
-    if (Robot.alliance == Alliance.Red) {
+    if (DriverStation.getAlliance().get() == Alliance.Red) {
     curentXDistance = Math.pow(Constants.FieldConst.RED_HUB.getX() - x, 2);
     curentYDistance = Math.pow(Constants.FieldConst.RED_HUB.getY() - y, 2);
     } else {
@@ -281,11 +282,19 @@ double motorVelocity = getVelocity();
     // curentYDistance = Math.pow(Constants.FieldConst.BLUE_HUB.getY() -
     // m_limelight.getMegaTag2().pose.getY(), 2);
     // }
+
+ double limelightX = m_limelight.getMegaTag2().pose.getX();
+ double limelightY = m_limelight.getMegaTag2().pose.getY();
+ double limelightXDistance = Math.pow(Constants.FieldConst.BLUE_HUB.getX() - limelightX, 2);
+ double limelightYDistance = Math.pow(Constants.FieldConst.BLUE_HUB.getY() - limelightY, 2);
+ double limelightDistance = Math.sqrt(limelightYDistance + limelightXDistance);
+ SmartDashboard.putNumber(("limelightDistance"), limelightDistance);
+
     double distance = Math.sqrt(curentYDistance + curentXDistance);
     double speed = Constants.ShootingConst.DISTANCE_TO_SHOOT_SPEED
         .getInterpolated(new InterpolatingDouble(Units.metersToInches(distance))).value;
     SmartDashboard.putNumber("CalcSpeed.spd", speed);
-    SmartDashboard.putNumber("CalcSpeed.dist", distance);
+    SmartDashboard.putNumber("CalcSpeed.dist",Units.metersToInches(distance));
     SmartDashboard.putNumber("CalcSpeed.XDist", curentXDistance);
     SmartDashboard.putNumber("CalcSpeed.YDist", curentYDistance);
     SmartDashboard.putNumber("getXPose", x);
