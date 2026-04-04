@@ -87,7 +87,7 @@ public class Controls {
                 // Get the rotation rate -1 to 1 needed to get to target angle
                 final DoubleSupplier rotationRate = () -> {
                         double currentHeading = m_limelight.getMegaTag2().pose.getRotation().getRadians();
-                        double error = targetAngle.getAsDouble() - currentHeading +.2;
+                        double error = targetAngle.getAsDouble() - currentHeading +.1;
 
                         // Wrap to [-pi, pi]
                         error = Math.atan2(Math.sin(error), Math.cos(error));

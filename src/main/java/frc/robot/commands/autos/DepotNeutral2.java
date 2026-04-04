@@ -65,7 +65,8 @@ public class DepotNeutral2 {
                 new InstantCommand(() -> m_angleController.setPosition(0)),
                 new InstantCommand(() -> m_ballTunnel.stopBallTunnel()),
                 new InstantCommand(() -> m_shooter.stopMotors()),
-                // m_intakeActuation.setPositionUntilSupply(1.39),
+                m_intakeActuation.setPositionUntilSupply(1.39),
+                new InstantCommand(() -> m_intakeRollers.feedMotor(90, 100)),
                 pickup2.cmd()
         ));
 

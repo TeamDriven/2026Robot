@@ -63,8 +63,7 @@ public class DepotNeutral {
                 new WaitCommand(4),
                 new InstantCommand(() -> m_angleController.setPosition(0)),
                 new InstantCommand(() -> m_ballTunnel.stopBallTunnel()),
-                new InstantCommand(() -> m_shooter.stopMotors()),
-                m_intakeActuation.setPositionUntilSupply(1.39)
+                new InstantCommand(() -> m_shooter.stopMotors())
         ));
 
         // outpost.done().onTrue(Commands.sequence(

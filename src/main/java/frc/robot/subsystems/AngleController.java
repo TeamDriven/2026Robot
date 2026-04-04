@@ -198,7 +198,7 @@ public class AngleController extends SubsystemBase {
 
       @Override
       public boolean isFinished() {
-        return angleMotor.getSupplyCurrent().getValueAsDouble() >= Constants.AngleControllerConsts.CURRENT_TOLERANCE;
+        return angleMotor.getSupplyCurrent().getValueAsDouble() >= Constants.AngleControllerConsts.MAX_CURRENT_TOLERANCE;
       }
     };
   }

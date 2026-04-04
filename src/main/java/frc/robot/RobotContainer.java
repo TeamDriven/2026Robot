@@ -168,8 +168,8 @@ public class RobotContainer {
                 
 
                 // Intake
-                joystick.b().onTrue(m_intakeActuation.setPositionUntilSupply(1.21));
-                joystick.x().onTrue(m_intakeActuation.setPositionUntilSupply(0).andThen(new WaitCommand(5)).andThen(m_intakeRollers.stopIntakeCommand()));
+                joystick.b().onTrue(m_intakeActuation.setPositionUntilSupply(1.47));
+                joystick.x().onTrue(m_intakeActuation.setPositionUntilSupply(0).andThen(new WaitCommand(1)).andThen(m_intakeRollers.stopIntakeCommand()));
                 joystick.leftBumper().whileTrue(m_intakeRollers.feedCommand(90, 100)).whileFalse(m_intakeRollers.stopIntakeCommand());
 
                 // joystick.rightBumper().toggleOnTrue(new ShootCommand(29, 10, 62.5))
@@ -202,7 +202,7 @@ public class RobotContainer {
                 //                         new InstantCommand(() -> m_shooter.stopMotors()),
                 //                         new InstantCommand(() -> m_ballTunnel.stopBallTunnel())));
                                         
-                joystick.leftTrigger().whileTrue(m_ballTunnel.spitCommand(20, 62, 14, 100)
+                joystick.leftTrigger().whileTrue(m_ballTunnel.spitCommand(15, 62, 14, 100)
                 .alongWith(m_angleController.runOnce(() -> m_angleController.setPosition(2)))
                 .alongWith(m_intakeRollers.feedCommand(85, 100))
                 .alongWith(m_intakeActuation.intakeInSlowCommand(0.5)))
