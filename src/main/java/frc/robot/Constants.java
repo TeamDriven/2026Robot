@@ -123,22 +123,22 @@ public class Constants {
             DISTANCE_TO_SHOOT_SPEED.put(new InterpolatingDouble(110.0), new InterpolatingDouble(27)); // sdxzfszx
             DISTANCE_TO_SHOOT_SPEED.put(new InterpolatingDouble(115.0), new InterpolatingDouble((27)));
             DISTANCE_TO_SHOOT_SPEED.put(new InterpolatingDouble(120.0), new InterpolatingDouble((27)));
-            DISTANCE_TO_SHOOT_SPEED.put(new InterpolatingDouble(125.0), new InterpolatingDouble((28)));
-            DISTANCE_TO_SHOOT_SPEED.put(new InterpolatingDouble(130.0), new InterpolatingDouble((29)));
+            DISTANCE_TO_SHOOT_SPEED.put(new InterpolatingDouble(125.0), new InterpolatingDouble((27)));
+            DISTANCE_TO_SHOOT_SPEED.put(new InterpolatingDouble(130.0), new InterpolatingDouble((28)));
             DISTANCE_TO_SHOOT_SPEED.put(new InterpolatingDouble(135.0), new InterpolatingDouble((29)));
-            DISTANCE_TO_SHOOT_SPEED.put(new InterpolatingDouble(140.0), new InterpolatingDouble(30));
-            DISTANCE_TO_SHOOT_SPEED.put(new InterpolatingDouble(145.0), new InterpolatingDouble(32));
+            DISTANCE_TO_SHOOT_SPEED.put(new InterpolatingDouble(140.0), new InterpolatingDouble(29));
+            DISTANCE_TO_SHOOT_SPEED.put(new InterpolatingDouble(145.0), new InterpolatingDouble(30));
             DISTANCE_TO_SHOOT_SPEED.put(new InterpolatingDouble(150.0), new InterpolatingDouble(30));
-            DISTANCE_TO_SHOOT_SPEED.put(new InterpolatingDouble(155.0), new InterpolatingDouble(33));
-            DISTANCE_TO_SHOOT_SPEED.put(new InterpolatingDouble(160.0), new InterpolatingDouble(33));
+            DISTANCE_TO_SHOOT_SPEED.put(new InterpolatingDouble(155.0), new InterpolatingDouble(31));
+            DISTANCE_TO_SHOOT_SPEED.put(new InterpolatingDouble(160.0), new InterpolatingDouble(31.5));
             DISTANCE_TO_SHOOT_SPEED.put(new InterpolatingDouble(165.0), new InterpolatingDouble(33));
-            DISTANCE_TO_SHOOT_SPEED.put(new InterpolatingDouble(170.0), new InterpolatingDouble(33));
-            DISTANCE_TO_SHOOT_SPEED.put(new InterpolatingDouble(175.0), new InterpolatingDouble(32));
-            DISTANCE_TO_SHOOT_SPEED.put(new InterpolatingDouble(180.0), new InterpolatingDouble(36));
-            DISTANCE_TO_SHOOT_SPEED.put(new InterpolatingDouble(185.0), new InterpolatingDouble(34));
-            DISTANCE_TO_SHOOT_SPEED.put(new InterpolatingDouble(190.0), new InterpolatingDouble(34));
-            DISTANCE_TO_SHOOT_SPEED.put(new InterpolatingDouble(195.0), new InterpolatingDouble(34));
-            DISTANCE_TO_SHOOT_SPEED.put(new InterpolatingDouble(200.0), new InterpolatingDouble(34));
+            DISTANCE_TO_SHOOT_SPEED.put(new InterpolatingDouble(170.0), new InterpolatingDouble(34));
+            DISTANCE_TO_SHOOT_SPEED.put(new InterpolatingDouble(175.0), new InterpolatingDouble(35));
+            DISTANCE_TO_SHOOT_SPEED.put(new InterpolatingDouble(180.0), new InterpolatingDouble(35));
+            DISTANCE_TO_SHOOT_SPEED.put(new InterpolatingDouble(185.0), new InterpolatingDouble(35));
+            DISTANCE_TO_SHOOT_SPEED.put(new InterpolatingDouble(190.0), new InterpolatingDouble(36));
+            DISTANCE_TO_SHOOT_SPEED.put(new InterpolatingDouble(195.0), new InterpolatingDouble(36));
+            DISTANCE_TO_SHOOT_SPEED.put(new InterpolatingDouble(200.0), new InterpolatingDouble(36));
         }
 
 
