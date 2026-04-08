@@ -19,6 +19,7 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import dev.doglog.DogLog;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -32,6 +33,7 @@ import frc.robot.RobotContainer;
 import frc.robot.Constants.ShooterConsts;
 import frc.robot.Robot;
 import frc.robot.generated.TunerConstants;
+import frc.robot.util.ShooterLogger;
 import frc.robot.util.interpolable.InterpolatingDouble;
 
 import static frc.robot.RobotContainer.xPose;
@@ -154,6 +156,8 @@ public class Shooter extends SubsystemBase {
       public void execute() {
         double velocity = calcSpeedV2(xPose, yPose).getAsDouble();
         runShooter(velocity, acceleration);
+       ShooterLogger.log(getVelocity(), velocity);
+
       }
 
       @Override

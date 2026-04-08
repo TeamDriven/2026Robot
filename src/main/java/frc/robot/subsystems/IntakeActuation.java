@@ -64,7 +64,7 @@ public class IntakeActuation extends SubsystemBase {
     configs.Feedback.SensorToMechanismRatio = IntakeActuationConsts.GearRatio;
 
     configs.CurrentLimits.SupplyCurrentLimitEnable = true;
-    configs.CurrentLimits.SupplyCurrentLimit = 40;
+    configs.CurrentLimits.SupplyCurrentLimit = 20;
 
     configs.MotionMagic.MotionMagicCruiseVelocity = 30;
     configs.MotionMagic.MotionMagicAcceleration = 50;
